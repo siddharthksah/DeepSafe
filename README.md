@@ -1,4 +1,4 @@
-# DeepSafe
+# DeepSafe 🐶
 DeepSafe - DeepFake Detection made easy
 
 ## DeepSafe consiste of 3 tools.
