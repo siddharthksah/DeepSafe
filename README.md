@@ -106,6 +106,47 @@ Running the docker image and creating the container
 docker run -p 8501:8501 app:latest
 ```
 
+Getting the image to Docker Hub
+
+After you made your own Docker image, you can sign up for an account on https://hub.docker.com/. After verifying your email you are ready to go and upload your first docker image.
+
+1. Log in on https://hub.docker.com/
+2. Click on Create Repository.
+3. Choose a name (e.g. verse_gapminder) and a description for your repository and click Create.
+4. Log into the Docker Hub from the command line
+
+```
+docker login --username=yourhubusername --email=youremail@company.com
+```
+
+just with your own user name and email that you used for the account. Enter your password when prompted. If everything worked you will get a message similar to
+```
+WARNING: login credentials saved in /home/username/.docker/config.json
+Login Succeeded
+```
+Check the image ID using
+```
+docker images
+```
+and what you will see will be similar to
+
+REPOSITORY              TAG       IMAGE ID         CREATED           SIZE
+verse_gapminder_gsl     latest    023ab91c6291     3 minutes ago     1.975 GB
+verse_gapminder         latest    bb38976d03cf     13 minutes ago    1.955 GB
+rocker/verse            latest    0168d115f220     3 days ago        1.954 GB
+
+and tag your image
+```
+docker tag bb38976d03cf yourhubusername/verse_gapminder:firsttry
+```
+
+The number must match the image ID and :firsttry is the tag. In general, a good choice for a tag is something that will help you understand what this container should be used in conjunction with, or what it represents. If this container contains the analysis for a paper, consider using that paper’s DOI or journal-issued serial number; if it’s meant for use with a particular version of a code or data version control repo, that’s a good choice too - whatever will help you understand what this particular image is intended for.
+
+Push your image to the repository you created
+```
+docker push yourhubusername/verse_gapminder
+```
+
 
 
 # PyTorch Project Template
