@@ -1,0 +1,1 @@
+Deepware, https://github.com/deepware/deepfake-scanner, GNU General Public License v3.0

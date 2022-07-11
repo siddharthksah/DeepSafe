@@ -1,0 +1,11 @@
+{
+	"arch": "b7",
+	"batch": 10,
+	"lr": 5e-5,
+	"epoch": 20,
+	"margin": 1.65,
+	"size": 380,
+	"augments": {
+		"strong_transform": 1
+	}
+}

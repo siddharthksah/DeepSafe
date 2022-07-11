@@ -1,0 +1,9 @@
+opencv-python
+dface
+numpy
+Pillow
+sklearn
+timm
+torch
+torchvision
+tqdm

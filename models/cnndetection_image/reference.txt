@@ -1,0 +1,1 @@
+CNNDetection, https://github.com/peterwang512/CNNDetection, https://github.com/PeterWang512/CNNDetection/blob/master/LICENSE.txt

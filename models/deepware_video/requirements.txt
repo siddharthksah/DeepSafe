@@ -1,0 +1,9 @@
+dface==1.1.5
+numpy==1.22.2
+opencv_python==4.5.5.62
+Pillow==9.0.1
+scikit_learn==1.0.2
+timm==0.5.4
+torch==1.10.2
+torchvision==0.11.3
+tqdm==4.63.0

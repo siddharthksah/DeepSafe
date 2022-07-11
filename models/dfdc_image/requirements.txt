@@ -1,0 +1,5 @@
+numpy==1.22.3
+Pillow==9.0.1
+scikit_image==0.19.2
+skimage==0.0
+tensorflow==2.8.0
