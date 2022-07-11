@@ -22,7 +22,8 @@ WebBased DeepFake Detection
 
 <br/>
 
-
+Mega Drive
+https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ
 
 Download Weights
 
