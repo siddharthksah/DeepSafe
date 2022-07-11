@@ -92,6 +92,15 @@ A simple framework in python to create multi page web application using streamli
 ```
 $ git clone git@github.com:upraneelnihar/streamlit-multiapps
 $ cd streamlit-multiapps
+
+
+
+
+```
+2. Creating conda environment
+
+```
+conda create -n deepsafe python==3.8 -y
 ```
 
 2. Install dependencies:
