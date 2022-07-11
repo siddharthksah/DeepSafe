@@ -1,0 +1,8 @@
+opencv_python
+torch==1.9.0
+torchvision==0.10.0
+requests==2.24.0
+numpy
+Flask==2.0.2
+jsonpickle==2.0.0
+Pillow
