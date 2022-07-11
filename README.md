@@ -82,3 +82,8 @@ gdown.download_folder(url, quiet=True, use_cookies=False)
 id = "15uNXeRBIhVvZJIhL4yTw4IsStMhUaaxl"
 gdown.download_folder(id=id, quiet=True, use_cookies=False)
 ```
+
+Hosting on Google Cloud Run
+Streamlit
+Dockerized
+
