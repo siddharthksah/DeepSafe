@@ -23,7 +23,7 @@ conda activate deepsafe
 
 3. Install dependencies:
 ```
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 4. Download Model Weights
@@ -32,29 +32,11 @@ $ pip install -r requirements.txt
 | :---:   | :-: | :-: |
   | Link | [Google Drive](https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing) | [Mega Drive](https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ) |
   
-  Or you can use [Gdown](https://github.com/wkentaro/gdown)
+Or you can use [Gdown](https://github.com/wkentaro/gdown)
+
   <a href="https://pypi.python.org/pypi/gdown"><img src="https://img.shields.io/pypi/v/gdown.svg"></a>
-  '''
-import gdown
-
-#this takes a while cause the folder is quite big about 3.4G
-
-# a folder
-url = "https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing"
-gdown.download_folder(url, quiet=True, use_cookies=False)
-
-
-'''
-
-## Description
-
-Download a large file from Google Drive.  
-If you use curl/wget, it fails with a large file because of
-the security warning from Google Drive.
-Supports downloading from Google Drive folders (max 50 files per folder).
-
-
-## Installation
+  
+### Installation
 
 ```bash
 pip install gdown
@@ -62,33 +44,26 @@ pip install gdown
 # to upgrade
 pip install --upgrade gdown
 ```
-
-
-## Usage
-
-### From Command Line
-
-```bash
-$ gdown --help
-usage: gdown [-h] [-V] [-O OUTPUT] [-q] [--fuzzy] [--id] [--proxy PROXY]
-             [--speed SPEED] [--no-cookies] [--no-check-certificate]
-             [--continue] [--folder] [--remaining-ok]
-             url_or_id
-...
-
-### From Python
-
-```python
+  
+```
 import gdown
 
-# a folder
-url = "https://drive.google.com/drive/folders/15uNXeRBIhVvZJIhL4yTw4IsStMhUaaxl"
-gdown.download_folder(url, quiet=True, use_cookies=False)
+#this takes a while cause the folder is quite big about 3.4G
 
-# same as the above, but with the folder ID
-id = "15uNXeRBIhVvZJIhL4yTw4IsStMhUaaxl"
-gdown.download_folder(id=id, quiet=True, use_cookies=False)
-```
+# a folder
+url = "https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing"
+gdown.download_folder(url, quiet=True, use_cookies=False)
+'''
+
+### Description
+
+Download a large file from Google Drive.  
+If you use curl/wget, it fails with a large file because of
+the security warning from Google Drive.
+Supports downloading from Google Drive folders (max 50 files per folder).
+
+
+
   
   
 
