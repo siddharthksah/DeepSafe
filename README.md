@@ -16,6 +16,10 @@ cd DeepSafe
 ```
 2. Creating conda environment
 
+### Python version
+* Main supported version : <strong>3.8</strong> <br>
+* Other supported versions : <strong>3.7</strong> & <strong>3.9</strong>
+
 ```
 conda create -n deepsafe python==3.8 -y
 conda activate deepsafe
@@ -50,8 +54,8 @@ import gdown
 
 #this takes a while cause the folder is quite big about 3.4G
 
-# a folder
-url = "https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing"
+url = "https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing
+
 gdown.download_folder(url, quiet=True, use_cookies=False)
 ```
   
@@ -63,121 +67,7 @@ gdown.download_folder(url, quiet=True, use_cookies=False)
 streamlit run main.py
 ```
 
-<h1 align="center">
-  gdown
-</h1>
 
-<h4 align="center">
-  Download a large file from Google Drive.
-</h4>
-
-<div align="center">
-  <a href="https://pypi.python.org/pypi/gdown"><img src="https://img.shields.io/pypi/v/gdown.svg"></a>
-  <a href="https://pypi.org/project/gdown"><img src="https://img.shields.io/pypi/pyversions/gdown.svg"></a>
-  <a href="https://github.com/wkentaro/gdown/actions"><img src="https://github.com/wkentaro/gdown/workflows/ci/badge.svg"></a>
-</div>
-
-<div align="center">
-  <img src=".readme/cli.png" width="90%">
-  <img src=".readme/python.png" width="90%">
-</div>
-
-<br/>
-
-Mega Drive
-https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ
-
-Download Weights
-
-| Attempt | #1  | #2  |
-| :---:   | :-: | :-: |
-| Seconds | 301 | 283 |
-
-
-
-
-# streamlit-multiapps
-A simple framework in python to create multi page web application using streamlit.
-
-# How to Run
-
-
-
-Below are instructions to implement in in your local system using a separate development environment using the [Conda](http://conda.pydata.org/docs/index.html) package management system which comes bundled with the Anaconda Python distribution provided by Continuum Analytics.
-
-### Step 1:
-[Fork and clone](https://github.com/siddharthksah/Pose-Estimation-with-MediaPipe) a copy of this repository on to your local machine.
-
-### Step 2:
-Create a `conda` environment called `pose-estimation` and install all the necessary dependencies, the environment.yml file is uploaded in the repo for ease:
-
-    $ conda env create --file environment.yml
-    
-### Step 3:
-Install the extra dependencies required to run the webapp smoother:
-
-    $ pip install watchdog
-
-### Step 4:
-Activate the `pose-estimation` environment:
-
-    $ source activate pose-estimation
-
-To confirm that everything has installed correctly, type
-
-    $ which pip
-
-at the terminal prompt. You should see something like the following:
-
-    $ ~/anaconda/envs/pose-estimation/bin/pip
-
-which indicates that you are using the version of `pip` that is installed inside the `pose-estimation` Conda environment and not the system-wide version of `pip` that you would normally use to install Python packages.
-
-### Step 5:
-Change into your local copy of the this repo:
-
-    $ cd Pose-Estimation-with-MediaPipe
-
-### Step 6:
-Run the webapp:
-
-    $ streamlit run main.py
-
-
-Hosting on Google Cloud Run
-Streamlit
-Dockerized
-
-<div align="center">
-
-![Streamlit Prophet](streamlit_prophet/references/logo.png)
-
-[![CI status](https://github.com/artefactory-global/streamlit_prophet/actions/workflows/ci.yml/badge.svg?branch%3Amain&event%3Apush)](https://github.com/artefactory-global/streamlit_prophet/actions/workflows/ci.yml?query=branch%3Amain)
-[![Python Version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)](#supported-python-versions)
-[![Dependencies Status](https://img.shields.io/badge/dependabots-active-informational.svg)](https://github.com/artefactory-global/streamlit_prophet/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/maximelutel/streamlit_prophet/main/streamlit_prophet/app/dashboard.py)
-
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Security: bandit](https://img.shields.io/badge/security-bandit-informational.svg)](https://github.com/PyCQA/bandit)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-informational?logo=pre-commit&logoColor=white)](https://github.com/artefactory-global/streamlit_prophet/blob/main/.pre-commit-config.yaml)
-[![Semantic Versions](https://img.shields.io/badge/%F0%9F%9A%80-semantic%20versions-informational.svg)](https://github.com/artefactory-global/streamlit_prophet/releases)
-[![License](https://img.shields.io/badge/License-MIT-informational.svg)](https://github.com/artefactory-global/streamlit_prophet/blob/main/LICENSE)
-
-Deploy a [Streamlit](https://streamlit.io/) app to train, evaluate and optimize a [Prophet](https://facebook.github.io/prophet/) forecasting model visually
-
-## ⭐  Quick Start  ⭐
-
-[Test the app online](https://share.streamlit.io/maximelutel/streamlit_prophet/main/streamlit_prophet/app/dashboard.py) with shared computing resources & [read introductory article](https://medium.com/artefact-engineering-and-data-science/visual-time-series-forecasting-with-streamlit-prophet-71d86a769928?source=friends_link&sk=590cca0d24f53f73a9fdb0490a9a47a7)
-
-If you plan to use the app regularly, you should install the package and run it locally:
-```bash
-pip install -U streamlit_prophet
-streamlit_prophet deploy dashboard
-```
-
-</div>
-
-https://user-images.githubusercontent.com/56996548/126762714-f2d3f3a1-7098-4a86-8c60-0a69d0f913a7.mp4
 
 ## 💻 Requirements
 
