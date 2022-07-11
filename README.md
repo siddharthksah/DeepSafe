@@ -183,7 +183,8 @@ gcloud services enable run.googleapis.com containerregistry.googleapis.com
 
 Push Local Image to GCP Cloud Container Registry
 Following command will allow local docker engine tobe used by gcloud tool
-```gcloud auth configure-docker
+```
+gcloud auth configure-docker
 ```
 Following step will create a tag of the local image as per gcp requirment.
 ```
@@ -199,6 +200,7 @@ Run the following Single Line command to deploy / host the app.
 ```
 gcloud run deploy < service name >  --image < gcp image name>   --platform managed --allow-unauthenticated --region < your region > --memory 2Gi --timeout=3600
 ```
+<pre>
 < service name >          : Service Name User Supplied 
 < gcp image name>         : Image Pushed into GCP 
 < your region >           : Region was set at the Gcloud Init.
@@ -206,7 +208,7 @@ gcloud run deploy < service name >  --image < gcp image name>   --platform manag
 < allow-unauthenticated > : GCP Specific Parameter, consult GCP Manual for further details.
 < memory >                : Memory to be allocated for the container deployment.
 < timeout >               : GCP Specific Parameter, consult GCP Manual for further details. For streamlit deployment, this value should be set to a high value to avoid a timeout / connection error. 
-
+</pre>
 
 
 # PyTorch Project Template
