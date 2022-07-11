@@ -70,10 +70,6 @@ streamlit run main.py
 ### Dockerize the webapp
 
 ```
-# docker build -f Dockerfile -t app:latest .
-# docker run -p 8501:8501 app:latest
-
-
 #Base Image to use
 FROM python:3.7.9-slim
 
@@ -100,6 +96,16 @@ WORKDIR /app
 #Run the application on port 8080
 ENTRYPOINT ["streamlit", "run", "main.py", "--server.port=8080", "--server.address=0.0.0.0"]
 ```
+Building the Docker Image
+```
+docker build -f Dockerfile -t app:latest .
+
+```
+Running the docker image and creating the container
+```
+docker run -p 8501:8501 app:latest
+```
+
 
 
 # PyTorch Project Template
