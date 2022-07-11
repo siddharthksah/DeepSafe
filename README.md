@@ -71,7 +71,7 @@ streamlit run main.py
 
 [Container on Docher Hub](https://hub.docker.com/repository/docker/siddharth123sk/deepsafe)
 
-```
+```dockerfile
 #Base Image to use
 FROM python:3.7.9-slim
 
@@ -97,7 +97,7 @@ WORKDIR /app
 
 #Run the application on port 8080
 ENTRYPOINT ["streamlit", "run", "main.py", "--server.port=8080", "--server.address=0.0.0.0"]
-```
+```dockerfile
 Building the Docker Image
 ```
 docker build -f Dockerfile -t app:latest .
