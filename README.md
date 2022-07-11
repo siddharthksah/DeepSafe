@@ -13,8 +13,6 @@ For full access contact me
 ```
 git clone https://github.com/siddharthksah/DeepSafe
 cd DeepSafe
-
-
 ```
 2. Creating conda environment
 
@@ -33,45 +31,10 @@ $ pip install -r requirements.txt
 | Service | Google Drive  | Mega Drive  |
 | :---:   | :-: | :-: |
   | Link | [Google Drive](https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing) | [Mega Drive](https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ) |
-
-
-3. Start the application:
-```
-streamlit run app.py
-```
-
-<h1 align="center">
-  gdown
-</h1>
-
-<h4 align="center">
-  Download a large file from Google Drive.
-</h4>
-
-<div align="center">
+  
+  Or you can use [Gdown](https://github.com/wkentaro/gdown)
   <a href="https://pypi.python.org/pypi/gdown"><img src="https://img.shields.io/pypi/v/gdown.svg"></a>
-  <a href="https://pypi.org/project/gdown"><img src="https://img.shields.io/pypi/pyversions/gdown.svg"></a>
-  <a href="https://github.com/wkentaro/gdown/actions"><img src="https://github.com/wkentaro/gdown/workflows/ci/badge.svg"></a>
-</div>
-
-<div align="center">
-  <img src=".readme/cli.png" width="90%">
-  <img src=".readme/python.png" width="90%">
-</div>
-
-<br/>
-
-Mega Drive
-https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ
-
-Download Weights
-
-| Attempt | #1  | #2  |
-| :---:   | :-: | :-: |
-| Seconds | 301 | 283 |
-
-
-'''
+  '''
 import gdown
 
 #this takes a while cause the folder is quite big about 3.4G
@@ -126,6 +89,47 @@ gdown.download_folder(url, quiet=True, use_cookies=False)
 id = "15uNXeRBIhVvZJIhL4yTw4IsStMhUaaxl"
 gdown.download_folder(id=id, quiet=True, use_cookies=False)
 ```
+  
+  
+
+
+3. Start the application:
+```
+streamlit run app.py
+```
+
+<h1 align="center">
+  gdown
+</h1>
+
+<h4 align="center">
+  Download a large file from Google Drive.
+</h4>
+
+<div align="center">
+  <a href="https://pypi.python.org/pypi/gdown"><img src="https://img.shields.io/pypi/v/gdown.svg"></a>
+  <a href="https://pypi.org/project/gdown"><img src="https://img.shields.io/pypi/pyversions/gdown.svg"></a>
+  <a href="https://github.com/wkentaro/gdown/actions"><img src="https://github.com/wkentaro/gdown/workflows/ci/badge.svg"></a>
+</div>
+
+<div align="center">
+  <img src=".readme/cli.png" width="90%">
+  <img src=".readme/python.png" width="90%">
+</div>
+
+<br/>
+
+Mega Drive
+https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ
+
+Download Weights
+
+| Attempt | #1  | #2  |
+| :---:   | :-: | :-: |
+| Seconds | 301 | 283 |
+
+
+
 
 # streamlit-multiapps
 A simple framework in python to create multi page web application using streamlit.
