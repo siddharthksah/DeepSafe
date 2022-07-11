@@ -130,11 +130,12 @@ docker images
 ```
 and what you will see will be similar to
 
+```
 REPOSITORY              TAG       IMAGE ID         CREATED           SIZE
 verse_gapminder_gsl     latest    023ab91c6291     3 minutes ago     1.975 GB
 verse_gapminder         latest    bb38976d03cf     13 minutes ago    1.955 GB
 rocker/verse            latest    0168d115f220     3 days ago        1.954 GB
-
+```
 and tag your image
 ```
 docker tag bb38976d03cf yourhubusername/verse_gapminder:firsttry
