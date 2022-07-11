@@ -7,7 +7,7 @@ DeepSafe - DeepFake Detection made easy
 3. Chrome Extension
 
 # WebApp - [Live here](https://deepsafe-75twwvyl5q-de.a.run.app)
-For full access contact me
+This is a limited access app, for full access [contact me](mailto:siddharth123sk@gmail.com)
 
 1. Clone the repository:
 ```
