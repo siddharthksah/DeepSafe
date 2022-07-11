@@ -53,24 +53,14 @@ import gdown
 # a folder
 url = "https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing"
 gdown.download_folder(url, quiet=True, use_cookies=False)
-'''
-
-### Description
-
-Download a large file from Google Drive.  
-If you use curl/wget, it fails with a large file because of
-the security warning from Google Drive.
-Supports downloading from Google Drive folders (max 50 files per folder).
-
-
-
-  
-  
-
-
-3. Start the application:
 ```
-streamlit run app.py
+  
+  
+
+
+5. Start the application:
+```
+streamlit run main.py
 ```
 
 <h1 align="center">
