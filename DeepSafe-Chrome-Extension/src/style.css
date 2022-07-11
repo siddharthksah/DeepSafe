@@ -1,0 +1,114 @@
+/**
+ * VARIABLES
+ */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto&display=swap');
+
+:root {
+  --color-primary: #1b262c;
+  --color-secondary: #89c9b8;
+  --color-tertiary: #a39cb0;
+  --color-quartenary: #f5f5f5;
+  --font-base-family: -apple-system, BlinkMacSystemFont, 'Roboto', Oxygen-Sans,
+    Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-heading-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue',
+    sans-serif;
+  --measure: 60ch;
+  --metric-gutter: 2rem;
+  --metric-interaction-padding: 0.6rem 0.6rem;
+}
+
+/** 
+ * GLOBAL STYLES 
+ */
+body {
+  font-family: var(--font-base-family, sans-serif);
+  display: grid;
+  place-items: center;
+  background: var(--color-quartenary);
+  color: var(--color-text);
+  padding: var(--metric-gutter, 2rem);
+}
+
+/** 
+ * DARK MODE
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+  --color-tertiary: #696969;
+  --color-quartenary: #1b262c;
+  }
+
+/**
+ * CENTER UTILITY
+ */
+.center {
+  box-sizing: content-box;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: var(--measure);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/** 
+ * VISUALLY HIDDEN UTILITY
+ */
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+/**
+ * BUTTON
+ */
+input[type],
+button {
+  margin: 0;
+  font: inherit;
+  border: none;
+  line-height: 1;
+  padding: 0.8rem;
+  padding: var(--metric-interaction-padding);
+  outline-offset: -1px;
+}
+
+.button {
+  background-color: var(--color-tertiary);
+  color: var(--primary);
+  font-size: 1.6rem;
+  min-width: 3.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-base-family);
+  -webkit-transition: background 0.5s ease-in;
+  -moz-transition: background 0.5s ease-in;
+  -o-transition: background 0.5s ease-in;
+  transition: background 0.5s ease-in;
+}
+
+.button:hover {
+  filter: brightness(1.05);
+  background-color: var(--color-secondary);
+}
+
+.button:active {
+  transform: translateY(3px); /* Optical adjustment */
+}
+
+:focus {
+  outline: 2px dotted;
+  outline-color: var(--color-primary);
+  outline-offset: 0.25rem;
+}
+
