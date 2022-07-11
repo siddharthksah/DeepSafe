@@ -258,4 +258,312 @@ We encourage you to open an [issue](https://github.com/artefactory-global/stream
 For more information, see [`CONTRIBUTING`](https://github.com/artefactory-global/streamlit_prophet/blob/main/CONTRIBUTING.md) instructions.
 If you wish to containerize the app, see [`DOCKER`](https://github.com/artefactory-global/streamlit_prophet/blob/main/DOCKER.md) instructions.
 
+# ml_project_template
+
+## Tutorial for deployment website in AWS instance [can be found here](./docs/tutorial.md)
+
+# Tutorial
+This is tutorial for local development on local machine
+# Install 
+```
+sudo -s
+apt update
+apt install -y npm
+apt install -y python3.6 python3-pip
+apt install -y nginx
+apt update && apt install -y libsm6 libxext6
+apt install libxrender1
+apt install -y redis-server
+```
+
+### Clone the repo
+```
+apt install git
+git clone https://github.com/thanhhau097/ml_project_template.git 
+```
+
+### Install requirements
+```
+cd ml_project_template
+alias python=python3
+alias pip=pip3
+```
+
+#### Requirements for Flask app
+```
+cd api
+pip install -r requirements.txt
+npm install
+```
+#### Requirements for web app
+```
+cd ../web
+npm install
+```
+
+### Change your custom path
+#### api/app.py
+You need to config your AWS account in local machine: (optional, it is useful when you want to save uploaded data to AWS s3)
+```
+apt install awscli
+aws configure
+```
+
+Change your bucket in AWS S3 (it is optional, when you need to upload user data to s3 bucket)
+```
+async_data = {
+    'data': {'image': image_utils.encode(image), 'result': result},
+    'bucket': 'your-bucket',
+    'object_name': 'file-path-in-bucket/{}.pkl'.format(file_name)
+}
+```
+
+#### nginx/nginx.conf
+Comment out the SSL config in this file because you don't need domain name for local development (line 4-6, 29.41).
+If you want to deploy into production, please see [this link](./tutorial.md).
+
+### Write your code
+There are 3 tasks that you need to do for your project:
+
+1. Write prediction for you model in `model/predictor.py` and update your weights in model/weights folder
+2. Write your API in `api/app.py` using Flask framework (you can use the template that was written for image)
+3. Write your web app using ReactJS (you can use the demo template that I wrote in `web/`)
+
+# How to run the service
+Open multiple terminal windows, each process should be handle in one window.
+
+1. Web
+```
+cd web/
+npm run build
+npm run start
+```
+
+2. Flask
+```
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+export PYTHONPATH=$PYTHONPATH:./ 
+python api/app.py 
+```
+
+3. Redis
+
+Change redis conf in /etc/redis/redis.conf 
+```
+bind 0.0.0.0
+```
+
+```
+systemctl stop redis
+systemctl start redis
+```
+
+4. Celery
+
+Change 'redis://redis:6379/0' to 'redis://localhost:6379/0' because you are running redis in local machine
+```
+celery worker -A api.app.celery_app --loglevel=info
+```
+
+5. Nginx
+
+Change the app and web in nginx/nginx.conf file to 0.0.0.0
+```
+sudo -s
+rm /etc/nginx/sites-enabled/default
+cp nginx/nginx.conf /etc/nginx/sites-enabled/
+systemctl reload nginx
+```
+
+Now you can go to your browser and see what is happening: [0.0.0.0](0.0.0.0)
+
+
+### Tools are used in this template
+1. Flask
+2. Redis
+3. ReactJS
+4. Nginx
+5. Certbot (optional, when you have a domain name)
+6. Celery
+7. Docker
+8. Jenkins (optional)
+
+# PyTorch Project Template
+A simple and well designed structure is essential for any Deep Learning project, so after a lot practice and contributing in pytorch projects here's a pytorch project template that combines **simplicity, best practice for folder structure** and **good OOP design**. 
+The main idea is that there's much same stuff you do every time when you start your pytorch project, so wrapping all this shared stuff will help you to change just the core idea every time you start a new pytorch project. 
+
+**So, here’s a simple pytorch template that help you get into your main project faster and just focus on your core (Model Architecture, Training Flow, etc)**
+
+In order to decrease repeated stuff, we recommend to use a high-level library. You can write your own high-level library or you can just use some third-part libraries such as [ignite](https://github.com/pytorch/ignite), [fastai](https://github.com/fastai/fastai), [mmcv](https://github.com/open-mmlab/mmcv) … etc. This can help you write compact but full-featured training loops in a few lines of code. Here we use ignite to train mnist as an example.
+
+# Requirements
+- [yacs](https://github.com/rbgirshick/yacs) (Yet Another Configuration System)
+- [PyTorch](https://pytorch.org/) (An open source deep learning platform) 
+- [ignite](https://github.com/pytorch/ignite) (High-level library to help with training neural networks in PyTorch)
+
+# Table Of Contents
+-  [In a Nutshell](#in-a-nutshell)
+-  [In Details](#in-details)
+-  [Future Work](#future-work)
+-  [Contributing](#contributing)
+-  [Acknowledgments](#acknowledgments)
+
+# In a Nutshell   
+In a nutshell here's how to use this template, so **for example** assume you want to implement ResNet-18 to train mnist, so you should do the following:
+- In `modeling`  folder create a python file named whatever you like, here we named it `example_model.py` . In `modeling/__init__.py` file, you can build a function named `build_model` to call your model
+
+```python
+from .example_model import ResNet18
+
+def build_model(cfg):
+    model = ResNet18(cfg.MODEL.NUM_CLASSES)
+    return model
+``` 
+
+   
+- In `engine`  folder create a model trainer function and inference function. In trainer function, you need to write the logic of the training process, you can use some third-party library to decrease the repeated stuff.
+
+```python
+# trainer
+def do_train(cfg, model, train_loader, val_loader, optimizer, scheduler, loss_fn):
+ """
+ implement the logic of epoch:
+ -loop on the number of iterations in the config and call the train step
+ -add any summaries you want using the summary
+ """
+pass
+
+# inference
+def inference(cfg, model, val_loader):
+"""
+implement the logic of the train step
+- run the tensorflow session
+- return any metrics you need to summarize
+ """
+pass
+```
+
+- In `tools`  folder, you create the `train.py` .  In this file, you need to get the instances of the following objects "Model",  "DataLoader”, “Optimizer”, and config
+```python
+# create instance of the model you want
+model = build_model(cfg)
+
+# create your data generator
+train_loader = make_data_loader(cfg, is_train=True)
+val_loader = make_data_loader(cfg, is_train=False)
+
+# create your model optimizer
+optimizer = make_optimizer(cfg, model)
+```
+
+- Pass the all these objects to the function `do_train` , and start your training
+```python
+# here you train your model
+do_train(cfg, model, train_loader, val_loader, optimizer, None, F.cross_entropy)
+```
+
+**You will find a template file and a simple example in the model and trainer folder that shows you how to try your first model simply.**
+
+
+# In Details
+```
+├──  config
+│    └── defaults.py  - here's the default config file.
+│
+│
+├──  configs  
+│    └── train_mnist_softmax.yml  - here's the specific config file for specific model or dataset.
+│ 
+│
+├──  data  
+│    └── datasets  - here's the datasets folder that is responsible for all data handling.
+│    └── transforms  - here's the data preprocess folder that is responsible for all data augmentation.
+│    └── build.py  		   - here's the file to make dataloader.
+│    └── collate_batch.py   - here's the file that is responsible for merges a list of samples to form a mini-batch.
+│
+│
+├──  engine
+│   ├── trainer.py     - this file contains the train loops.
+│   └── inference.py   - this file contains the inference process.
+│
+│
+├── layers              - this folder contains any customed layers of your project.
+│   └── conv_layer.py
+│
+│
+├── modeling            - this folder contains any model of your project.
+│   └── example_model.py
+│
+│
+├── solver             - this folder contains optimizer of your project.
+│   └── build.py
+│   └── lr_scheduler.py
+│   
+│ 
+├──  tools                - here's the train/test model of your project.
+│    └── train_net.py  - here's an example of train model that is responsible for the whole pipeline.
+│ 
+│ 
+└── utils
+│    ├── logger.py
+│    └── any_other_utils_you_need
+│ 
+│ 
+└── tests					- this foler contains unit test of your project.
+     ├── test_data_sampler.py
+```
+
+
+# Future Work
+
+# Contributing
+Any kind of enhancement or contribution is welcomed.
+
+
+# Acknowledgments
+
+
+
+
+[![maintained by dataroots](https://img.shields.io/badge/maintained%20by-dataroots-%2300b189)](https://dataroots.io)
+[![PythonVersion](https://img.shields.io/pypi/pyversions/gino_admin)](https://img.shields.io/pypi/pyversions/gino_admin)
+[![tests](https://github.com/datarootsio/ml-skeleton-py/workflows/tests/badge.svg?branch=master)](https://github.com/datarootsio/ml-skeleton-py/actions)
+[![Codecov](https://codecov.io/github/datarootsio/ml-skeleton-py/badge.svg?branch=master&service=github)](https://github.com/datarootsio/ml-skeleton-py/actions)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+![](https://scontent.fbru1-1.fna.fbcdn.net/v/t1.0-9/94305647_112517570431823_3318660558911176704_o.png?_nc_cat=111&_nc_sid=e3f864&_nc_ohc=-spbrtnzSpQAX_qi7iI&_nc_ht=scontent.fbru1-1.fna&oh=483d147a29972c72dfb588b91d57ac3c&oe=5F99368A "Logo")
+
+**NOTE:** This is a best-practices first project template that allows you to get started on a new machine learning project. For more info on how to use it check out [HOWTO.md](HOWTO.md). Feel free to use it how it suits you best 🚀
+
+# `PROJECT NAME`
+
+> project for: `client name`  
+
+## Objective
+
+`ADD OBJECTIVE OF CASE`
+
+## Explorative results
+
+`SHORT SUMMARY AND LINK TO REPORT`
+
+## Modelling results
+
+`SHORT SUMMARY AND LINK TO REPORT`
+
+## Usage
+
+`ADD EXPLANATION`
+
+## Configuration
+
+`RELEVANT INFO ON CONFIGURATION`
+
+## Deploy
+
+`RELEVANT INFO ON DEPLOYMENT`
+
+> copyright by `your company`
+> main developer `developer_name` (`developer email`)
 
