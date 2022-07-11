@@ -1,5 +1,44 @@
 # DeepSafe
-WebBased DeepFake Detection
+DeepSafe - DeepFake Detection made easy
+
+## DeepSafe consiste of 3 tools.
+1. WebApp
+2. DeepSafe API
+3. Chrome Extension
+
+# WebApp - Live here
+For full access contact me
+
+1. Clone the repository:
+```
+git clone https://github.com/siddharthksah/DeepSafe
+cd DeepSafe
+
+
+```
+2. Creating conda environment
+
+```
+conda create -n deepsafe python==3.8 -y
+conda activate deepsafe
+```
+
+3. Install dependencies:
+```
+$ pip install -r requirements.txt
+```
+
+4. Download Model Weights
+
+| Service | Google Drive  | Mega Drive  |
+| :---:   | :-: | :-: |
+  | Link | [Google Drive](https://drive.google.com/drive/folders/1Gan21zLaPD0wHbNF3P3a7BzgKE91BOpq?usp=sharing) | [Mega Drive](https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ) |
+
+
+3. Start the application:
+```
+streamlit run app.py
+```
 
 <h1 align="center">
   gdown
@@ -26,6 +65,11 @@ Mega Drive
 https://mega.nz/folder/faxWBbID#B84oIE9VEw2FvV8dEVW1XQ
 
 Download Weights
+
+| Attempt | #1  | #2  |
+| :---:   | :-: | :-: |
+| Seconds | 301 | 283 |
+
 
 '''
 import gdown
@@ -88,30 +132,7 @@ A simple framework in python to create multi page web application using streamli
 
 # How to Run
 
-1. Clone the repository:
-```
-$ git clone git@github.com:upraneelnihar/streamlit-multiapps
-$ cd streamlit-multiapps
 
-
-
-
-```
-2. Creating conda environment
-
-```
-conda create -n deepsafe python==3.8 -y
-```
-
-2. Install dependencies:
-```
-$ pip install -r requirements.txt
-```
-
-3. Start the application:
-```
-streamlit run app.py
-```
 
 Below are instructions to implement in in your local system using a separate development environment using the [Conda](http://conda.pydata.org/docs/index.html) package management system which comes bundled with the Anaconda Python distribution provided by Continuum Analytics.
 
