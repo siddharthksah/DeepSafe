@@ -213,6 +213,8 @@ Below are the arguments.
 < timeout >               : GCP Specific Parameter, consult GCP Manual for further details. For streamlit deployment, this value should be set to a high value to avoid a timeout / connection error. 
 </pre>
 
+
+![Screenshot](gcp.png)
 ---
 ---
 
