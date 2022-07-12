@@ -500,6 +500,12 @@ DeepSafe acts like a platform on which the newer models can be incorporated onto
 Any kind of enhancement or contribution is welcomed.
 
 
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+![](https://scontent.fbru1-1.fna.fbcdn.net/v/t1.0-9/94305647_112517570431823_3318660558911176704_o.png?_nc_cat=111&_nc_sid=e3f864&_nc_ohc=-spbrtnzSpQAX_qi7iI&_nc_ht=scontent.fbru1-1.fna&oh=483d147a29972c72dfb588b91d57ac3c&oe=5F99368A "Logo")
+
+
+
 # Acknowledgments
 
 | Methods      | Repositories                                                                                                     | Release Date |
@@ -515,11 +521,3 @@ Any kind of enhancement or contribution is welcomed.
 | Upconv       | https://github.com/cc-hpc-itwm/UpConv                                                                            | 2020.03      |
 | WM           | https://github.com/cuihaoleo/kaggle-dfdc                                                                         | 2020.07      |
 | Selim        | [https://github.com/selimsef/dfdc\_deepfake\_challenge](https://github.com/selimsef/dfdc_deepfake_challenge)     | 2020.07      |
-
-
-
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-![](https://scontent.fbru1-1.fna.fbcdn.net/v/t1.0-9/94305647_112517570431823_3318660558911176704_o.png?_nc_cat=111&_nc_sid=e3f864&_nc_ohc=-spbrtnzSpQAX_qi7iI&_nc_ht=scontent.fbru1-1.fna&oh=483d147a29972c72dfb588b91d57ac3c&oe=5F99368A "Logo")
-
-
-
