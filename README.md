@@ -508,16 +508,22 @@ Any kind of enhancement or contribution is welcomed.
 
 # Acknowledgments
 
-| Methods      | Repositories                                                                                                     | Release Date |
-| ------------ | ---------------------------------------------------------------------------------------------------------------- | ------------ |
-| MesoNet      | https://github.com/DariusAf/MesoNet                                                                              | 2018.09      |
-| FWA          | [https://github.com/danmohaha/CVPRW2019\_Face\_Artifacts](https://github.com/danmohaha/CVPRW2019_Face_Artifacts) | 2018.11      |
-| VA           | https://github.com/FalkoMatern/Exploiting-Visual-Artifacts                                                       | 2019.01      |
-| Xception     | https://github.com/ondyari/FaceForensics                                                                         | 2019.01      |
-| ClassNSeg    | https://github.com/nii-yamagishilab/ClassNSeg                                                                    | 2019.06      |
-| Capsule      | https://github.com/nii-yamagishilab/Capsule-Forensics-v2                                                         | 2019.1       |
-| CNNDetection | https://github.com/peterwang512/CNNDetection                                                                     | 2019.12      |
-| DSP-FWA      | https://github.com/danmohaha/DSP-FWA                                                                             | 2019.11      |
-| Upconv       | https://github.com/cc-hpc-itwm/UpConv                                                                            | 2020.03      |
-| WM           | https://github.com/cuihaoleo/kaggle-dfdc                                                                         | 2020.07      |
-| Selim        | [https://github.com/selimsef/dfdc\_deepfake\_challenge](https://github.com/selimsef/dfdc_deepfake_challenge)     | 2020.07      |
+| Methods       | Repositories                                                                                                     | Release Date |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- | ------------ |
+| MesoNet       | https://github.com/DariusAf/MesoNet                                                                              | 2018.09      |
+| FWA           | [https://github.com/danmohaha/CVPRW2019\_Face\_Artifacts](https://github.com/danmohaha/CVPRW2019_Face_Artifacts) | 2018.11      |
+| VA            | https://github.com/FalkoMatern/Exploiting-Visual-Artifacts                                                       | 2019.01      |
+| Xception      | https://github.com/ondyari/FaceForensics                                                                         | 2019.01      |
+| ClassNSeg     | https://github.com/nii-yamagishilab/ClassNSeg                                                                    | 2019.06      |
+| Capsule       | https://github.com/nii-yamagishilab/Capsule-Forensics-v2                                                         | 2019.1       |
+| CNNDetection  | https://github.com/peterwang512/CNNDetection                                                                     | 2019.12      |
+| DSP-FWA       | https://github.com/danmohaha/DSP-FWA                                                                             | 2019.11      |
+| Upconv        | https://github.com/cc-hpc-itwm/UpConv                                                                            | 2020.03      |
+| WM            | https://github.com/cuihaoleo/kaggle-dfdc                                                                         | 2020.07      |
+| Selim         | [https://github.com/selimsef/dfdc\_deepfake\_challenge](https://github.com/selimsef/dfdc_deepfake_challenge)     | 2020.07      |
+| Photoshop FAL | https://peterwang512.github.io/FALdetector/                                                                      | 2019         |
+| FaceForensics | https://github.com/ondyari/FaceForensics                                                                         | 2018.03      |
+| Deepware      | https://github.com/deepware                                                                                      | 2021         |
+| CViT          | https://github.com/erprogs/CViT                                                                                  | 2021         |
+| CNNDetection  | https://peterwang512.github.io/CNNDetection/                                                                     | 2020         |
+| Boken         | https://github.com/beibuwandeluori/DeeperForensicsChallengeSolution                                              | 2020         |
