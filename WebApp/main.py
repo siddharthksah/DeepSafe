@@ -41,23 +41,24 @@ for model in os.listdir("./models"):
 start_time = time.time()
 start_time_formatted = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
-# favicon and page configs
-favicon = './assets/icon.png'
-st.set_page_config(page_title='DeepSafe', page_icon = favicon, initial_sidebar_state = 'expanded')
-# favicon being an object of the same kind as the one you should provide st.image() with (ie. a PIL array for example) or a string (url or local file path)
-st.write('<style>div.block-container{padding-top:0rem;}</style>', unsafe_allow_html=True)
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+# Setting favicon and page configurations
+favicon_path = './assets/icon.png'
+st.set_page_config(page_title='DeepSafe', page_icon=favicon_path, initial_sidebar_state='expanded')
 
-st.markdown(
-    """
-    <style>
+# Applying custom style to hide Streamlit's default style elements
+custom_style = """
+<style>
+    div.block-container { padding-top: 0rem; }
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    header { visibility: hidden; }
+</style>
+"""
+st.markdown(custom_style, unsafe_allow_html=True)
+
+# Adjusting sidebar width based on its expansion state
+sidebar_style = """
+<style>
     [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
         width: 140px;
     }
@@ -65,140 +66,75 @@ st.markdown(
         width: 140px;
         margin-left: -140px;
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+</style>
+"""
+st.markdown(sidebar_style, unsafe_allow_html=True)
 
-# Using "with" notation
+# Creating a radio button selection in the sidebar
 with st.sidebar:
-    add_radio = st.radio(
-        " ",
-        ("Detector", "Examples", "About")
+    selection_radio = st.radio("Choose an option", ("Detector", "Examples", "About"))
 
-    )
 
 if add_radio == "Detector":
 
 
-    model_option= "NaN"
-    show_real_fake_button =  False
-
-
-    #introduction of the app
-    st.write("""
-    ## DeepSafe - A free DeepFake Detector
-    """)
-
-    #upload button for the input image
-    uploaded_file = st.file_uploader("Choose the image/video", type=['jpg', 'png', 'jpeg', 'mp4', ".mov"])
-    #print(uploaded_file)
-    url = ""
-    #if uploaded_file is None:
+    model_option = "NaN"
+    show_real_fake_button = False
+    
+    # Application introduction
+    st.write("## DeepSafe - A Free DeepFake Detector")
+    
+    # Uploading button for images and videos
+    uploaded_file = st.file_uploader("Choose the image/video", type=['jpg', 'png', 'jpeg', 'mp4', 'mov'])
+    
+    # Text input for URL
     url = st.text_input("Or paste the URL below", key="text")
-
+    
     did_file_download = False
 
+    
     if uploaded_file is not None:
-
         did_user_upload_file = True
-
-        #getting the file extension of the uploaded file
-        file_name = uploaded_file.name
-        extension = file_name.split(".")[-1]
-
-        if extension == "png" or  extension == "PNG":
+    
+        # Extracting file extension
+        file_extension = uploaded_file.name.split(".")[-1].lower()
+    
+        # Processing for image files
+        if file_extension in ["png", "jpeg", "jpg"]:
+            # Displaying uploaded image
             uploaded_image = Image.open(uploaded_file)
             save_image(uploaded_file)
             st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
-
-            # cosmetic touch of names
-            models_list_image_only_names = []
-            for model in models_list_image:
-                models_list_image_only_names.append(model[:-6].title())
-
-            model_option = st.multiselect( 'Select a DeepFake Detection Method',
-                            models_list_image_only_names)
-
+    
+            # Generating model options with cosmetic adjustments
+            models_list_image_only_names = [model[:-6].title() for model in models_list_image]
+            model_option = st.multiselect('Select a DeepFake Detection Method', models_list_image_only_names)
             model_option = sorted(model_option)
-
-            #st.write('You selected:', model_option)
-
-
-        elif extension == "jpeg" or extension == "JPEG":
-            uploaded_image = Image.open(uploaded_file)
-            save_image(uploaded_file)
-            st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
-
-            # cosmetic touch of names
-            models_list_image_only_names = []
-            for model in models_list_image:
-                models_list_image_only_names.append(model[:-6].title())
-
-            model_option = st.multiselect( 'Select a DeepFake Detection Method',
-                            models_list_image_only_names)
-
-            model_option = sorted(model_option)
-
-            #st.write('You selected:', model_option)
-
-        elif extension == "jpg" or extension == "JPG":
-            uploaded_image = Image.open(uploaded_file)
-            save_image(uploaded_file)
-            st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
-
-            # cosmetic touch of names
-            models_list_image_only_names = []
-            for model in models_list_image:
-                models_list_image_only_names.append(model[:-6].title())
-
-            model_option = st.multiselect( 'Select a DeepFake Detection Method',
-                            models_list_image_only_names)
-
-            model_option = sorted(model_option)
-
-            #st.write('You selected:', model_option)
-
-        elif extension == "mp4" or extension == "MP4":
+    
+        # Processing for video files
+        elif file_extension in ["mp4", "mov"]:
+            # Handling video upload
             save_video(uploaded_file)
-            video_file = open('temp/delete.mp4', 'rb')
-            video_bytes = video_file.read()
-            st.video(video_bytes, start_time=0)
-            # cosmetic touch of names
-            models_list_video_only_names = []
-            for model in models_list_video:
-                models_list_video_only_names.append(model[:-6].title())
-            model_option = st.multiselect( 'Select a DeepFake Detection Method',
-                            models_list_video_only_names)
-
+            with open('temp/delete.mp4', 'rb') as video_file:
+                st.video(video_file.read())
+    
+            # Generating model options for videos with cosmetic adjustments
+            models_list_video_only_names = [model[:-6].title() for model in models_list_video]
+            model_option = st.multiselect('Select a DeepFake Detection Method', models_list_video_only_names)
             model_option = sorted(model_option)
-
-            #st.write('You selected:', model_option)
-        
-        elif extension == "mov" or extension == "MOV":
-            save_video(uploaded_file)
-            video_file = open('temp/delete.mp4', 'rb')
-            video_bytes = video_file.read()
-            st.video(video_bytes)
-            # cosmetic touch of names
-            models_list_video_only_names = []
-            for model in models_list_video:
-                models_list_video_only_names.append(model[:-6].title())
-            model_option = st.multiselect( 'Select a DeepFake Detection Method',
-                            models_list_video_only_names)
-
-            model_option = sorted(model_option)
-
-            #st.write('You selected:', model_option)
+    
+        # Handling unsupported file types
         else:
-            pass
-            #st.error('Problem with uploaded file!')
+            st.error('Unsupported file format!')
+    
         show_real_fake_button = True
-
+    
+        # Function to clear text
         def clear_text():
             st.session_state["text"] = ""
-        
-        on_click=clear_text
+    
+        on_click = clear_text
+
         
 
     #st.write('<style>body { margin: 0; font-family: Arial, Helvetica, sans-serif;} .header{padding: 10px 16px; background: #555; color: #f1f1f1; position:fixed;top:0;} .sticky { position: fixed; top: 0; width: 100%;} </style><div class="header" id="myHeader">'+str("yy")+'</div>', unsafe_allow_html=True)
