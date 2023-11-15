@@ -1,22 +1,24 @@
 import requests
-import json
 import cv2
-import os, shutil
+import json
 
+# Server address and endpoint configuration
 addr = 'http://localhost:5001'
-test_url = addr + '/api_v1/'
+api_endpoint = '/api_v1/'
+test_url = addr + api_endpoint
 
-# prepare headers for http request
-content_type = 'image/jpeg'
-headers = {'content-type': content_type}
-img = cv2.imread('tempDir/image.jpg')
+# Read and encode the image
+image_path = 'tempDir/image.jpg'
+image = cv2.imread(image_path)
+_, encoded_image = cv2.imencode('.jpg', image)
 
-# encode image as jpeg
-_, img_encoded = cv2.imencode('.jpg', img)
+# HTTP request headers
+headers = {
+    'content-type': 'image/jpeg'
+}
 
-# send http request with image and receive response
-response = requests.post(test_url, data=img_encoded.tobytes(), headers=headers)
+# Post the image to the server and get the response
+response = requests.post(test_url, data=encoded_image.tobytes(), headers=headers)
+response_data = json.loads(response.text)
 
-
-print(json.loads(response.text))
-
+print(response_data)
