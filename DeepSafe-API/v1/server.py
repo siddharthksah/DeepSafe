@@ -1,43 +1,39 @@
 from flask import Flask, request, Response
-import jsonpickle
 import numpy as np
-import cv2, os
+import cv2
+import os
 from PIL import Image
-
-import warnings
-warnings.filterwarnings("ignore")
-
+import jsonpickle
 from predictor import predictor_CNN
 
 # Initialize the Flask application
 app = Flask(__name__)
 
-# route http posts to this method
 @app.route('/api_v1/', methods=['POST'])
-
 def test():
-    r = request
-    # convert string of image data to uint8
-    nparr = np.fromstring(r.data, np.uint8)
-    # decode image
+    # Convert string of image data to uint8
+    nparr = np.frombuffer(request.data, np.uint8)
+    # Decode image
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #print(img)
+    # Convert to PIL Image
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(img)
-    b, g, r = img.split()
-    img = Image.merge("RGB", (r, g, b))
-    if not os.path.exists('tempDir'):
-        os.makedirs('tempDir')
-    img.save('./tempDir/image.jpg', 'JPEG')
+    
+    # Create tempDir if it doesn't exist
+    temp_dir = './tempDir'
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+    image_path = os.path.join(temp_dir, 'image.jpg')
+    img.save(image_path, 'JPEG')
 
-    #run prediction
+    # Run prediction
     probab = predictor_CNN()
 
+    # Prepare and send response
     response = {'Probability of DeepFake': probab}
-
-    # encode response using jsonpickle
     response_pickled = jsonpickle.encode(response)
-
     return Response(response=response_pickled, status=200, mimetype="application/json")
 
-# start flask app
-app.run(host="0.0.0.0", port=5001)
+# Start flask app
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5001)
