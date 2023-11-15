@@ -2,43 +2,26 @@
 # @website www.siddharthsah.com
 
 # importing the necessary packages
-from audioop import add
-from datetime import datetime
-from distutils.util import rfc822_escape
-import time, random
-import matplotlib.pyplot as plt
-rgb = [[random.random(), random.random(), random.random()]]
+import os
 import csv
+import time
+import random
 import numpy as np
-import streamlit as st
-from PIL import Image
-from skimage import transform
-import os, cv2
-from PIL import Image
 import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
 from statistics import mean
+from PIL import Image
+import streamlit as st
 from bokeh.models.widgets import Div
 
-
-# import from utils folder
-from utils.save_uploaded_image_temp import save_image
-from utils.save_uploaded_video_temp import save_video
-from utils.download_image_video_from_url import download_image_from_url
-from utils.download_from_url import download
-from utils.clear_temp_folder import clean
-from utils.save_deepfake_media_url import save
-from utils.is_url_image import is_url_image
-from utils.download_youtube_video import download_video
-from utils.convert2df import convert_df
-from utils.del_module import delete_module
-
-#references
+# Import utility functions from utils folder
+from utils import (
+    save_image, save_video, download_image_from_url, download,
+    clean, save, is_url_image, download_video, convert_df, delete_module
+)
 from utils.get_references_of_models import get_reference
-
-#examples
 from examples.show_sample_deepfakes_from_url import examples
-
-
 
 import importlib, os
 models_list_image = []
