@@ -36,7 +36,6 @@ for model in os.listdir("./models"):
 # print(models_list_video)
 
 
-
 # this is needed to calculate total inference time
 start_time = time.time()
 start_time_formatted = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
