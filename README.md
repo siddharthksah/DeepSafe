@@ -1,5 +1,5 @@
 # DeepSafe 🐶
-DeepFake Detection made easy - test
+DeepFake Detection made easy
 
 DeepSafe consists of 3 tools.
 1. WebApp - The webapp has 2 modes. The one live on GCP is limited to one model each for image and video deepfake detection and the other one consists of multiple detector which the users can choose from a drop down. The later comes with a lot of rich features out of box designed so that users can add their own custom detectors and use all the existing ones out-of-the-box with minimal changes.
