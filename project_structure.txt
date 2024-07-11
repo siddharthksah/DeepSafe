@@ -1,0 +1,111 @@
+.
+├── assets
+│   ├── Random_Image
+│   ├── Random_Video
+│   └── Sanity_Check
+├── dashboard
+├── database
+│   ├── 2024-07-08 21:52:14.989839
+│   └── 2024-07-08 22:15:26.922036
+├── datasets
+│   ├── image
+│   │   ├── Easy
+│   │   │   ├── fake
+│   │   │   └── real
+│   │   └── OpenForensics
+│   │       ├── Fake
+│   │       └── Real
+│   └── video
+│       ├── Easy
+│       │   ├── fake
+│       │   └── real
+│       └── dfdc_train_part_00
+│           └── dfdc_train_part_0
+├── examples
+│   └── __pycache__
+├── faceforensics_dataset
+├── leaderboard
+│   ├── 20240709200623
+│   └── 20240711111919
+├── models
+│   ├── __pycache__
+│   ├── cnndetection_image
+│   │   ├── __pycache__
+│   │   ├── networks
+│   │   │   └── __pycache__
+│   │   └── weights
+│   ├── cvit_video
+│   │   ├── __pycache__
+│   │   ├── helpers
+│   │   │   └── __pycache__
+│   │   ├── model
+│   │   │   └── __pycache__
+│   │   ├── preprocessing
+│   │   │   └── dfdc_data
+│   │   │       └── dfdc_train_part_3
+│   │   ├── sample__prediction_data
+│   │   ├── sample_train_data
+│   │   │   ├── test
+│   │   │   │   ├── fake
+│   │   │   │   └── real
+│   │   │   ├── train
+│   │   │   │   ├── fake
+│   │   │   │   └── real
+│   │   │   └── validation
+│   │   │       ├── fake
+│   │   │       └── real
+│   │   └── weight
+│   ├── deepware_video
+│   │   ├── __pycache__
+│   │   ├── img
+│   │   ├── video
+│   │   └── weights
+│   ├── faceforensics_image
+│   │   ├── __pycache__
+│   │   ├── architectures
+│   │   │   ├── __pycache__
+│   │   │   └── externals
+│   │   │       └── __pycache__
+│   │   ├── blazeface
+│   │   │   └── __pycache__
+│   │   ├── isplutils
+│   │   │   └── __pycache__
+│   │   └── samples
+│   ├── ganimagedetection_image
+│   │   ├── __pycache__
+│   │   ├── docs
+│   │   ├── example_images
+│   │   └── weights
+│   ├── photoshop_fal_image
+│   │   ├── __pycache__
+│   │   ├── data
+│   │   ├── examples
+│   │   ├── networks
+│   │   │   └── __pycache__
+│   │   ├── out
+│   │   ├── utils
+│   │   │   ├── __pycache__
+│   │   │   └── dlib_face_detector
+│   │   └── weights
+│   └── selim_video
+│       ├── __pycache__
+│       ├── configs
+│       ├── images
+│       ├── libs
+│       ├── logs
+│       ├── preprocessing
+│       ├── training
+│       │   ├── __pycache__
+│       │   ├── datasets
+│       │   ├── pipelines
+│       │   ├── tools
+│       │   ├── transforms
+│       │   └── zoo
+│       │       └── __pycache__
+│       └── weights
+├── stats
+├── temp
+└── utils
+    └── __pycache__
+
+126 directories

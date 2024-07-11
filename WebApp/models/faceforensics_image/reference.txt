@@ -1,1 +1,0 @@
-FaceForensics, https://github.com/ondyari/FaceForensics, https://github.com/ondyari/FaceForensics/blob/master/LICENSE
