@@ -1,0 +1,128 @@
+{
+    "timestamp": "20240711111919",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Ganimagedetection"
+    ],
+    "total_files": 9,
+    "benchmark_results": [
+        {
+            "file_name": "real - Copy (2).png",
+            "file_path": "datasets/image/Easy/real/real - Copy (2).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.62061
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.92899
+            }
+        },
+        {
+            "file_name": "real - Copy (3).png",
+            "file_path": "datasets/image/Easy/real/real - Copy (3).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.50612
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.86863
+            }
+        },
+        {
+            "file_name": "real - Copy (4).png",
+            "file_path": "datasets/image/Easy/real/real - Copy (4).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.55187
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.93713
+            }
+        },
+        {
+            "file_name": "real - Copy (5).png",
+            "file_path": "datasets/image/Easy/real/real - Copy (5).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.47148
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.89001
+            }
+        },
+        {
+            "file_name": "real - Copy.png",
+            "file_path": "datasets/image/Easy/real/real - Copy.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.50271
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 3.04403
+            }
+        },
+        {
+            "file_name": "real.png",
+            "file_path": "datasets/image/Easy/real/real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.55454
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.93104
+            }
+        },
+        {
+            "file_name": "fake - Copy (2).png",
+            "file_path": "datasets/image/Easy/fake/fake - Copy (2).png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.51555
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.93577
+            }
+        },
+        {
+            "file_name": "fake - Copy.png",
+            "file_path": "datasets/image/Easy/fake/fake - Copy.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.50999
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.84829
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "file_path": "datasets/image/Easy/fake/fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.46003
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.84282
+            }
+        }
+    ]
+}

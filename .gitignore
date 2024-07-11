@@ -51,7 +51,6 @@ coverage.xml
 models
 models/ganimagedetection_image
 datasets
-leaderboard
 models/__pycache__
 models/cnndetection_image
 models/cvit_video

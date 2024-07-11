@@ -1,0 +1,10 @@
+file_name,file_path,label,Cnndetection,Ganimagedetection
+real - Copy (2).png,datasets/image/Random_Image/real/real - Copy (2).png,0,"{'probability': 0.0976, 'inference_time': 2.65645}","{'probability': 0.00027, 'inference_time': 2.99682}"
+real - Copy (3).png,datasets/image/Random_Image/real/real - Copy (3).png,0,"{'probability': 0.0976, 'inference_time': 2.44737}","{'probability': 0.00027, 'inference_time': 2.84464}"
+real - Copy (4).png,datasets/image/Random_Image/real/real - Copy (4).png,0,"{'probability': 0.0976, 'inference_time': 2.51423}","{'probability': 0.00027, 'inference_time': 2.92323}"
+real - Copy (5).png,datasets/image/Random_Image/real/real - Copy (5).png,0,"{'probability': 0.0976, 'inference_time': 2.4813}","{'probability': 0.00027, 'inference_time': 2.91382}"
+real - Copy.png,datasets/image/Random_Image/real/real - Copy.png,0,"{'probability': 0.0976, 'inference_time': 2.53731}","{'probability': 0.00027, 'inference_time': 2.95476}"
+real.png,datasets/image/Random_Image/real/real.png,0,"{'probability': 0.0976, 'inference_time': 2.73434}","{'probability': 0.00027, 'inference_time': 3.0428}"
+fake - Copy (2).png,datasets/image/Random_Image/fake/fake - Copy (2).png,1,"{'probability': 0.45262, 'inference_time': 2.46278}","{'probability': 0.80206, 'inference_time': 2.80868}"
+fake - Copy.png,datasets/image/Random_Image/fake/fake - Copy.png,1,"{'probability': 0.45262, 'inference_time': 2.5776}","{'probability': 0.80206, 'inference_time': 2.91538}"
+fake.png,datasets/image/Random_Image/fake/fake.png,1,"{'probability': 0.45262, 'inference_time': 2.4465}","{'probability': 0.80206, 'inference_time': 2.80542}"

@@ -1,0 +1,35 @@
+{
+    "timestamp": "20240709205552",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Faceforensics"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 3.58367
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.74333
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.66231
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.07401
+            }
+        }
+    ]
+}

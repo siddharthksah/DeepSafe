@@ -1,0 +1,3 @@
+file_name,file_path,label,Cnndetection,Ganimagedetection
+real.png,datasets/image/Random_Image/real/real.png,0,"{'probability': 0.0976, 'inference_time': 2.66498}","{'probability': 0.00027, 'inference_time': 3.04007}"
+fake.png,datasets/image/Random_Image/fake/fake.png,1,"{'probability': 0.45262, 'inference_time': 2.53583}","{'probability': 0.80206, 'inference_time': 2.86629}"

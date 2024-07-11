@@ -1,0 +1,128 @@
+{
+    "timestamp": "20240711105347",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Faceforensics"
+    ],
+    "total_files": 9,
+    "benchmark_results": [
+        {
+            "file_name": "real - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (2).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.53053
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.07366
+            }
+        },
+        {
+            "file_name": "real - Copy (3).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (3).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.52462
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.90456
+            }
+        },
+        {
+            "file_name": "real - Copy (4).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (4).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.53024
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.89685
+            }
+        },
+        {
+            "file_name": "real - Copy (5).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (5).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.49363
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.94243
+            }
+        },
+        {
+            "file_name": "real - Copy.png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.43177
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.87798
+            }
+        },
+        {
+            "file_name": "real.png",
+            "file_path": "datasets/image/Random_Image/real/real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.49598
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.08766
+            }
+        },
+        {
+            "file_name": "fake - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy (2).png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.51721
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.11579
+            }
+        },
+        {
+            "file_name": "fake - Copy.png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.6074
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.95055
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "file_path": "datasets/image/Random_Image/fake/fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.49641
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.03189
+            }
+        }
+    ]
+}

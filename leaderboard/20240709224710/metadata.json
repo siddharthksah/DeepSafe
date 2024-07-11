@@ -1,0 +1,128 @@
+{
+    "timestamp": "20240709224710",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Ganimagedetection"
+    ],
+    "total_files": 9,
+    "benchmark_results": [
+        {
+            "file_name": "real - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (2).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 3.37827
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 3.06325
+            }
+        },
+        {
+            "file_name": "real - Copy (3).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (3).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.51466
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.93255
+            }
+        },
+        {
+            "file_name": "real - Copy (4).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (4).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.53028
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.92201
+            }
+        },
+        {
+            "file_name": "real - Copy (5).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (5).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.53483
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.91392
+            }
+        },
+        {
+            "file_name": "real - Copy.png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.47767
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.8859
+            }
+        },
+        {
+            "file_name": "real.png",
+            "file_path": "datasets/image/Random_Image/real/real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.51758
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.85467
+            }
+        },
+        {
+            "file_name": "fake - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy (2).png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.47835
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.91456
+            }
+        },
+        {
+            "file_name": "fake - Copy.png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.51201
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.8531
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "file_path": "datasets/image/Random_Image/fake/fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.455
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.88143
+            }
+        }
+    ]
+}

@@ -1,0 +1,3 @@
+file_name,label,Cnndetection,Faceforensics,Ganimagedetection,Photoshop_Fal
+real.png,0,"{'probability': 0.0976, 'inference_time': 3.08254}","{'probability': 0.3453, 'inference_time': 4.26058}","{'probability': 0.00027, 'inference_time': 4.04229}","{'probability': 0.11176, 'inference_time': 3.2566}"
+fake.png,1,"{'probability': 0.45262, 'inference_time': 3.01729}","{'probability': 0.3453, 'inference_time': 3.45447}","{'probability': 0.80206, 'inference_time': 3.37366}","{'probability': 0.25937, 'inference_time': 2.83898}"
