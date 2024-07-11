@@ -61,9 +61,6 @@ models/selim_video
 models/__init__.py
 models/ganimagedetection_image
 models/ganimagedetection_image
-stats
-stats/state.csv
-stats/state.txt
 models/cvit_video/result.txt
 models/photoshop_fal_image/result.txt
 models/cvit_video/cvit_predictions.csv
