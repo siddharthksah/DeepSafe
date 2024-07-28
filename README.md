@@ -166,7 +166,6 @@ Any kind of enhancement or contribution is welcomed. You can contribute your com
 | Selim         | [https://github.com/selimsef/dfdc_deepfake_challenge](https://github.com/selimsef/dfdc_deepfake_challenge)       | 2020.07      |
 | Photoshop FAL | https://peterwang512.github.io/FALdetector/                                                                      | 2019         |
 | FaceForensics | https://github.com/ondyari/FaceForensics                                                                         | 2018.03      |
-| Deepware      | https://github.com/deepware                                                                                      | 2021         |
 | CViT          | https://github.com/erprogs/CViT                                                                                  | 2021         |
 | Boken         | https://github.com/beibuwandeluori/DeeperForensicsChallengeSolution                                              | 2020         |
 | GANimageDetection | [GANimageDetection](https://github.com/grip-unina/GANimageDetection) | [License](https://github.com/grip-unina/GANimageDetection/blob/main/LICENSE.md) |
