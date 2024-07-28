@@ -136,7 +136,7 @@ if add_radio == "Detector":
 
     #introduction of the app
     st.write("""
-    ## DeepSafe - Open Source DeepFake Detection
+    ## DeepSafe : A Fully Open Source DeepFake Detection Platform 
     """)
 
     #upload button for the input image

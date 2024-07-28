@@ -1,0 +1,10 @@
+file_name,file_path,label,Cnndetection
+real - Copy (2).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (2).png,0,"{'probability': 0.0976, 'inference_time': 3.95529}"
+real - Copy (3).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (3).png,0,"{'probability': 0.0976, 'inference_time': 2.68499}"
+real - Copy (4).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (4).png,0,"{'probability': 0.0976, 'inference_time': 2.54969}"
+real - Copy (5).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (5).png,0,"{'probability': 0.0976, 'inference_time': 2.52449}"
+real - Copy.png,datasets/image/Blind Benchmarking Dataset/real/real - Copy.png,0,"{'probability': 0.0976, 'inference_time': 2.52477}"
+real.png,datasets/image/Blind Benchmarking Dataset/real/real.png,0,"{'probability': 0.0976, 'inference_time': 2.47594}"
+fake - Copy (2).png,datasets/image/Blind Benchmarking Dataset/fake/fake - Copy (2).png,1,"{'probability': 0.45262, 'inference_time': 2.83913}"
+fake - Copy.png,datasets/image/Blind Benchmarking Dataset/fake/fake - Copy.png,1,"{'probability': 0.45262, 'inference_time': 2.81055}"
+fake.png,datasets/image/Blind Benchmarking Dataset/fake/fake.png,1,"{'probability': 0.45262, 'inference_time': 2.73705}"
