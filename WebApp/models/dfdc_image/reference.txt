@@ -1,1 +1,0 @@
-DFDC, https://github.com/siddharthksah/DeepFake-Detector, MIT License

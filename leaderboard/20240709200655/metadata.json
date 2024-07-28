@@ -1,0 +1,53 @@
+{
+    "timestamp": "20240709200655",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Faceforensics",
+        "Ganimagedetection",
+        "Photoshop_Fal"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 3.08254
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 4.26058
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 4.04229
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 3.2566
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 3.01729
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.45447
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 3.37366
+            },
+            "Photoshop_Fal": {
+                "probability": 0.25937,
+                "inference_time": 2.83898
+            }
+        }
+    ]
+}

@@ -1,0 +1,202 @@
+{
+    "timestamp": "20240711102932",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Faceforensics",
+        "Ganimagedetection",
+        "Photoshop_Fal"
+    ],
+    "total_files": 9,
+    "benchmark_results": [
+        {
+            "file_name": "real - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (2).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 3.39066
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.32569
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.89689
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.46378
+            }
+        },
+        {
+            "file_name": "real - Copy (3).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (3).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.46559
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.91179
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.87855
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.43703
+            }
+        },
+        {
+            "file_name": "real - Copy (4).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (4).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.36121
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.8541
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.86881
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.41903
+            }
+        },
+        {
+            "file_name": "real - Copy (5).png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy (5).png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.4278
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.90019
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.87992
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.40176
+            }
+        },
+        {
+            "file_name": "real - Copy.png",
+            "file_path": "datasets/image/Random_Image/real/real - Copy.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.39258
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.89263
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.88304
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.38265
+            }
+        },
+        {
+            "file_name": "real.png",
+            "file_path": "datasets/image/Random_Image/real/real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 2.45222
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.90503
+            },
+            "Ganimagedetection": {
+                "probability": 0.00027,
+                "inference_time": 2.79355
+            },
+            "Photoshop_Fal": {
+                "probability": 0.11176,
+                "inference_time": 2.43561
+            }
+        },
+        {
+            "file_name": "fake - Copy (2).png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy (2).png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.54309
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.07935
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.85916
+            },
+            "Photoshop_Fal": {
+                "probability": 0.26055,
+                "inference_time": 2.40501
+            }
+        },
+        {
+            "file_name": "fake - Copy.png",
+            "file_path": "datasets/image/Random_Image/fake/fake - Copy.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.46847
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.87682
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.76744
+            },
+            "Photoshop_Fal": {
+                "probability": 0.26055,
+                "inference_time": 2.42406
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "file_path": "datasets/image/Random_Image/fake/fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.48025
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.90566
+            },
+            "Ganimagedetection": {
+                "probability": 0.80206,
+                "inference_time": 2.79734
+            },
+            "Photoshop_Fal": {
+                "probability": 0.26055,
+                "inference_time": 2.39617
+            }
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+# Ignore Windows thumbnail cache files
+Thumbs.db
+
+# Ignore Windows Explorer folder settings file
+Desktop.ini
+
+# Ignore Windows recycle bin folder
+$RECYCLE.BIN/
+
+# Ignore Windows system volume information folder
+System Volume Information/
+
+# Ignore macOS metadata files
+._*
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore mypy cache
+.mypy_cache/
+
+# Ignore Pytest cache
+.pytest_cache/
+
+# Ignore coverage reports
+htmlcov/
+coverage.xml
+.coverage
+
+# Ignore other Python related temporary files
+*.log
+*.pot
+*.mo
+
+# Ignore various editor and IDE folders
+.vscode/
+.idea/
+models
+models/ganimagedetection_image
+datasets
+models/__pycache__
+models/cnndetection_image
+models/cvit_video
+models/deepware_video
+models/faceforensics_image
+models/photoshop_fal_image
+models/selim_video
+models/__init__.py
+models/ganimagedetection_image
+models/ganimagedetection_image
+models/cvit_video/result.txt
+models/photoshop_fal_image/result.txt
+models/cvit_video/cvit_predictions.csv
+WebApp/.DS_Store
+**/.DS_Store
+.DS_Store

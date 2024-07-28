@@ -1,0 +1,10 @@
+file_name,file_path,label,Cnndetection
+real - Copy (2).png,datasets/image/Random_Image/real/real - Copy (2).png,0,"{'probability': 0.0976, 'inference_time': 2.68167}"
+real - Copy (3).png,datasets/image/Random_Image/real/real - Copy (3).png,0,"{'probability': 0.0976, 'inference_time': 2.60168}"
+real - Copy (4).png,datasets/image/Random_Image/real/real - Copy (4).png,0,"{'probability': 0.0976, 'inference_time': 2.52056}"
+real - Copy (5).png,datasets/image/Random_Image/real/real - Copy (5).png,0,"{'probability': 0.0976, 'inference_time': 2.41048}"
+real - Copy.png,datasets/image/Random_Image/real/real - Copy.png,0,"{'probability': 0.0976, 'inference_time': 2.59013}"
+real.png,datasets/image/Random_Image/real/real.png,0,"{'probability': 0.0976, 'inference_time': 2.53046}"
+fake - Copy (2).png,datasets/image/Random_Image/fake/fake - Copy (2).png,1,"{'probability': 0.45262, 'inference_time': 2.50307}"
+fake - Copy.png,datasets/image/Random_Image/fake/fake - Copy.png,1,"{'probability': 0.45262, 'inference_time': 2.4863}"
+fake.png,datasets/image/Random_Image/fake/fake.png,1,"{'probability': 0.45262, 'inference_time': 2.48729}"

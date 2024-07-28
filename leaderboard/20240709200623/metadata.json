@@ -1,0 +1,26 @@
+{
+    "timestamp": "20240709200623",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "real.png",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.0976,
+                "inference_time": 4.72026
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "label": 1,
+            "Cnndetection": {
+                "probability": 0.45262,
+                "inference_time": 2.97982
+            }
+        }
+    ]
+}

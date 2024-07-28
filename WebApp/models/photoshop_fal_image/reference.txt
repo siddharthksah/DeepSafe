@@ -1,1 +1,0 @@
-PhotoshopFAL, https://github.com/peterwang512/FALdetector, Apache License 2.0
