@@ -66,7 +66,7 @@ DeepSafe is a Streamlit-based web application for DeepFake detection, offering a
     ```
 4. Download Model Weights from Google Drive:
 
-    <a href="https://drive.google.com/drive/folders/1UmMTuXPmu-eYfskbrGgZ1uNXceznPQ6o?usp=sharing" target="_blank">
+    <a href="https://drive.google.com/drive/folders/1bdzx0TJELfHQ4dDtzeTFtTFMpO4U7I-O?usp=drive_link" target="_blank">
         <img src="https://img.shields.io/badge/Download%20Models-Google%20Drive-blue?style=for-the-badge&logo=googledrive" alt="Google Drive Link">
     </a>
 
