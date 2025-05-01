@@ -1,0 +1,29 @@
+{
+    "timestamp": "20241107025422",
+    "dataset_type": "Video",
+    "models": [
+        "Cvit",
+        "Deepware",
+        "Selim"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "test.mp4",
+            "file_path": "datasets/video/Blind Benchmarking Dataset/real/test.mp4",
+            "label": 0,
+            "Cvit": {
+                "probability": 0.97383,
+                "inference_time": 21.4892
+            },
+            "Deepware": {
+                "probability": 0.5,
+                "inference_time": 5.4839
+            },
+            "Selim": {
+                "probability": 0.5,
+                "inference_time": 16.63363
+            }
+        }
+    ]
+}

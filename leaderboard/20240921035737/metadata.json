@@ -1,0 +1,19 @@
+{
+    "timestamp": "20240921035737",
+    "dataset_type": "Video",
+    "models": [
+        "Cvit"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "test.mp4",
+            "file_path": "datasets/video/Blind Benchmarking Dataset/real/test.mp4",
+            "label": 0,
+            "Cvit": {
+                "probability": 0.97383,
+                "inference_time": 22.74885
+            }
+        }
+    ]
+}

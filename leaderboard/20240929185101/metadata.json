@@ -1,0 +1,24 @@
+{
+    "timestamp": "20240929185101",
+    "dataset_type": "Video",
+    "models": [
+        "Deepware",
+        "Selim"
+    ],
+    "total_files": 2,
+    "benchmark_results": [
+        {
+            "file_name": "test.mp4",
+            "file_path": "datasets/video/Blind Benchmarking Dataset/real/test.mp4",
+            "label": 0,
+            "Deepware": {
+                "probability": 0.5,
+                "inference_time": 6.5594
+            },
+            "Selim": {
+                "probability": 0.5,
+                "inference_time": 17.5614
+            }
+        }
+    ]
+}

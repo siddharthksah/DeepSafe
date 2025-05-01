@@ -1,0 +1,451 @@
+{
+    "timestamp": "20241213002434",
+    "dataset_type": "Image",
+    "models": [
+        "Ganimagedetection"
+    ],
+    "total_files": 190335,
+    "benchmark_results": [
+        {
+            "file_name": "real_0 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 2e-05,
+                "inference_time": 5.141
+            }
+        },
+        {
+            "file_name": "real_0 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 1e-05,
+                "inference_time": 3.39652
+            }
+        },
+        {
+            "file_name": "real_0.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00026,
+                "inference_time": 3.27707
+            }
+        },
+        {
+            "file_name": "real_1 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00089,
+                "inference_time": 3.34876
+            }
+        },
+        {
+            "file_name": "real_1 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00138,
+                "inference_time": 3.34812
+            }
+        },
+        {
+            "file_name": "real_1.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0811,
+                "inference_time": 3.32662
+            }
+        },
+        {
+            "file_name": "real_10 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 1e-05,
+                "inference_time": 3.40564
+            }
+        },
+        {
+            "file_name": "real_10 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00015,
+                "inference_time": 3.41156
+            }
+        },
+        {
+            "file_name": "real_10.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00364,
+                "inference_time": 3.39962
+            }
+        },
+        {
+            "file_name": "real_100 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_100 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.04821,
+                "inference_time": 3.40845
+            }
+        },
+        {
+            "file_name": "real_100 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_100 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0071,
+                "inference_time": 3.29952
+            }
+        },
+        {
+            "file_name": "real_100.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_100.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00705,
+                "inference_time": 3.4219
+            }
+        },
+        {
+            "file_name": "real_1000 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1000 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00062,
+                "inference_time": 3.37226
+            }
+        },
+        {
+            "file_name": "real_1000 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1000 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0,
+                "inference_time": 3.40957
+            }
+        },
+        {
+            "file_name": "real_1000.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1000.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 5e-05,
+                "inference_time": 3.34668
+            }
+        },
+        {
+            "file_name": "real_10000 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10000 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 1e-05,
+                "inference_time": 3.38601
+            }
+        },
+        {
+            "file_name": "real_10000.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10000.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 1e-05,
+                "inference_time": 3.36278
+            }
+        },
+        {
+            "file_name": "real_10001 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10001 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.29085,
+                "inference_time": 3.36759
+            }
+        },
+        {
+            "file_name": "real_10001.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10001.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 5e-05,
+                "inference_time": 3.51484
+            }
+        },
+        {
+            "file_name": "real_10002 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10002 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 2e-05,
+                "inference_time": 3.3319
+            }
+        },
+        {
+            "file_name": "real_10002.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10002.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00053,
+                "inference_time": 3.44701
+            }
+        },
+        {
+            "file_name": "real_10003 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10003 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 3e-05,
+                "inference_time": 3.46035
+            }
+        },
+        {
+            "file_name": "real_10003.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10003.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00193,
+                "inference_time": 3.4479
+            }
+        },
+        {
+            "file_name": "real_10004 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10004 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0005,
+                "inference_time": 3.29574
+            }
+        },
+        {
+            "file_name": "real_10004.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10004.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 4e-05,
+                "inference_time": 3.38585
+            }
+        },
+        {
+            "file_name": "real_10005 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10005 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00967,
+                "inference_time": 3.44659
+            }
+        },
+        {
+            "file_name": "real_10005.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10005.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.01254,
+                "inference_time": 3.61167
+            }
+        },
+        {
+            "file_name": "real_10006 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10006 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.32287,
+                "inference_time": 3.43539
+            }
+        },
+        {
+            "file_name": "real_10006.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10006.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00067,
+                "inference_time": 3.4114
+            }
+        },
+        {
+            "file_name": "real_10007 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10007 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.12474,
+                "inference_time": 3.25088
+            }
+        },
+        {
+            "file_name": "real_10007.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10007.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00396,
+                "inference_time": 3.39731
+            }
+        },
+        {
+            "file_name": "real_10008 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10008 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 3e-05,
+                "inference_time": 3.36531
+            }
+        },
+        {
+            "file_name": "real_10008.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10008.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 4e-05,
+                "inference_time": 3.37954
+            }
+        },
+        {
+            "file_name": "real_10009 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10009 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00023,
+                "inference_time": 3.35527
+            }
+        },
+        {
+            "file_name": "real_10009.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10009.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0,
+                "inference_time": 3.32924
+            }
+        },
+        {
+            "file_name": "real_1001 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1001 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00117,
+                "inference_time": 3.43783
+            }
+        },
+        {
+            "file_name": "real_1001 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1001 (3).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00021,
+                "inference_time": 3.40479
+            }
+        },
+        {
+            "file_name": "real_1001.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1001.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00148,
+                "inference_time": 3.27966
+            }
+        },
+        {
+            "file_name": "real_10010 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10010 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00259,
+                "inference_time": 3.43574
+            }
+        },
+        {
+            "file_name": "real_10010.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10010.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00069,
+                "inference_time": 3.26529
+            }
+        },
+        {
+            "file_name": "real_10011 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10011 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0,
+                "inference_time": 3.56624
+            }
+        },
+        {
+            "file_name": "real_10011.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10011.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.0058,
+                "inference_time": 3.36453
+            }
+        },
+        {
+            "file_name": "real_10012 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10012 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00012,
+                "inference_time": 3.24167
+            }
+        },
+        {
+            "file_name": "real_10012.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10012.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 6e-05,
+                "inference_time": 3.45644
+            }
+        },
+        {
+            "file_name": "real_10013 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10013 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.22613,
+                "inference_time": 3.30203
+            }
+        },
+        {
+            "file_name": "real_10013.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10013.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.01013,
+                "inference_time": 3.44388
+            }
+        },
+        {
+            "file_name": "real_10014 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10014 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.02724,
+                "inference_time": 3.33419
+            }
+        },
+        {
+            "file_name": "real_10014.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10014.jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.00049,
+                "inference_time": 3.28217
+            }
+        },
+        {
+            "file_name": "real_10015 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_10015 (2).jpg",
+            "label": 0,
+            "Ganimagedetection": {
+                "probability": 0.03695,
+                "inference_time": 3.33529
+            }
+        }
+    ]
+}

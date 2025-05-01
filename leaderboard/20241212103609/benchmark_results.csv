@@ -1,0 +1,10 @@
+file_name,file_path,label,Faceforensics
+real - Copy (2).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (2).png,0,"{'probability': 0.3453, 'inference_time': 4.44047}"
+real - Copy (3).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (3).png,0,"{'probability': 0.3453, 'inference_time': 2.7616}"
+real - Copy (4).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (4).png,0,"{'probability': 0.3453, 'inference_time': 2.83254}"
+real - Copy (5).png,datasets/image/Blind Benchmarking Dataset/real/real - Copy (5).png,0,"{'probability': 0.3453, 'inference_time': 2.79915}"
+real - Copy.png,datasets/image/Blind Benchmarking Dataset/real/real - Copy.png,0,"{'probability': 0.3453, 'inference_time': 2.82544}"
+real.png,datasets/image/Blind Benchmarking Dataset/real/real.png,0,"{'probability': 0.3453, 'inference_time': 2.82198}"
+fake - Copy (2).png,datasets/image/Blind Benchmarking Dataset/fake/fake - Copy (2).png,1,"{'probability': 0.3453, 'inference_time': 2.80349}"
+fake - Copy.png,datasets/image/Blind Benchmarking Dataset/fake/fake - Copy.png,1,"{'probability': 0.3453, 'inference_time': 2.84984}"
+fake.png,datasets/image/Blind Benchmarking Dataset/fake/fake.png,1,"{'probability': 0.3453, 'inference_time': 2.80572}"

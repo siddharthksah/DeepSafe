@@ -1,0 +1,89 @@
+{
+    "timestamp": "20241025191927",
+    "dataset_type": "Image",
+    "models": [
+        "Cnndetection",
+        "Faceforensics"
+    ],
+    "total_files": 190335,
+    "benchmark_results": [
+        {
+            "file_name": "real_0 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0 (2).jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.1062,
+                "inference_time": 3.34962
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.47754
+            }
+        },
+        {
+            "file_name": "real_0 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0 (3).jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.49756,
+                "inference_time": 2.41796
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.8316
+            }
+        },
+        {
+            "file_name": "real_0.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_0.jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.27879,
+                "inference_time": 2.49725
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.8671
+            }
+        },
+        {
+            "file_name": "real_1 (2).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1 (2).jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.36796,
+                "inference_time": 2.41059
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.95497
+            }
+        },
+        {
+            "file_name": "real_1 (3).jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1 (3).jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.19845,
+                "inference_time": 2.35451
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.88231
+            }
+        },
+        {
+            "file_name": "real_1.jpg",
+            "file_path": "datasets/image/OpenForensics/real/real_1.jpg",
+            "label": 0,
+            "Cnndetection": {
+                "probability": 0.05408,
+                "inference_time": 2.48488
+            },
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.86009
+            }
+        }
+    ]
+}

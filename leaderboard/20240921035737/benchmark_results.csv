@@ -1,0 +1,2 @@
+file_name,file_path,label,Cvit
+test.mp4,datasets/video/Blind Benchmarking Dataset/real/test.mp4,0,"{'probability': 0.97383, 'inference_time': 22.74885}"

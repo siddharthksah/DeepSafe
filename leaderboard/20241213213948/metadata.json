@@ -1,0 +1,91 @@
+{
+    "timestamp": "20241213213948",
+    "dataset_type": "Image",
+    "models": [
+        "Faceforensics"
+    ],
+    "total_files": 9,
+    "benchmark_results": [
+        {
+            "file_name": "real - Copy (2).png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real - Copy (2).png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 4.28807
+            }
+        },
+        {
+            "file_name": "real - Copy (3).png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real - Copy (3).png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.88762
+            }
+        },
+        {
+            "file_name": "real - Copy (4).png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real - Copy (4).png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.98391
+            }
+        },
+        {
+            "file_name": "real - Copy (5).png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real - Copy (5).png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.94576
+            }
+        },
+        {
+            "file_name": "real - Copy.png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real - Copy.png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 3.01317
+            }
+        },
+        {
+            "file_name": "real.png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/real/real.png",
+            "label": 0,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.91191
+            }
+        },
+        {
+            "file_name": "fake - Copy (2).png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/fake/fake - Copy (2).png",
+            "label": 1,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.93772
+            }
+        },
+        {
+            "file_name": "fake - Copy.png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/fake/fake - Copy.png",
+            "label": 1,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.96996
+            }
+        },
+        {
+            "file_name": "fake.png",
+            "file_path": "datasets/image/Blind Benchmarking Dataset/fake/fake.png",
+            "label": 1,
+            "Faceforensics": {
+                "probability": 0.3453,
+                "inference_time": 2.867
+            }
+        }
+    ]
+}

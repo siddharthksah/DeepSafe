@@ -1,0 +1,9 @@
+file_name,file_path,label,Ganimagedetection
+real_0 (2).jpg,datasets/image/OpenForensics/real/real_0 (2).jpg,0,"{'probability': 2e-05, 'inference_time': 5.05374}"
+real_0 (3).jpg,datasets/image/OpenForensics/real/real_0 (3).jpg,0,"{'probability': 1e-05, 'inference_time': 3.4805}"
+real_0.jpg,datasets/image/OpenForensics/real/real_0.jpg,0,"{'probability': 0.00026, 'inference_time': 3.41205}"
+real_1 (2).jpg,datasets/image/OpenForensics/real/real_1 (2).jpg,0,"{'probability': 0.00089, 'inference_time': 3.45284}"
+real_1 (3).jpg,datasets/image/OpenForensics/real/real_1 (3).jpg,0,"{'probability': 0.00138, 'inference_time': 3.37522}"
+real_1.jpg,datasets/image/OpenForensics/real/real_1.jpg,0,"{'probability': 0.0811, 'inference_time': 3.37428}"
+real_10 (2).jpg,datasets/image/OpenForensics/real/real_10 (2).jpg,0,"{'probability': 1e-05, 'inference_time': 3.42882}"
+real_10 (3).jpg,datasets/image/OpenForensics/real/real_10 (3).jpg,0,"{'probability': 0.00015, 'inference_time': 3.51956}"

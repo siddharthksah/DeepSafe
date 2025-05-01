@@ -1,0 +1,2 @@
+file_name,file_path,label,Cvit,Deepware,Selim
+test.mp4,datasets/video/Blind Benchmarking Dataset/real/test.mp4,0,"{'probability': 0.97383, 'inference_time': 22.79794}","{'probability': 0.5, 'inference_time': 5.11685}","{'probability': 0.5, 'inference_time': 17.23794}"

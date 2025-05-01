@@ -1,0 +1,2 @@
+file_name,file_path,label,Cnndetection,Faceforensics
+real_0 (2).jpg,datasets/image/OpenForensics/real/real_0 (2).jpg,0,"{'probability': 0.1062, 'inference_time': 2.37495}","{'probability': 0.3453, 'inference_time': 3.07931}"
