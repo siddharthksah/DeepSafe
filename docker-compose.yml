@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Main API service
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      - CNNDETECTION_URL=http://cnndetection:5000
+      - GANIMAGEDETECTION_URL=http://ganimagedetection:5001
+      - UNIVERSALFAKEDETECT_URL=http://universalfakedetect:5002
+    depends_on:
+      - cnndetection
+      - ganimagedetection
+      - universalfakedetect
+
+  # Frontend service
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  # CNNDetection model service
+  cnndetection:
+    build: ./models/image/cnndetection
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./models/image/cnndetection/cnndetection:/app/cnndetection
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5000
+
+  # GANimageDetection model service
+  ganimagedetection:
+    build: ./models/image/ganimagedetection
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./models/image/ganimagedetection/ganimagedetection:/app/ganimagedetection
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5001
+
+  # UniversalFakeDetect model service (newly added)
+  universalfakedetect:
+    build: ./models/image/universalfakedetect
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./models/image/universalfakedetect/universalfakedetect:/app/universalfakedetect
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5002

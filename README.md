@@ -1,183 +1,147 @@
-# DeepSafe 🐶 - Open Source DeepFake Detection
+# DeepFake Detection System
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+A production-ready system for detecting deepfake images using the CNNDetection model.
 
-DeepSafe is a Streamlit-based web application for DeepFake detection, offering an easy-to-use interface for analyzing images and videos. Users can add their own deepfake detection models and compare them with existing models out of the box.
+## Overview
 
-## WebApp
+This project provides a complete solution for deepfake detection with:
 
-[Live here](https://deepsafe.disconinja.duckdns.org/) (Limited access, for full access please [contact me](mailto:siddharth123sk@gmail.com)).
+- **Model Service**: A containerized CNNDetection model service
+- **API Backend**: FastAPI service handling client requests
+- **Web Frontend**: React-based user interface for easy interaction
+- **Docker Deployment**: Complete Docker setup for easy deployment
 
-## Table of Contents
+## Architecture
 
-- [Features](#features)
-- [Usage](#usage)
-- [Installation](#installation)
-- [Additional Sections](#additional-sections)
-- [WebApp](#webapp)
-- [Future Work](#future-work)
-- [Contributing](#contributing)
-- [Acknowledgments](#acknowledgments)
-- [License](#license)
-- [Contact Information](#contact-information)
+```
+┌─────────────────┐     ┌─────────────────────────────────────┐
+│                 │     │              Backend                │
+│  Web Frontend   │◄───►│  ┌─────────┐    ┌──────────────┐    │
+│  (React)        │     │  │ API     │◄──►│CNNDetection  │    │
+│                 │     │  │(FastAPI)│    │Model Service │    │
+└─────────────────┘     │  └─────────┘    └──────────────┘    │
+                        └─────────────────────────────────────┘
+```
 
-## Features
+## Prerequisites
 
-✨ **Multi-model Support**: Users can select from multiple DeepFake detection models for both images and videos.  
-📁 **File Upload**: Supports uploading images (jpg, png, jpeg) and videos (mp4, mov).  
-🌐 **URL Input**: Allows users to input URLs for image or video analysis.  
-⚙️ **Processing Unit Selection**: Option to use GPU for supported models (default is CPU).  
-📊 **Result Visualization**: 
-- Displays DeepFake detection stats in a table format.
-- Provides downloadable CSV of detection results.
-- Visualizes results with bar charts for DeepFake probability and inference time.
+- Docker and Docker Compose
+- Git
+- WSL2 if running on Windows
+
+## Setup for Windows with WSL
+
+1. Enable WSL2 on Windows:
+   ```
+   wsl --install
+   ```
+
+2. Install Ubuntu from Microsoft Store
+
+3. Install Docker Desktop for Windows with WSL2 integration
+
+4. Install VS Code with Remote - WSL extension
+
+## Getting Started
+
+1. Clone this repository:
+   ```bash
+   git clone https://your-repo-url/deepfake-detector.git
+   cd deepfake-detector
+   ```
+
+2. Copy the CNNDetection model code:
+   ```bash
+   # Create the directory structure
+   mkdir -p model/cnn_detection
+   
+   # Copy CNNDetection code into model/cnn_detection
+   # You can clone the repository or copy from an existing location
+   cp -r /path/to/CNNDetection/* model/cnn_detection/
+   ```
+
+3. Start the services using Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Access the application:
+   - Web UI: http://localhost:3000
+   - API: http://localhost:8000
+   - Model Service: http://localhost:5000
 
 ## Usage
 
-1. Select the "Detector" option from the sidebar.
-2. Upload an image/video or provide a URL.
-3. Choose the DeepFake detection model(s) you want to use.
-4. Optionally select GPU processing if available.
-5. Click "Real or Fake? 🤔" to start the analysis.
-6. View the results in the displayed charts and tables.
+1. Open the web UI at http://localhost:3000
+2. Upload an image you want to analyze
+3. Click "Analyze Image"
+4. View the results showing the probability of the image being a deepfake
 
-## Additional Sections
+## API Endpoints
 
-- **Examples**: View sample DeepFakes by selecting "Examples" from the sidebar.
-- **About**: Learn about the detectors used in the app and their original authors.
-- **Learn**: Access educational resources about DeepFakes.
+### Main API (FastAPI)
 
-## Installation
+- `GET /health` - Health check
+- `POST /detect` - Upload and analyze an image
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/siddharthksah/DeepSafe
-    cd DeepSafe
-    ```
-2. Create a conda environment:
-    ```bash
-    conda create -n deepsafe python==3.8 -y
-    conda activate deepsafe
-    ```
-3. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Download Model Weights from Google Drive:
+### Model Service
 
-    <a href="https://drive.google.com/drive/folders/1bdzx0TJELfHQ4dDtzeTFtTFMpO4U7I-O?usp=drive_link" target="_blank">
-        <img src="https://img.shields.io/badge/Download%20Models-Google%20Drive-blue?style=for-the-badge&logo=googledrive" alt="Google Drive Link">
-    </a>
+- `GET /health` - Health check
+- `POST /predict` - Internal endpoint for image analysis
 
-    ```python
-    from pydrive.auth import GoogleAuth
-    from pydrive.drive import GoogleDrive
-    import os
+## Development
 
-    # Authenticate and create the PyDrive client.
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()
-    drive = GoogleDrive(gauth)
+### Project Structure
 
-    # Specify the folder ID (the part after 'folders/' in the URL)
-    folder_id = '1UmMTuXPmu-eYfskbrGgZ1uNXceznPQ6o'
+```
+deepfake-detector/
+├── api/                      # FastAPI backend 
+│   ├── main.py               # API entry point
+│   ├── Dockerfile            # API container definition
+│   └── requirements.txt      # API dependencies
+├── model/                    # CNNDetection model service
+│   ├── app.py                # Model service code
+│   ├── Dockerfile            # Model container definition
+│   ├── requirements.txt      # Model dependencies
+│   └── cnn_detection/        # CNNDetection code (copied from repo)
+├── frontend/                 # React frontend
+│   ├── src/                  # React source code
+│   ├── public/               # Public assets
+│   ├── Dockerfile            # Frontend container definition
+│   └── package.json          # Frontend dependencies
+├── docker-compose.yml        # Docker Compose configuration
+└── README.md                 # Project documentation
+```
 
-    # Create 'models' directory if it doesn't exist
-    if not os.path.exists('models'):
-        os.makedirs('models')
+### Local Development
 
-    # List all files in the folder
-    file_list = drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false"}).GetList()
+For frontend development:
+```bash
+cd frontend
+npm install
+npm start
+```
 
-    # Download each file to the 'models' directory
-    for file in file_list:
-        file.GetContentFile(os.path.join('models', file['title']))
+For API development:
+```bash
+cd api
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
 
-    print("Download complete.")
-    ```
-5. Start the application:
-    ```bash
-    streamlit run main.py
-    ```
+## Extending the System
 
-## Benchmarking
+To add more deepfake detection models:
 
-DeepSafe includes a powerful benchmarking feature that allows users to benchmark their datasets against selected deepfake detection models. The results include accuracy, precision, and recall metrics, along with detailed visualizations.
+1. Create a new model service similar to the existing one
+2. Update the API to call multiple model services
+3. Implement an ensemble method to combine results
+4. Update the UI to display multiple model results
 
-### Benchmark Your Datasets
+## License
 
-1. **Select Dataset Type**: Choose between Image or Video datasets.
-2. **Choose Dataset**: Select an available dataset for benchmarking.
-3. **Model Selection**: Pick the deepfake detection models you want to benchmark your dataset against.
-4. **Start Benchmarking**: Click the "Benchmark Dataset" button to initiate the benchmarking process.
-
-The benchmarking results are displayed in detailed bar charts for DeepFake probability and inference time, and a downloadable CSV of the detection results is provided.
-
-### Adding Your Own Custom Dataset
-
-1. **Dataset Structure**: Ensure your dataset follows this folder structure:
-    ```
-    datasets/
-    └── image/ (or video/)
-        └── your_dataset_name/
-            ├── real/
-            │   ├── image1.jpg
-            │   └── ...
-            └── fake/
-                ├── image1.jpg
-                └── ...
-    ```
-2. **Config File**: Create a `.config` file within your dataset folder to provide metadata about your dataset. Here’s an example of a `.config` file:
-    ```ini
-    [Dataset]
-    name = Your Dataset Name
-    description = A brief description of your dataset.
-    source = URL or source information.
-    ```
-3. **Upload Dataset**: Place your dataset in the appropriate folder (`datasets/image/` or `datasets/video/`).
-
-4. **Run Benchmark**: Follow the steps in the benchmarking section to benchmark your custom dataset.
-
-## Future Work
-
-DeepSafe acts as a platform where newer models can be incorporated into the app.
-
-## Contributing
-
-Any kind of enhancement or contribution is welcomed. You can contribute your comments, questions, resources, and apps as [issues](https://github.com/siddharthksah/DeepSafe/issues) or [pull requests](https://github.com/siddharthksah/DeepSafe/pulls) to the [source code](https://github.com/siddharthksah/DeepSafe).
-
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
-| Methods       | Repositories                                                                                                     | Release Date |
-| ------------- | ---------------------------------------------------------------------------------------------------------------- | ------------ |
-| MesoNet       | https://github.com/DariusAf/MesoNet                                                                              | 2018.09      |
-| FWA           | [https://github.com/danmohaha/CVPRW2019_Face_Artifacts](https://github.com/danmohaha/CVPRW2019_Face_Artifacts)  | 2018.11      |
-| VA            | https://github.com/FalkoMatern/Exploiting-Visual-Artifacts                                                       | 2019.01      |
-| Xception      | https://github.com/ondyari/FaceForensics                                                                         | 2019.01      |
-| ClassNSeg     | https://github.com/nii-yamagishilab/ClassNSeg                                                                    | 2019.06      |
-| Capsule       | https://github.com/nii-yamagishilab/Capsule-Forensics-v2                                                         | 2019.1       |
-| CNNDetection  | https://github.com/peterwang512/CNNDetection                                                                     | 2019.12      |
-| DSP-FWA       | https://github.com/danmohaha/DSP-FWA                                                                             | 2019.11      |
-| Upconv        | https://github.com/cc-hpc-itwm/UpConv                                                                            | 2020.03      |
-| WM            | https://github.com/cuihaoleo/kaggle-dfdc                                                                         | 2020.07      |
-| Selim         | [https://github.com/selimsef/dfdc_deepfake_challenge](https://github.com/selimsef/dfdc_deepfake_challenge)       | 2020.07      |
-| Photoshop FAL | https://peterwang512.github.io/FALdetector/                                                                      | 2019         |
-| FaceForensics | https://github.com/ondyari/FaceForensics                                                                         | 2018.03      |
-| CViT          | https://github.com/erprogs/CViT                                                                                  | 2021         |
-| Boken         | https://github.com/beibuwandeluori/DeeperForensicsChallengeSolution                                              | 2020         |
-| GANimageDetection | [GANimageDetection](https://github.com/grip-unina/GANimageDetection) | [License](https://github.com/grip-unina/GANimageDetection/blob/main/LICENSE.md) |
-## License
-
-This project is licensed under a dual license:
-
-1. **Open Source License (MIT License)**: For personal and non-commercial use.
-2. **Commercial License**: For any commercial use, please contact [Siddharth](mailto:siddharth123sk@gmail.com) to obtain a commercial license.
-
-## Contact Information
-
-For questions, please contact me at siddharth123sk[@]gmail.com
-
-Made with ❤️ by [Siddharth](https://siddharthksah.github.io/)
+- [CNNDetection](https://github.com/PeterWang512/CNNDetection) for the deepfake detection model

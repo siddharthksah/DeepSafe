@@ -1,2 +1,0 @@
-file_name,file_path,label,Deepware,Selim
-test.mp4,datasets/video/Blind Benchmarking Dataset/real/test.mp4,0,"{'probability': 0.5, 'inference_time': 6.5594}","{'probability': 0.5, 'inference_time': 17.5614}"
