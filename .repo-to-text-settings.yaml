@@ -11,8 +11,12 @@ ignore-tree-and-content:
   - "examples/"
   - "MANIFEST.in"
   - "setup.py"
-  - "frontend/node_modules/"
-  - "model/cnn_detection/"
+  - "frontend/node_modules/**"
+  - "models/image/cnndetection/cnndetection/**"
+  - "models/image/ganimagedetection/ganimagedetection/**"
+  - "models/image/universalfakedetect/universalfakedetect/**"
+  - "assets/**"
+  - "frontend/package-lock.json"
 
 # Ignore files and directories for contents sections
 ignore-content:
