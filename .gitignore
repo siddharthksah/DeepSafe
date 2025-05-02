@@ -1,2 +1,5 @@
 frontend/node_modules/
 .venv
+models/image/cnndetection/cnndetection
+models/image/ganimagedetection/ganimagedetectionw
+models/universalfakedetect/universalfakedetect
