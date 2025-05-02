@@ -1,0 +1,18 @@
+# models/image/hifi_ifdl/requirements.txt
+# Framework
+fastapi==0.104.1 # Or a recent stable version
+uvicorn[standard]==0.24.0 # Includes standard dependencies like websockets, httptools
+
+# ML/Torch - Use versions compatible with base image (pytorch:1.11.0-cuda11.3)
+torch==1.11.0
+torchvision==0.12.0
+
+# Image Processing & Numerics
+numpy==1.24.3 # Or a recent compatible version
+Pillow==10.0.1 # Or a recent compatible version
+opencv-python-headless==4.8.0.76
+scikit-image==0.21.0 # Or a recent compatible version
+
+# Utilities
+requests==2.31.0 # For potential internal calls if needed
+# gdown is installed via apt-get/pip in Dockerfile, not needed here unless used in app.py

@@ -4,3 +4,4 @@ models/image/cnndetection/cnndetection
 models/image/ganimagedetection/ganimagedetection
 models/universalfakedetect/universalfakedetect
 .repo-to-text-settings.yaml
+models/image/hifi_ifdl/hifi_ifdl

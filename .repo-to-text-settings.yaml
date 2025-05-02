@@ -15,8 +15,11 @@ ignore-tree-and-content:
   - "models/image/cnndetection/cnndetection/**"
   - "models/image/ganimagedetection/ganimagedetection/**"
   - "models/image/universalfakedetect/universalfakedetect/**"
+  - "models/image/hifi_ifdl/hifi_ifdl/**"
   - "assets/**"
   - "frontend/package-lock.json"
+  - "hifi_ifdl/**"
+  - "models/image/hifi_ifdl/repo-to-text_2025-05-02-08-05-22-UTC.txt"
 
 # Ignore files and directories for contents sections
 ignore-content:

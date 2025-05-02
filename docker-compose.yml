@@ -9,10 +9,12 @@ services:
       - cnndetection
       - ganimagedetection
       - universalfakedetect
+      - hifi_ifdl  # <-- Add dependency
     environment:
       - CNNDETECTION_URL=http://cnndetection:5000/predict
       - GANIMAGEDETECTION_URL=http://ganimagedetection:5001/predict
       - UNIVERSALFAKEDETECT_URL=http://universalfakedetect:5002/predict
+      - HIFI_IFDL_URL=http://hifi_ifdl:5003/predict # <-- Add new model URL
 
   cnndetection:
     build: ./models/image/cnndetection
@@ -59,6 +61,22 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5002
+
+  hifi_ifdl: # <-- New Service Definition
+    build: ./models/image/hifi_ifdl
+    container_name: deepsafe-hifi_ifdl # <-- Set container name
+    ports:
+      - "5003:5003" # <-- Map new port
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5003 # <-- Set port inside container
 
   frontend:
     build: ./frontend

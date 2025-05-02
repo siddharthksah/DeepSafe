@@ -24,7 +24,8 @@ logger = logging.getLogger(__name__)
 MODEL_ENDPOINTS = {
     "cnndetection": os.environ.get("CNNDETECTION_URL", "http://cnndetection:5000/predict"),
     "ganimagedetection": os.environ.get("GANIMAGEDETECTION_URL", "http://ganimagedetection:5001/predict"),
-    "universalfakedetect": os.environ.get("UNIVERSALFAKEDETECT_URL", "http://universalfakedetect:5002/predict")
+    "universalfakedetect": os.environ.get("UNIVERSALFAKEDETECT_URL", "http://universalfakedetect:5002/predict"),
+    "hifi_ifdl": os.environ.get("HIFI_IFDL_URL", "http://hifi_ifdl:5003/predict")
 }
 
 # Health endpoints
