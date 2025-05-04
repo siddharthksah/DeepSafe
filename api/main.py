@@ -21,11 +21,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Model endpoints configuration
+# Update the MODEL_ENDPOINTS dictionary in api/main.py
+
 MODEL_ENDPOINTS = {
     "cnndetection": os.environ.get("CNNDETECTION_URL", "http://cnndetection:5000/predict"),
     "ganimagedetection": os.environ.get("GANIMAGEDETECTION_URL", "http://ganimagedetection:5001/predict"),
     "universalfakedetect": os.environ.get("UNIVERSALFAKEDETECT_URL", "http://universalfakedetect:5002/predict"),
-    "hifi_ifdl": os.environ.get("HIFI_IFDL_URL", "http://hifi_ifdl:5003/predict")
+    "hifi_ifdl": os.environ.get("HIFI_IFDL_URL", "http://hifi_ifdl:5003/predict"),
+    "npr_deepfakedetection": os.environ.get("NPR_DEEPFAKEDETECTION_URL", "http://npr_deepfakedetection:5004/predict"),
+    "dmimagedetection": os.environ.get("DMIMAGEDETECTION_URL", "http://dmimagedetection:5005/predict"),
+    "caddm": os.environ.get("CADDM_URL", "http://caddm:5006/predict"),
+    "faceforensics_plus_plus": os.environ.get("FACEFORENSICS_PLUS_PLUS_URL", "http://faceforensics_plus_plus:5007/predict"),
 }
 
 # Health endpoints

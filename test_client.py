@@ -12,12 +12,17 @@ import os
 from typing import Optional, Dict, List
 import sys
 
-# Model endpoints configuration - ADDED hifi_ifdl
+# Model endpoints configuration - ADDED caddm
+
 MODEL_ENDPOINTS = {
     "cnndetection": "http://localhost:5000/predict",
     "ganimagedetection": "http://localhost:5001/predict",
     "universalfakedetect": "http://localhost:5002/predict",
-    "hifi_ifdl": "http://localhost:5003/predict"  # <-- New endpoint added
+    "hifi_ifdl": "http://localhost:5003/predict",
+    "npr_deepfakedetection": "http://localhost:5004/predict",
+    "dmimagedetection": "http://localhost:5005/predict",
+    "caddm": "http://localhost:5006/predict",
+    "faceforensics_plus_plus": "http://localhost:5007/predict",
 }
 
 def encode_image(image_path: str) -> str:
@@ -215,6 +220,8 @@ if __name__ == "__main__":
                 prediction_class = result.get("class", "unknown")
                 probability = result.get("probability", -1) # Use -1 to indicate missing probability
                 inf_time = result.get("inference_time_seconds", -1)
+                if inf_time == -1:
+                    inf_time = result.get("inference_time", -1)  # Try alternative key
                 prob_str = f"{probability:.4f}" if probability != -1 else "N/A"
                 time_str = f"{inf_time:.3f}s" if inf_time != -1 else "N/A"
                 print(f"{model.ljust(20)}: {prediction_class.ljust(5)} (Prob Fake: {prob_str}, Time: {time_str})")

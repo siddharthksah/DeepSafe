@@ -9,12 +9,21 @@ services:
       - cnndetection
       - ganimagedetection
       - universalfakedetect
-      - hifi_ifdl  # <-- Add dependency
+      - hifi_ifdl
+      - npr_deepfakedetection
+      - dmimagedetection
+      - caddm
+      - faceforensics_plus_plus
+      
     environment:
       - CNNDETECTION_URL=http://cnndetection:5000/predict
       - GANIMAGEDETECTION_URL=http://ganimagedetection:5001/predict
       - UNIVERSALFAKEDETECT_URL=http://universalfakedetect:5002/predict
-      - HIFI_IFDL_URL=http://hifi_ifdl:5003/predict # <-- Add new model URL
+      - HIFI_IFDL_URL=http://hifi_ifdl:5003/predict
+      - NPR_DEEPFAKEDETECTION_URL=http://npr_deepfakedetection:5004/predict
+      - DMIMAGEDETECTION_URL=http://dmimagedetection:5005/predict
+      - CADDM_URL=http://caddm:5006/predict
+      - FACEFORENSICS_PLUS_PLUS_URL=http://faceforensics_plus_plus:5007/predict
 
   cnndetection:
     build: ./models/image/cnndetection
@@ -62,11 +71,11 @@ services:
       - USE_GPU=true
       - MODEL_PORT=5002
 
-  hifi_ifdl: # <-- New Service Definition
+  hifi_ifdl:
     build: ./models/image/hifi_ifdl
-    container_name: deepsafe-hifi_ifdl # <-- Set container name
+    container_name: deepsafe-hifi_ifdl
     ports:
-      - "5003:5003" # <-- Map new port
+      - "5003:5003"
     deploy:
       resources:
         reservations:
@@ -76,7 +85,71 @@ services:
               capabilities: [gpu]
     environment:
       - USE_GPU=true
-      - MODEL_PORT=5003 # <-- Set port inside container
+      - MODEL_PORT=5003
+
+  npr_deepfakedetection:
+    build: ./models/image/npr_deepfakedetection
+    container_name: deepsafe-npr_deepfakedetection
+    ports:
+      - "5004:5004"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5004
+
+  dmimagedetection:
+    build: ./models/image/dmimagedetection
+    ports:
+      - "5005:5005"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5005
+
+  caddm:
+    build: ./models/image/caddm
+    container_name: deepsafe-caddm
+    ports:
+      - "5006:5006"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5006
+      - MODEL_BACKBONE=efficientnet-b4
+
+  faceforensics_plus_plus:
+    build: ./models/image/faceforensics_plus_plus
+    container_name: deepsafe-faceforensics_plus_plus
+    ports:
+      - "5007:5007"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - USE_GPU=true
+      - MODEL_PORT=5007
 
   frontend:
     build: ./frontend

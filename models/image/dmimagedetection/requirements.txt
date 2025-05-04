@@ -1,0 +1,12 @@
+fastapi==0.103.1
+uvicorn==0.23.2
+pydantic==2.3.0
+torch==1.11.0
+torchvision==0.12.0
+pillow==10.0.1
+numpy
+scipy
+python-multipart
+scikit-learn
+scikit-image
+gdown
