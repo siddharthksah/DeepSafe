@@ -8,7 +8,7 @@ import base64
 import requests
 import logging
 from typing import Dict, Any, List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -21,8 +21,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Model endpoints configuration
-# Update the MODEL_ENDPOINTS dictionary in api/main.py
-
 MODEL_ENDPOINTS = {
     "cnndetection": os.environ.get("CNNDETECTION_URL", "http://cnndetection:5000/predict"),
     "ganimagedetection": os.environ.get("GANIMAGEDETECTION_URL", "http://ganimagedetection:5001/predict"),
@@ -53,28 +51,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Input model
+# Input model for JSON payload
 class ImageInput(BaseModel):
     image: str  # Base64 encoded image
     models: Optional[List[str]] = None  # Optional list of models to use
     threshold: Optional[float] = 0.5  # Optional threshold for classification
     ensemble_method: Optional[str] = "voting"  # voting or average
-
-class ModelResult(BaseModel):
-    model: str
-    probability: float
-    prediction: int
-    class_label: str
-    inference_time: float
-
-class EnsembleResult(BaseModel):
-    verdict: str
-    confidence: float
-    fake_votes: int
-    real_votes: int
-    total_votes: int
-    inference_time: float
-    model_results: Dict[str, Any]
 
 def validate_base64_image(base64_str: str) -> bool:
     """Validate if the string is a valid base64 encoded image."""
@@ -240,6 +222,56 @@ async def predict_image(input_data: ImageInput):
     }
     
     return ensemble_result
+
+@app.post("/detect")
+async def detect(file: UploadFile = File(...), 
+                threshold: float = Form(0.5), 
+                ensemble_method: str = Form("voting"),
+                models: str = Form(None)):
+    """
+    Form-based endpoint for file uploads from web UI.
+    """
+    try:
+        # Read file content
+        image_bytes = await file.read()
+        
+        # Convert to base64
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        
+        # Parse models if provided
+        model_list = None
+        if models:
+            try:
+                model_list = models.split(',')
+            except:
+                pass
+        
+        # Create ImageInput object
+        input_data = ImageInput(
+            image=base64_image,
+            threshold=threshold,
+            ensemble_method=ensemble_method,
+            models=model_list
+        )
+        
+        # Use the JSON endpoint
+        result = await predict_image(input_data)
+        
+        # Simplify response for web UI
+        is_likely_deepfake = result["verdict"] == "fake"
+        
+        return {
+            "is_likely_deepfake": is_likely_deepfake,
+            "deepfake_probability": float(result["confidence"] if is_likely_deepfake else 1.0 - result["confidence"]),
+            "model_count": result["total_votes"],
+            "fake_votes": result["fake_votes"],
+            "real_votes": result["real_votes"],
+            "response_time": result["inference_time"]
+        }
+        
+    except Exception as e:
+        logger.error(f"Error processing upload: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     # Run the API server
