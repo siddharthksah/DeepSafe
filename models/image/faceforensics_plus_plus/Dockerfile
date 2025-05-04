@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install git and other dependencies
 RUN apt-get update && \
-    apt-get install -y git wget curl unzip findutils && \
+    apt-get install -y git wget curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +26,7 @@ RUN mkdir -p /app/models
 # Install latest version of gdown
 RUN pip install --no-cache-dir --upgrade gdown
 
-# Download individual files with their direct IDs, using recommended format
+# Download individual files with their direct IDs
 # Download deepfake_c0_xception.pkl
 RUN echo "Downloading deepfake_c0_xception.pkl..." && \
     gdown 1eHRN117X0loEff7EBk1mGMJeGbGKsd7m -O /app/models/deepfake_c0_xception.pkl --no-cookies
@@ -47,27 +47,15 @@ RUN if [ ! -f "/app/models/deepfake_c0_xception.pkl" ] && \
         exit 1; \
     fi
 
-# Create symlink to default model
-RUN if [ -f "/app/models/deepfake_c0_xception.pkl" ]; then \
-        ln -sf /app/models/deepfake_c0_xception.pkl /app/models/model.pth; \
-    elif [ -f "/app/models/ffpp_c23.pth" ]; then \
-        ln -sf /app/models/ffpp_c23.pth /app/models/model.pth; \
-    elif [ -f "/app/models/ffpp_c40.pth" ]; then \
-        ln -sf /app/models/ffpp_c40.pth /app/models/model.pth; \
-    else \
-        echo "ERROR: Failed to create model.pth symlink" && \
-        exit 1; \
-    fi
-
 # Verify model files exist and have content
 RUN ls -la /app/models/ && \
     echo "Model file sizes:" && \
     du -h /app/models/*
 
-# Set environment variables
+# Set environment variables - Default to ensemble mode
 ENV MODEL_PORT=5007
 ENV USE_GPU=true
-ENV MODEL_PATH=/app/models/model.pth
+ENV MODEL_TYPE=ensemble
 
 # Expose port
 EXPOSE 5007

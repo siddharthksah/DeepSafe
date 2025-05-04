@@ -16,7 +16,7 @@ from pydantic import BaseModel
 import uvicorn
 import numpy as np
 import torchvision.transforms as transforms
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 # Configure logging
 logging.basicConfig(
@@ -54,24 +54,7 @@ try:
     logger.info("Successfully imported model_selection")
 except Exception as e:
     logger.error(f"Error importing model_selection: {str(e)}")
-    # Define a fallback model selection function
-    def model_selection(modelname='xception', num_out_classes=2, dropout=0.5):
-        import torch.nn as nn
-        # Simple fallback model
-        model = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(128, 256, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.AdaptiveAvgPool2d((1, 1)),
-            nn.Flatten(),
-            nn.Linear(256, num_out_classes)
-        )
-        return model
+    raise ImportError(f"Failed to import model_selection: {str(e)}")
 
 # Find model files by scanning the models directory
 def find_model_file(pattern):
@@ -84,40 +67,29 @@ def find_model_file(pattern):
     return None
 
 # Model paths and settings
-DEFAULT_MODEL_PATH = os.environ.get("MODEL_PATH", "/app/models/model.pth")
-MODEL_TYPE = os.environ.get("MODEL_TYPE", "c0")  # c0, c23, or c40
+C0_MODEL_PATH = find_model_file("c0") or find_model_file("deepfake") or "/app/models/deepfake_c0_xception.pkl"
+C23_MODEL_PATH = find_model_file("c23") or "/app/models/ffpp_c23.pth"
+C40_MODEL_PATH = find_model_file("c40") or "/app/models/ffpp_c40.pth"
 
-# Find model paths based on patterns
-c0_model_path = find_model_file("c0") or find_model_file("deepfake") or "/app/models/deepfake_c0_xception.pkl"
-c23_model_path = find_model_file("c23") or "/app/models/ffpp_c23.pth"
-c40_model_path = find_model_file("c40") or "/app/models/ffpp_c40.pth"
-
-# Select the model based on MODEL_TYPE
-if MODEL_TYPE == "c0" and os.path.exists(c0_model_path):
-    MODEL_PATH = c0_model_path
-elif MODEL_TYPE == "c23" and os.path.exists(c23_model_path):
-    MODEL_PATH = c23_model_path
-elif MODEL_TYPE == "c40" and os.path.exists(c40_model_path):
-    MODEL_PATH = c40_model_path
-else:
-    # Default to any model that exists
-    if os.path.exists(c0_model_path):
-        MODEL_PATH = c0_model_path
-        MODEL_TYPE = "c0"
-    elif os.path.exists(c23_model_path):
-        MODEL_PATH = c23_model_path
-        MODEL_TYPE = "c23"
-    elif os.path.exists(c40_model_path):
-        MODEL_PATH = c40_model_path
-        MODEL_TYPE = "c40"
-    else:
-        # Fall back to the symlink provided in the Dockerfile
-        MODEL_PATH = DEFAULT_MODEL_PATH
+# Default to c23 model if specified, otherwise use all models for ensemble
+MODEL_TYPE = os.environ.get("MODEL_TYPE", "ensemble")
+if MODEL_TYPE == "c0":
+    DEFAULT_MODEL_PATH = C0_MODEL_PATH
+elif MODEL_TYPE == "c23":
+    DEFAULT_MODEL_PATH = C23_MODEL_PATH
+elif MODEL_TYPE == "c40":
+    DEFAULT_MODEL_PATH = C40_MODEL_PATH
+else:  # Default to ensemble
+    DEFAULT_MODEL_PATH = None
+    MODEL_TYPE = "ensemble"
 
 USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
 DEVICE = 'cuda' if USE_GPU else 'cpu'
 
-logger.info(f"Using model type: {MODEL_TYPE}, path: {MODEL_PATH}")
+if MODEL_TYPE == "ensemble":
+    logger.info(f"Using ensemble of all models")
+else:
+    logger.info(f"Using model type: {MODEL_TYPE}")
 
 # Define request model
 class ImageInput(BaseModel):
@@ -129,112 +101,104 @@ class ImageInput(BaseModel):
         "protected_namespaces": ()  # Disable protected namespace warning
     }
 
-# Global variable for the model
-model = None
+# Global variables for models
+c0_model = None
+c23_model = None
+c40_model = None
 
-def load_model():
-    """Load the Faceforensics_plus_plus model."""
-    global model
-    
+def load_model(model_path, model_type):
+    """Load a specific model from path."""
     try:
-        logger.info(f"Loading model from {MODEL_PATH} on {DEVICE}")
+        logger.info(f"Loading {model_type} model from {model_path} on {DEVICE}")
         
         # Check if the model file exists
-        if not os.path.exists(MODEL_PATH):
-            logger.error(f"Model file not found at {MODEL_PATH}")
-            raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
-        
-        # Determine model type from filename
-        model_filename = os.path.basename(MODEL_PATH)
-        logger.info(f"Loading model file: {model_filename}")
+        if not os.path.exists(model_path):
+            logger.error(f"Model file not found at {model_path}")
+            raise FileNotFoundError(f"Model file not found at {model_path}")
+            
+        # Load the Xception model
+        model = model_selection(modelname='xception', num_out_classes=2, dropout=0.5)
         
         # Load state dict
-        state_dict = torch.load(MODEL_PATH, map_location=DEVICE)
+        state_dict = torch.load(model_path, map_location=DEVICE)
         
-        # Different handling based on model type
-        if any(['weight' in key for key in state_dict.keys()]):
-            # We have a simple state dict format - load it with a simple model
-            logger.info("Detected simple state dict format")
+        # Handle various state dict formats
+        if isinstance(state_dict, dict):
+            # Handle the case where the state dict might be nested
+            if 'state_dict' in state_dict:
+                state_dict = state_dict['state_dict']
+            elif 'model' in state_dict:
+                state_dict = state_dict['model']
             
-            # Create a default simple model
-            import torch.nn as nn
-            model = nn.Sequential(
-                nn.Conv2d(3, 64, 3, padding=1),
-                nn.ReLU(),
-                nn.MaxPool2d(2, 2),
-                nn.Conv2d(64, 128, 3, padding=1),
-                nn.ReLU(),
-                nn.MaxPool2d(2, 2),
-                nn.Conv2d(128, 256, 3, padding=1),
-                nn.ReLU(),
-                nn.AdaptiveAvgPool2d((1, 1)),
-                nn.Flatten(),
-                nn.Linear(256, 2)
-            )
-            logger.info("Created simple model for prediction")
+            # Some models might have 'module.' prefix for DataParallel
+            has_module_prefix = any(['module.' in key for key in state_dict.keys()])
             
-        else:
-            # Try to load as an xception model
-            logger.info("Loading Xception model architecture")
-            model = model_selection(modelname='xception', num_out_classes=2, dropout=0.5)
-            
-            # Handle various state dict formats
-            if isinstance(state_dict, dict):
-                # Handle the case where the state dict might be nested
-                if 'state_dict' in state_dict:
-                    state_dict = state_dict['state_dict']
-                elif 'model' in state_dict:
-                    state_dict = state_dict['model']
-                
-                # Try different model key patterns
-                # Some models might have 'module.' prefix for DataParallel
-                has_module_prefix = any(['module.' in key for key in state_dict.keys()])
-                
-                if has_module_prefix:
-                    logger.info("Removing 'module.' prefix from state dict keys")
-                    # Remove 'module.' prefix
-                    new_state_dict = {}
-                    for key, value in state_dict.items():
-                        new_key = key.replace('module.', '')
-                        new_state_dict[new_key] = value
-                    state_dict = new_state_dict
-            
-            # Try to load the state dict
-            try:
-                model.load_state_dict(state_dict)
-                logger.info("Successfully loaded state dict")
-            except Exception as e:
-                logger.error(f"Error loading state dict: {str(e)}")
-                logger.warning("Using initialized model with random weights")
+            if has_module_prefix:
+                logger.info(f"Removing 'module.' prefix from {model_type} state dict keys")
+                # Remove 'module.' prefix
+                new_state_dict = {}
+                for key, value in state_dict.items():
+                    new_key = key.replace('module.', '')
+                    new_state_dict[new_key] = value
+                state_dict = new_state_dict
+        
+        # Try to load the state dict
+        try:
+            model.load_state_dict(state_dict)
+            logger.info(f"Successfully loaded {model_type} state dict")
+        except Exception as e:
+            logger.error(f"Error loading {model_type} state dict: {str(e)}")
+            raise ValueError(f"Could not load state dict for {model_type} model: {str(e)}")
         
         if USE_GPU:
             model.cuda()
-            logger.info(f"Model moved to GPU")
+            logger.info(f"Model {model_type} moved to GPU")
         
         model.eval()
-        logger.info(f"Model loaded successfully")
+        logger.info(f"Model {model_type} loaded successfully")
+        
+        return model
         
     except Exception as e:
-        logger.error(f"Failed to load model: {str(e)}")
-        # Instead of raising an error, create a simple model that will work
-        import torch.nn as nn
-        logger.warning("Creating emergency fallback model")
-        model = nn.Sequential(
-            nn.Conv2d(3, 64, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(64, 128, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(128, 256, 3, padding=1),
-            nn.ReLU(),
-            nn.AdaptiveAvgPool2d((1, 1)),
-            nn.Flatten(),
-            nn.Linear(256, 2)
-        )
-        if USE_GPU:
-            model.cuda()
-        model.eval()
+        logger.error(f"Failed to load {model_type} model: {str(e)}")
+        raise
+
+def load_all_models():
+    """Load all three models."""
+    global c0_model, c23_model, c40_model
+    
+    # Track which models loaded successfully
+    success = []
+    
+    # Load c0 model
+    try:
+        c0_model = load_model(C0_MODEL_PATH, "c0")
+        success.append("c0")
+    except Exception as e:
+        logger.error(f"Failed to load c0 model: {str(e)}")
+        c0_model = None
+    
+    # Load c23 model
+    try:
+        c23_model = load_model(C23_MODEL_PATH, "c23")
+        success.append("c23")
+    except Exception as e:
+        logger.error(f"Failed to load c23 model: {str(e)}")
+        c23_model = None
+    
+    # Load c40 model
+    try:
+        c40_model = load_model(C40_MODEL_PATH, "c40")
+        success.append("c40")
+    except Exception as e:
+        logger.error(f"Failed to load c40 model: {str(e)}")
+        c40_model = None
+    
+    # Check if at least one model was loaded
+    if not success:
+        raise ValueError("Failed to load any models")
+    
+    logger.info(f"Successfully loaded models: {', '.join(success)}")
 
 def preprocess_image(image_bytes):
     """Preprocess the image for the model."""
@@ -255,41 +219,78 @@ def preprocess_image(image_bytes):
         logger.error(f"Error preprocessing image: {str(e)}")
         raise
 
+def predict_with_model(model, image_tensor, model_type, threshold=0.5):
+    """Run prediction with a specific model."""
+    try:
+        with torch.no_grad():
+            outputs = model(image_tensor)
+            
+            # Handle different output formats
+            if isinstance(outputs, tuple):
+                # Some models return multiple outputs
+                outputs = outputs[0]
+            
+            # Ensure outputs is the right shape
+            if len(outputs.shape) == 1:
+                outputs = outputs.unsqueeze(0)
+            
+            # Get predictions
+            if outputs.shape[1] >= 2:  # Binary classification
+                _, preds = torch.max(outputs.data, 1)
+                
+                # Apply softmax to get probabilities
+                probabilities = torch.nn.functional.softmax(outputs, dim=1)
+                probability = probabilities[0][1].item()  # Probability of fake class
+            else:  # Single output (sigmoid)
+                probability = torch.sigmoid(outputs[0]).item()
+                preds = torch.tensor([1 if probability >= threshold else 0])
+            
+            # Apply threshold
+            prediction = 1 if probability >= threshold else 0
+            
+            return {
+                "model_type": model_type,
+                "probability": float(probability),
+                "prediction": int(prediction),
+                "class": "fake" if prediction == 1 else "real"
+            }
+    except Exception as e:
+        logger.error(f"Error during prediction with {model_type} model: {str(e)}")
+        raise ValueError(f"Prediction failed for {model_type} model: {str(e)}")
+
 @app.get("/")
 async def root():
     """Root endpoint."""
-    # Check which model files are available using our finder function
+    # Check which model files are available
     model_files = {
-        "c0": os.path.exists(find_model_file("c0") or find_model_file("deepfake") or ""),
-        "c23": os.path.exists(find_model_file("c23") or ""),
-        "c40": os.path.exists(find_model_file("c40") or "")
+        "c0": os.path.exists(C0_MODEL_PATH),
+        "c23": os.path.exists(C23_MODEL_PATH),
+        "c40": os.path.exists(C40_MODEL_PATH)
     }
     
-    # Get model type from the path for response
-    current_model_type = "unknown"
-    if "c0" in MODEL_PATH or "deepfake" in MODEL_PATH:
-        current_model_type = "c0"
-    elif "c23" in MODEL_PATH:
-        current_model_type = "c23"
-    elif "c40" in MODEL_PATH:
-        current_model_type = "c40"
-    
-    # Get actual model paths
+    # Get model paths
     model_paths = {
-        "c0": find_model_file("c0") or find_model_file("deepfake"),
-        "c23": find_model_file("c23"),
-        "c40": find_model_file("c40")
+        "c0": C0_MODEL_PATH,
+        "c23": C23_MODEL_PATH,
+        "c40": C40_MODEL_PATH
     }
+    
+    # Get loaded models
+    loaded_models = []
+    if c0_model is not None:
+        loaded_models.append("c0")
+    if c23_model is not None:
+        loaded_models.append("c23")
+    if c40_model is not None:
+        loaded_models.append("c40")
     
     return {
         "model": "Faceforensics_plus_plus",
         "description": "Xception-based deepfake image detection from Faceforensics++",
-        "current_model": {
-            "type": current_model_type,
-            "path": MODEL_PATH
-        },
+        "mode": MODEL_TYPE,
         "available_models": model_files,
-        "model_paths": {k: v for k, v in model_paths.items() if v is not None},
+        "loaded_models": loaded_models,
+        "model_paths": model_paths,
         "device": DEVICE,
         "gpu_available": torch.cuda.is_available()
     }
@@ -297,115 +298,124 @@ async def root():
 @app.get("/health")
 async def health():
     """Health check endpoint."""
-    global model
-    
-    # Check which model files are available using our finder function
+    # Check which model files are available
     model_files = {
-        "c0": os.path.exists(find_model_file("c0") or find_model_file("deepfake") or ""),
-        "c23": os.path.exists(find_model_file("c23") or ""),
-        "c40": os.path.exists(find_model_file("c40") or "")
+        "c0": os.path.exists(C0_MODEL_PATH),
+        "c23": os.path.exists(C23_MODEL_PATH),
+        "c40": os.path.exists(C40_MODEL_PATH)
     }
     
-    # Get model type from the path for response
-    current_model_type = "unknown"
-    if "c0" in MODEL_PATH or "deepfake" in MODEL_PATH:
-        current_model_type = "c0"
-    elif "c23" in MODEL_PATH:
-        current_model_type = "c23"
-    elif "c40" in MODEL_PATH:
-        current_model_type = "c40"
+    # Check which models are loaded
+    loaded_models = []
+    if c0_model is not None:
+        loaded_models.append("c0")
+    if c23_model is not None:
+        loaded_models.append("c23")
+    if c40_model is not None:
+        loaded_models.append("c40")
     
-    # Get actual model paths
-    model_paths = {
-        "c0": find_model_file("c0") or find_model_file("deepfake"),
-        "c23": find_model_file("c23"),
-        "c40": find_model_file("c40")
-    }
-    
-    if model is None:
-        # Try to load the model
+    # If no models are loaded, try to load them
+    if not loaded_models:
         try:
-            load_model()
-            if model is None:
+            load_all_models()
+            
+            # Update loaded models list
+            loaded_models = []
+            if c0_model is not None:
+                loaded_models.append("c0")
+            if c23_model is not None:
+                loaded_models.append("c23")
+            if c40_model is not None:
+                loaded_models.append("c40")
+            
+            if loaded_models:
+                return {
+                    "status": "healthy", 
+                    "device": DEVICE,
+                    "mode": MODEL_TYPE,
+                    "available_models": model_files,
+                    "loaded_models": loaded_models
+                }
+            else:
                 return {
                     "status": "error", 
-                    "message": "Model could not be loaded",
+                    "message": "No models could be loaded",
                     "device": DEVICE,
-                    "current_model": current_model_type,
+                    "mode": MODEL_TYPE,
                     "available_models": model_files,
-                    "model_paths": {k: v for k, v in model_paths.items() if v is not None}
+                    "loaded_models": []
                 }
-            return {
-                "status": "healthy", 
-                "device": DEVICE,
-                "current_model": current_model_type,
-                "available_models": model_files,
-                "model_paths": {k: v for k, v in model_paths.items() if v is not None}
-            }
         except Exception as e:
             return {
                 "status": "error", 
-                "message": f"Error loading model: {str(e)}", 
+                "message": f"Error loading models: {str(e)}", 
                 "device": DEVICE,
-                "current_model": current_model_type,
+                "mode": MODEL_TYPE,
                 "available_models": model_files,
-                "model_paths": {k: v for k, v in model_paths.items() if v is not None}
+                "loaded_models": []
             }
     
     return {
         "status": "healthy", 
         "device": DEVICE,
-        "current_model": current_model_type,
+        "mode": MODEL_TYPE,
         "available_models": model_files,
-        "model_paths": {k: v for k, v in model_paths.items() if v is not None}
+        "loaded_models": loaded_models
     }
+
 
 @app.post("/predict")
 async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
     """
-    Detect if an image is a deepfake using the Faceforensics_plus_plus model.
-    Returns standardized output matching other models.
+    Detect if an image is a deepfake using the Faceforensics_plus_plus model(s).
+    If mode is ensemble, uses all available models and averages the results.
+    Otherwise, uses the specified model type.
     """
-    global model, MODEL_PATH
+    global c0_model, c23_model, c40_model
     
-    # Check if a specific model type was requested for this prediction
-    if input_data.model_type:
-        # Find the appropriate model file
-        if input_data.model_type == "c0":
-            requested_model_path = find_model_file("c0") or find_model_file("deepfake") or "/app/models/deepfake_c0_xception.pkl"
-        elif input_data.model_type == "c23":
-            requested_model_path = find_model_file("c23") or "/app/models/ffpp_c23.pth"
-        elif input_data.model_type == "c40":
-            requested_model_path = find_model_file("c40") or "/app/models/ffpp_c40.pth"
-        else:
-            # Invalid model type
-            logger.error(f"Invalid model type requested: {input_data.model_type}")
-            raise HTTPException(status_code=400, detail=f"Invalid model type: {input_data.model_type}")
-        
-        # Check if the requested model exists
-        if not os.path.exists(requested_model_path):
-            logger.error(f"Requested model file not found: {requested_model_path}")
-            raise HTTPException(status_code=404, detail=f"Requested model file not found for type: {input_data.model_type}")
-        
-        # Check if we need to load a different model
-        if requested_model_path != MODEL_PATH:
-            logger.info(f"Switching to model: {input_data.model_type} at path: {requested_model_path}")
-            MODEL_PATH = requested_model_path
-            model = None  # Reset model so it will be reloaded
+    # Check if specific model type requested for this prediction
+    request_model_type = input_data.model_type or MODEL_TYPE
     
-    # Make sure model is loaded
-    if model is None:
-        try:
-            load_model()
-        except Exception as e:
-            logger.error(f"Error loading model: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error loading model: {str(e)}")
+    # Load models if not already loaded
+    if request_model_type == "ensemble":
+        if c0_model is None and c23_model is None and c40_model is None:
+            try:
+                load_all_models()
+            except Exception as e:
+                logger.error(f"Error loading models: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Error loading models: {str(e)}")
+    else:
+        # Load the specific requested model
+        if request_model_type == "c0" and c0_model is None:
+            try:
+                c0_model = load_model(C0_MODEL_PATH, "c0")
+            except Exception as e:
+                logger.error(f"Error loading c0 model: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Error loading c0 model: {str(e)}")
+        elif request_model_type == "c23" and c23_model is None:
+            try:
+                c23_model = load_model(C23_MODEL_PATH, "c23")
+            except Exception as e:
+                logger.error(f"Error loading c23 model: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Error loading c23 model: {str(e)}")
+        elif request_model_type == "c40" and c40_model is None:
+            try:
+                c40_model = load_model(C40_MODEL_PATH, "c40")
+            except Exception as e:
+                logger.error(f"Error loading c40 model: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Error loading c40 model: {str(e)}")
     
-    # If model is still None, return an error
-    if model is None:
-        logger.error("Model could not be loaded")
-        raise HTTPException(status_code=500, detail="Model could not be loaded")
-        
+    # Check that at least one model is loaded
+    if request_model_type == "ensemble":
+        if c0_model is None and c23_model is None and c40_model is None:
+            raise HTTPException(status_code=500, detail="No models are loaded")
+    elif request_model_type == "c0" and c0_model is None:
+        raise HTTPException(status_code=500, detail="c0 model is not loaded")
+    elif request_model_type == "c23" and c23_model is None:
+        raise HTTPException(status_code=500, detail="c23 model is not loaded")
+    elif request_model_type == "c40" and c40_model is None:
+        raise HTTPException(status_code=500, detail="c40 model is not loaded")
+    
     try:
         # Decode base64 image
         try:
@@ -429,52 +439,73 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
             image_tensor = image_tensor.cuda()
         
         # Run prediction
-        with torch.no_grad():
-            outputs = model(image_tensor)
+        results = []
+        
+        if request_model_type == "ensemble":
+            # Run prediction with all available models
+            if c0_model is not None:
+                try:
+                    c0_result = predict_with_model(c0_model, image_tensor, "c0", input_data.threshold)
+                    results.append(c0_result)
+                except Exception as e:
+                    logger.error(f"Error with c0 prediction: {str(e)}")
             
-            # Handle different output formats
-            if isinstance(outputs, tuple):
-                # Some models return multiple outputs
-                outputs = outputs[0]
+            if c23_model is not None:
+                try:
+                    c23_result = predict_with_model(c23_model, image_tensor, "c23", input_data.threshold)
+                    results.append(c23_result)
+                except Exception as e:
+                    logger.error(f"Error with c23 prediction: {str(e)}")
             
-            # Ensure outputs is the right shape
-            if len(outputs.shape) == 1:
-                outputs = outputs.unsqueeze(0)
+            if c40_model is not None:
+                try:
+                    c40_result = predict_with_model(c40_model, image_tensor, "c40", input_data.threshold)
+                    results.append(c40_result)
+                except Exception as e:
+                    logger.error(f"Error with c40 prediction: {str(e)}")
             
-            # Get predictions
-            if outputs.shape[1] >= 2:  # Binary classification
-                _, preds = torch.max(outputs.data, 1)
-                
-                # Apply softmax to get probabilities
-                probabilities = torch.nn.functional.softmax(outputs, dim=1)
-                probability = probabilities[0][1].item()  # Probability of fake class
-            else:  # Single output (sigmoid)
-                probability = torch.sigmoid(outputs[0]).item()
-                preds = torch.tensor([1 if probability >= input_data.threshold else 0])
+            # Calculate average probability
+            if results:
+                avg_probability = sum(r["probability"] for r in results) / len(results)
+                prediction = 1 if avg_probability >= input_data.threshold else 0
+                prediction_class = "fake" if prediction == 1 else "real"
+            else:
+                raise HTTPException(status_code=500, detail="All model predictions failed")
             
-        # Apply threshold
-        prediction = 1 if probability >= input_data.threshold else 0
+        else:
+            # Run prediction with specific model
+            if request_model_type == "c0" and c0_model is not None:
+                result = predict_with_model(c0_model, image_tensor, "c0", input_data.threshold)
+                results = [result]
+                avg_probability = result["probability"]
+                prediction = result["prediction"]
+                prediction_class = result["class"]
+            elif request_model_type == "c23" and c23_model is not None:
+                result = predict_with_model(c23_model, image_tensor, "c23", input_data.threshold)
+                results = [result]
+                avg_probability = result["probability"]
+                prediction = result["prediction"]
+                prediction_class = result["class"]
+            elif request_model_type == "c40" and c40_model is not None:
+                result = predict_with_model(c40_model, image_tensor, "c40", input_data.threshold)
+                results = [result]
+                avg_probability = result["probability"]
+                prediction = result["prediction"]
+                prediction_class = result["class"]
+            else:
+                raise HTTPException(status_code=500, detail=f"Model {request_model_type} is not loaded")
         
         # Calculate inference time
         inference_time = time.time() - start_time
         
         logger.info(f"Inference completed in {inference_time:.4f} seconds")
         
-        # Get model type from the path for response
-        model_type = "unknown"
-        if "c0" in MODEL_PATH or "deepfake" in MODEL_PATH:
-            model_type = "c0"
-        elif "c23" in MODEL_PATH:
-            model_type = "c23"
-        elif "c40" in MODEL_PATH:
-            model_type = "c40"
-        
-        # Return standardized format
+        # Return standardized format without individual results
         return {
-            "model": f"Faceforensics_plus_plus ({model_type})",
-            "probability": float(probability),
+            "model": f"Faceforensics_plus_plus ({request_model_type})",
+            "probability": float(avg_probability),
             "prediction": int(prediction),
-            "class": "fake" if prediction == 1 else "real",
+            "class": prediction_class,
             "inference_time": float(inference_time)
         }
         
@@ -484,8 +515,23 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
 
 @app.on_event("startup")
 async def startup_event():
-    """Load model on startup."""
-    load_model()
+    """Load models on startup."""
+    try:
+        if MODEL_TYPE == "ensemble":
+            load_all_models()
+        elif MODEL_TYPE == "c0":
+            global c0_model
+            c0_model = load_model(C0_MODEL_PATH, "c0")
+        elif MODEL_TYPE == "c23":
+            global c23_model
+            c23_model = load_model(C23_MODEL_PATH, "c23")
+        elif MODEL_TYPE == "c40":
+            global c40_model
+            c40_model = load_model(C40_MODEL_PATH, "c40")
+    except Exception as e:
+        logger.error(f"Error during startup: {str(e)}")
+        # We don't raise an exception here, to allow the server to start
+        # even if model loading fails initially
 
 if __name__ == "__main__":
     # Run the API server
