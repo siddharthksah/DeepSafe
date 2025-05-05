@@ -9,6 +9,8 @@ import base64
 import torch
 import logging
 import time
+import threading
+import gc
 from PIL import Image
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,9 +34,6 @@ logger = logging.getLogger(__name__)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, 'cnndetection'))
 
-# Import after path setup
-from networks.resnet import resnet50
-
 # Initialize FastAPI app
 app = FastAPI(
     title="CNNDetection Model Service",
@@ -55,6 +54,8 @@ app.add_middleware(
 MODEL_PATH = os.environ.get("MODEL_PATH", "cnndetection/weights/blur_jpg_prob0.5.pth")
 USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
 DEVICE = 'cuda' if USE_GPU else 'cpu'
+PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "5"))  # Seconds to keep model loaded
 
 # Define request model - update to match UniversalFakeDetect
 class ImageInput(BaseModel):
@@ -63,29 +64,76 @@ class ImageInput(BaseModel):
 
 # Global variable for the model
 model = None
+model_lock = threading.Lock()
+last_used_time = 0
 
 def load_model():
     """Load the CNNDetection model."""
-    global model
+    global model, last_used_time
     
-    try:
-        logger.info(f"Loading model from {MODEL_PATH} on {DEVICE}")
+    # If model is already loaded, update timestamp and return
+    if model is not None:
+        last_used_time = time.time()
+        return model
         
-        # Load the model
-        model = resnet50(num_classes=1)
-        state_dict = torch.load(MODEL_PATH, map_location=DEVICE)
-        model.load_state_dict(state_dict['model'])
+    with model_lock:  # Thread safety for concurrent requests
+        # Check again after acquiring the lock
+        if model is not None:
+            last_used_time = time.time()
+            return model
+    
+        try:
+            logger.info(f"Loading model from {MODEL_PATH} on {DEVICE}")
+            
+            # Import after path setup
+            from networks.resnet import resnet50
+            
+            # Load the model
+            model = resnet50(num_classes=1)
+            state_dict = torch.load(MODEL_PATH, map_location=DEVICE)
+            model.load_state_dict(state_dict['model'])
+            
+            if USE_GPU:
+                model.cuda()
+                logger.info(f"Model moved to GPU")
+            
+            model.eval()
+            
+            # Update last used time
+            last_used_time = time.time()
+            
+            logger.info(f"Model loaded successfully")
+            
+            # Clear CUDA cache to free up memory
+            if USE_GPU:
+                torch.cuda.empty_cache()
+            gc.collect()
+            
+            return model
+            
+        except Exception as e:
+            logger.error(f"Failed to load model: {str(e)}")
+            raise
+
+def unload_model_if_idle():
+    """Unload model if it's been idle for too long."""
+    global model, last_used_time
+    
+    if model is None:
+        return
         
-        if USE_GPU:
-            model.cuda()
-            logger.info(f"Model moved to GPU")
-        
-        model.eval()
-        logger.info(f"Model loaded successfully")
-        
-    except Exception as e:
-        logger.error(f"Failed to load model: {str(e)}")
-        raise
+    if time.time() - last_used_time > MODEL_TIMEOUT:
+        with model_lock:
+            if model is not None and time.time() - last_used_time > MODEL_TIMEOUT:
+                logger.info(f"Unloading model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del model
+                model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info("Model unloaded and memory cleared")
 
 def preprocess_image(image_bytes):
     """Preprocess the image for the model."""
@@ -113,15 +161,22 @@ async def root():
         "description": "CNN-based deepfake image detection",
         "model_path": MODEL_PATH,
         "device": DEVICE,
-        "gpu_available": torch.cuda.is_available()
+        "gpu_available": torch.cuda.is_available(),
+        "model_loaded": model is not None,
+        "lazy_loading": not PRELOAD_MODEL
     }
 
 @app.get("/health")
 async def health():
     """Health check endpoint."""
-    if model is None:
-        return {"status": "error", "message": "Model not loaded"}
-    return {"status": "healthy", "device": DEVICE}
+    model_file_exists = os.path.exists(MODEL_PATH)
+    
+    return {
+        "status": "healthy" if model_file_exists else "missing_weights",
+        "device": DEVICE,
+        "model_loaded": model is not None,
+        "lazy_loading": not PRELOAD_MODEL
+    }
 
 @app.post("/predict")
 async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
@@ -134,13 +189,21 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
     try:
         # Make sure model is loaded
         if model is None:
-            load_model()
+            model = load_model()
+        else:
+            # Update timestamp if already loaded
+            global last_used_time
+            last_used_time = time.time()
             
         # Decode base64 image
         image_bytes = base64.b64decode(input_data.image)
         
         # Start timing
         start_time = time.time()
+        
+        # Optimize memory during inference
+        if USE_GPU:
+            torch.cuda.empty_cache()
         
         # Preprocess image
         image_tensor = preprocess_image(image_bytes)
@@ -162,6 +225,9 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
         
         logger.info(f"Inference completed in {inference_time:.4f} seconds")
         
+        # Schedule unloading after timeout - run in background
+        threading.Timer(5.0, unload_model_if_idle).start()
+        
         # Return standardized format
         return {
             "model": "CNNDetection",
@@ -177,8 +243,15 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
 
 @app.on_event("startup")
 async def startup_event():
-    """Load model on startup."""
-    load_model()
+    """Load model on startup only if PRELOAD_MODEL is true."""
+    if PRELOAD_MODEL:
+        logger.info("Preloading model at startup (PRELOAD_MODEL=true)")
+        try:
+            load_model()
+        except Exception as e:
+            logger.error(f"Preloading failed: {str(e)}")
+    else:
+        logger.info("Model will be loaded on first request (PRELOAD_MODEL=false)")
 
 if __name__ == "__main__":
     # Run the API server

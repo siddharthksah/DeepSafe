@@ -1,10 +1,10 @@
-version: '3.8'
-
 services:
   api:
     build: ./api
+    container_name: deepsafe-api
     ports:
       - "8000:8000"
+    restart: unless-stopped
     depends_on:
       - cnndetection
       - ganimagedetection
@@ -14,7 +14,6 @@ services:
       - dmimagedetection
       - caddm
       - faceforensics_plus_plus
-      
     environment:
       - CNNDETECTION_URL=http://cnndetection:5000/predict
       - GANIMAGEDETECTION_URL=http://ganimagedetection:5001/predict
@@ -24,11 +23,15 @@ services:
       - DMIMAGEDETECTION_URL=http://dmimagedetection:5005/predict
       - CADDM_URL=http://caddm:5006/predict
       - FACEFORENSICS_PLUS_PLUS_URL=http://faceforensics_plus_plus:5007/predict
-
+    networks:
+      - deepsafe-network
+      
   cnndetection:
     build: ./models/image/cnndetection
+    container_name: deepsafe-cnndetection
     ports:
       - "5000:5000"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -40,11 +43,17 @@ services:
       - USE_GPU=true
       - MODEL_PORT=5000
       - MODEL_PATH=cnndetection/weights/blur_jpg_prob0.5.pth
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   ganimagedetection:
     build: ./models/image/ganimagedetection
+    container_name: deepsafe-ganimagedetection
     ports:
       - "5001:5001"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -55,11 +64,17 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5001
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   universalfakedetect:
     build: ./models/image/universalfakedetect
+    container_name: deepsafe-universalfakedetect
     ports:
       - "5002:5002"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -70,12 +85,17 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5002
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   hifi_ifdl:
     build: ./models/image/hifi_ifdl
     container_name: deepsafe-hifi_ifdl
     ports:
       - "5003:5003"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -86,12 +106,17 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5003
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   npr_deepfakedetection:
     build: ./models/image/npr_deepfakedetection
     container_name: deepsafe-npr_deepfakedetection
     ports:
       - "5004:5004"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -102,11 +127,17 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5004
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   dmimagedetection:
     build: ./models/image/dmimagedetection
+    container_name: deepsafe-dmimagedetection
     ports:
       - "5005:5005"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -117,12 +148,17 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5005
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   caddm:
     build: ./models/image/caddm
     container_name: deepsafe-caddm
     ports:
       - "5006:5006"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -134,12 +170,17 @@ services:
       - USE_GPU=true
       - MODEL_PORT=5006
       - MODEL_BACKBONE=efficientnet-b4
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   faceforensics_plus_plus:
     build: ./models/image/faceforensics_plus_plus
     container_name: deepsafe-faceforensics_plus_plus
     ports:
       - "5007:5007"
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -150,10 +191,22 @@ services:
     environment:
       - USE_GPU=true
       - MODEL_PORT=5007
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=300
+    networks:
+      - deepsafe-network
 
   frontend:
     build: ./frontend
+    container_name: deepsafe-frontend
     ports:
       - "80:80"
+    restart: unless-stopped
     depends_on:
       - api
+    networks:
+      - deepsafe-network
+
+networks:
+  deepsafe-network:
+    driver: bridge

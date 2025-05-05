@@ -9,6 +9,8 @@ import base64
 import torch
 import logging
 import time
+import threading
+import gc
 from PIL import Image
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -85,6 +87,8 @@ else:  # Default to ensemble
 
 USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
 DEVICE = 'cuda' if USE_GPU else 'cpu'
+PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
 
 if MODEL_TYPE == "ensemble":
     logger.info(f"Using ensemble of all models")
@@ -105,63 +109,150 @@ class ImageInput(BaseModel):
 c0_model = None
 c23_model = None
 c40_model = None
+model_locks = {"c0": threading.Lock(), "c23": threading.Lock(), "c40": threading.Lock()}
+last_used_times = {"c0": 0, "c23": 0, "c40": 0}
 
 def load_model(model_path, model_type):
     """Load a specific model from path."""
-    try:
-        logger.info(f"Loading {model_type} model from {model_path} on {DEVICE}")
+    global c0_model, c23_model, c40_model
+    
+    if model_type == "c0" and c0_model is not None:
+        last_used_times["c0"] = time.time()
+        return c0_model
+    elif model_type == "c23" and c23_model is not None:
+        last_used_times["c23"] = time.time()
+        return c23_model
+    elif model_type == "c40" and c40_model is not None:
+        last_used_times["c40"] = time.time()
+        return c40_model
         
-        # Check if the model file exists
-        if not os.path.exists(model_path):
-            logger.error(f"Model file not found at {model_path}")
-            raise FileNotFoundError(f"Model file not found at {model_path}")
-            
-        # Load the Xception model
-        model = model_selection(modelname='xception', num_out_classes=2, dropout=0.5)
-        
-        # Load state dict
-        state_dict = torch.load(model_path, map_location=DEVICE)
-        
-        # Handle various state dict formats
-        if isinstance(state_dict, dict):
-            # Handle the case where the state dict might be nested
-            if 'state_dict' in state_dict:
-                state_dict = state_dict['state_dict']
-            elif 'model' in state_dict:
-                state_dict = state_dict['model']
-            
-            # Some models might have 'module.' prefix for DataParallel
-            has_module_prefix = any(['module.' in key for key in state_dict.keys()])
-            
-            if has_module_prefix:
-                logger.info(f"Removing 'module.' prefix from {model_type} state dict keys")
-                # Remove 'module.' prefix
-                new_state_dict = {}
-                for key, value in state_dict.items():
-                    new_key = key.replace('module.', '')
-                    new_state_dict[new_key] = value
-                state_dict = new_state_dict
-        
-        # Try to load the state dict
+    with model_locks[model_type]:  # Thread safety for concurrent requests
+        # Check again after acquiring the lock
+        if model_type == "c0" and c0_model is not None:
+            last_used_times["c0"] = time.time()
+            return c0_model
+        elif model_type == "c23" and c23_model is not None:
+            last_used_times["c23"] = time.time()
+            return c23_model
+        elif model_type == "c40" and c40_model is not None:
+            last_used_times["c40"] = time.time()
+            return c40_model
+    
         try:
-            model.load_state_dict(state_dict)
-            logger.info(f"Successfully loaded {model_type} state dict")
+            logger.info(f"Loading {model_type} model from {model_path} on {DEVICE}")
+            
+            # Check if the model file exists
+            if not os.path.exists(model_path):
+                logger.error(f"Model file not found at {model_path}")
+                raise FileNotFoundError(f"Model file not found at {model_path}")
+                
+            # Load the Xception model
+            model = model_selection(modelname='xception', num_out_classes=2, dropout=0.5)
+            
+            # Load state dict
+            state_dict = torch.load(model_path, map_location=DEVICE)
+            
+            # Handle various state dict formats
+            if isinstance(state_dict, dict):
+                # Handle the case where the state dict might be nested
+                if 'state_dict' in state_dict:
+                    state_dict = state_dict['state_dict']
+                elif 'model' in state_dict:
+                    state_dict = state_dict['model']
+                
+                # Some models might have 'module.' prefix for DataParallel
+                has_module_prefix = any(['module.' in key for key in state_dict.keys()])
+                
+                if has_module_prefix:
+                    logger.info(f"Removing 'module.' prefix from {model_type} state dict keys")
+                    # Remove 'module.' prefix
+                    new_state_dict = {}
+                    for key, value in state_dict.items():
+                        new_key = key.replace('module.', '')
+                        new_state_dict[new_key] = value
+                    state_dict = new_state_dict
+            
+            # Try to load the state dict
+            try:
+                model.load_state_dict(state_dict)
+                logger.info(f"Successfully loaded {model_type} state dict")
+            except Exception as e:
+                logger.error(f"Error loading {model_type} state dict: {str(e)}")
+                raise ValueError(f"Could not load state dict for {model_type} model: {str(e)}")
+            
+            if USE_GPU:
+                model.cuda()
+                logger.info(f"Model {model_type} moved to GPU")
+            
+            model.eval()
+            
+            # Save to global variable
+            if model_type == "c0":
+                c0_model = model
+            elif model_type == "c23":
+                c23_model = model
+            elif model_type == "c40":
+                c40_model = model
+                
+            # Update last used time
+            last_used_times[model_type] = time.time()
+            
+            # Clear CUDA cache to free up memory
+            if USE_GPU:
+                torch.cuda.empty_cache()
+            gc.collect()
+            
+            logger.info(f"Model {model_type} loaded successfully")
+            
+            return model
+            
         except Exception as e:
-            logger.error(f"Error loading {model_type} state dict: {str(e)}")
-            raise ValueError(f"Could not load state dict for {model_type} model: {str(e)}")
+            logger.error(f"Failed to load {model_type} model: {str(e)}")
+            raise
+
+def unload_model_if_idle(model_type):
+    """Unload model if it's been idle for too long."""
+    global c0_model, c23_model, c40_model
+    
+    if model_type == "c0" and c0_model is None:
+        return
+    elif model_type == "c23" and c23_model is None:
+        return
+    elif model_type == "c40" and c40_model is None:
+        return
         
-        if USE_GPU:
-            model.cuda()
-            logger.info(f"Model {model_type} moved to GPU")
-        
-        model.eval()
-        logger.info(f"Model {model_type} loaded successfully")
-        
-        return model
-        
-    except Exception as e:
-        logger.error(f"Failed to load {model_type} model: {str(e)}")
-        raise
+    if time.time() - last_used_times[model_type] > MODEL_TIMEOUT:
+        with model_locks[model_type]:
+            if model_type == "c0" and c0_model is not None and time.time() - last_used_times[model_type] > MODEL_TIMEOUT:
+                logger.info(f"Unloading {model_type} model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del c0_model
+                c0_model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info(f"Model {model_type} unloaded and memory cleared")
+            elif model_type == "c23" and c23_model is not None and time.time() - last_used_times[model_type] > MODEL_TIMEOUT:
+                logger.info(f"Unloading {model_type} model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del c23_model
+                c23_model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info(f"Model {model_type} unloaded and memory cleared")
+            elif model_type == "c40" and c40_model is not None and time.time() - last_used_times[model_type] > MODEL_TIMEOUT:
+                logger.info(f"Unloading {model_type} model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del c40_model
+                c40_model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info(f"Model {model_type} unloaded and memory cleared")
 
 def load_all_models():
     """Load all three models."""
@@ -172,33 +263,32 @@ def load_all_models():
     
     # Load c0 model
     try:
-        c0_model = load_model(C0_MODEL_PATH, "c0")
+        load_model(C0_MODEL_PATH, "c0")
         success.append("c0")
     except Exception as e:
         logger.error(f"Failed to load c0 model: {str(e)}")
-        c0_model = None
     
     # Load c23 model
     try:
-        c23_model = load_model(C23_MODEL_PATH, "c23")
+        load_model(C23_MODEL_PATH, "c23")
         success.append("c23")
     except Exception as e:
         logger.error(f"Failed to load c23 model: {str(e)}")
-        c23_model = None
     
     # Load c40 model
     try:
-        c40_model = load_model(C40_MODEL_PATH, "c40")
+        load_model(C40_MODEL_PATH, "c40")
         success.append("c40")
     except Exception as e:
         logger.error(f"Failed to load c40 model: {str(e)}")
-        c40_model = None
     
     # Check if at least one model was loaded
     if not success:
         raise ValueError("Failed to load any models")
     
     logger.info(f"Successfully loaded models: {', '.join(success)}")
+    
+    return success
 
 def preprocess_image(image_bytes):
     """Preprocess the image for the model."""
@@ -292,7 +382,8 @@ async def root():
         "loaded_models": loaded_models,
         "model_paths": model_paths,
         "device": DEVICE,
-        "gpu_available": torch.cuda.is_available()
+        "gpu_available": torch.cuda.is_available(),
+        "lazy_loading": not PRELOAD_MODEL
     }
 
 @app.get("/health")
@@ -314,55 +405,17 @@ async def health():
     if c40_model is not None:
         loaded_models.append("c40")
     
-    # If no models are loaded, try to load them
-    if not loaded_models:
-        try:
-            load_all_models()
-            
-            # Update loaded models list
-            loaded_models = []
-            if c0_model is not None:
-                loaded_models.append("c0")
-            if c23_model is not None:
-                loaded_models.append("c23")
-            if c40_model is not None:
-                loaded_models.append("c40")
-            
-            if loaded_models:
-                return {
-                    "status": "healthy", 
-                    "device": DEVICE,
-                    "mode": MODEL_TYPE,
-                    "available_models": model_files,
-                    "loaded_models": loaded_models
-                }
-            else:
-                return {
-                    "status": "error", 
-                    "message": "No models could be loaded",
-                    "device": DEVICE,
-                    "mode": MODEL_TYPE,
-                    "available_models": model_files,
-                    "loaded_models": []
-                }
-        except Exception as e:
-            return {
-                "status": "error", 
-                "message": f"Error loading models: {str(e)}", 
-                "device": DEVICE,
-                "mode": MODEL_TYPE,
-                "available_models": model_files,
-                "loaded_models": []
-            }
+    # Check if all required model files exist
+    all_models_exist = all(model_files.values())
     
     return {
-        "status": "healthy", 
+        "status": "healthy" if all_models_exist else "missing_weights", 
         "device": DEVICE,
         "mode": MODEL_TYPE,
         "available_models": model_files,
-        "loaded_models": loaded_models
+        "loaded_models": loaded_models,
+        "lazy_loading": not PRELOAD_MODEL
     }
-
 
 @app.post("/predict")
 async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
@@ -376,46 +429,6 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
     # Check if specific model type requested for this prediction
     request_model_type = input_data.model_type or MODEL_TYPE
     
-    # Load models if not already loaded
-    if request_model_type == "ensemble":
-        if c0_model is None and c23_model is None and c40_model is None:
-            try:
-                load_all_models()
-            except Exception as e:
-                logger.error(f"Error loading models: {str(e)}")
-                raise HTTPException(status_code=500, detail=f"Error loading models: {str(e)}")
-    else:
-        # Load the specific requested model
-        if request_model_type == "c0" and c0_model is None:
-            try:
-                c0_model = load_model(C0_MODEL_PATH, "c0")
-            except Exception as e:
-                logger.error(f"Error loading c0 model: {str(e)}")
-                raise HTTPException(status_code=500, detail=f"Error loading c0 model: {str(e)}")
-        elif request_model_type == "c23" and c23_model is None:
-            try:
-                c23_model = load_model(C23_MODEL_PATH, "c23")
-            except Exception as e:
-                logger.error(f"Error loading c23 model: {str(e)}")
-                raise HTTPException(status_code=500, detail=f"Error loading c23 model: {str(e)}")
-        elif request_model_type == "c40" and c40_model is None:
-            try:
-                c40_model = load_model(C40_MODEL_PATH, "c40")
-            except Exception as e:
-                logger.error(f"Error loading c40 model: {str(e)}")
-                raise HTTPException(status_code=500, detail=f"Error loading c40 model: {str(e)}")
-    
-    # Check that at least one model is loaded
-    if request_model_type == "ensemble":
-        if c0_model is None and c23_model is None and c40_model is None:
-            raise HTTPException(status_code=500, detail="No models are loaded")
-    elif request_model_type == "c0" and c0_model is None:
-        raise HTTPException(status_code=500, detail="c0 model is not loaded")
-    elif request_model_type == "c23" and c23_model is None:
-        raise HTTPException(status_code=500, detail="c23 model is not loaded")
-    elif request_model_type == "c40" and c40_model is None:
-        raise HTTPException(status_code=500, detail="c40 model is not loaded")
-    
     try:
         # Decode base64 image
         try:
@@ -426,6 +439,10 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
         
         # Start timing
         start_time = time.time()
+        
+        # Optimize memory during inference
+        if USE_GPU:
+            torch.cuda.empty_cache()
         
         # Preprocess image
         try:
@@ -443,24 +460,52 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
         
         if request_model_type == "ensemble":
             # Run prediction with all available models
+            
+            # Try to load c0 model
+            if c0_model is None:
+                try:
+                    c0_model = load_model(C0_MODEL_PATH, "c0")
+                except Exception as e:
+                    logger.error(f"Error loading c0 model: {str(e)}")
+            
+            # Try to run prediction with c0 model
             if c0_model is not None:
                 try:
                     c0_result = predict_with_model(c0_model, image_tensor, "c0", input_data.threshold)
                     results.append(c0_result)
+                    threading.Timer(5.0, lambda: unload_model_if_idle("c0")).start()
                 except Exception as e:
                     logger.error(f"Error with c0 prediction: {str(e)}")
             
+            # Try to load c23 model
+            if c23_model is None:
+                try:
+                    c23_model = load_model(C23_MODEL_PATH, "c23")
+                except Exception as e:
+                    logger.error(f"Error loading c23 model: {str(e)}")
+            
+            # Try to run prediction with c23 model
             if c23_model is not None:
                 try:
                     c23_result = predict_with_model(c23_model, image_tensor, "c23", input_data.threshold)
                     results.append(c23_result)
+                    threading.Timer(5.0, lambda: unload_model_if_idle("c23")).start()
                 except Exception as e:
                     logger.error(f"Error with c23 prediction: {str(e)}")
             
+            # Try to load c40 model
+            if c40_model is None:
+                try:
+                    c40_model = load_model(C40_MODEL_PATH, "c40")
+                except Exception as e:
+                    logger.error(f"Error loading c40 model: {str(e)}")
+            
+            # Try to run prediction with c40 model
             if c40_model is not None:
                 try:
                     c40_result = predict_with_model(c40_model, image_tensor, "c40", input_data.threshold)
                     results.append(c40_result)
+                    threading.Timer(5.0, lambda: unload_model_if_idle("c40")).start()
                 except Exception as e:
                     logger.error(f"Error with c40 prediction: {str(e)}")
             
@@ -474,26 +519,53 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
             
         else:
             # Run prediction with specific model
-            if request_model_type == "c0" and c0_model is not None:
+            if request_model_type == "c0":
+                # Try to load c0 model if needed
+                if c0_model is None:
+                    c0_model = load_model(C0_MODEL_PATH, "c0")
+                
+                # Run prediction with c0 model
                 result = predict_with_model(c0_model, image_tensor, "c0", input_data.threshold)
                 results = [result]
                 avg_probability = result["probability"]
                 prediction = result["prediction"]
                 prediction_class = result["class"]
-            elif request_model_type == "c23" and c23_model is not None:
+                
+                # Schedule unloading
+                threading.Timer(5.0, lambda: unload_model_if_idle("c0")).start()
+                
+            elif request_model_type == "c23":
+                # Try to load c23 model if needed
+                if c23_model is None:
+                    c23_model = load_model(C23_MODEL_PATH, "c23")
+                
+                # Run prediction with c23 model
                 result = predict_with_model(c23_model, image_tensor, "c23", input_data.threshold)
                 results = [result]
                 avg_probability = result["probability"]
                 prediction = result["prediction"]
                 prediction_class = result["class"]
-            elif request_model_type == "c40" and c40_model is not None:
+                
+                # Schedule unloading
+                threading.Timer(5.0, lambda: unload_model_if_idle("c23")).start()
+                
+            elif request_model_type == "c40":
+                # Try to load c40 model if needed
+                if c40_model is None:
+                    c40_model = load_model(C40_MODEL_PATH, "c40")
+                
+                # Run prediction with c40 model
                 result = predict_with_model(c40_model, image_tensor, "c40", input_data.threshold)
                 results = [result]
                 avg_probability = result["probability"]
                 prediction = result["prediction"]
                 prediction_class = result["class"]
+                
+                # Schedule unloading
+                threading.Timer(5.0, lambda: unload_model_if_idle("c40")).start()
+                
             else:
-                raise HTTPException(status_code=500, detail=f"Model {request_model_type} is not loaded")
+                raise HTTPException(status_code=500, detail=f"Model {request_model_type} is not supported")
         
         # Calculate inference time
         inference_time = time.time() - start_time
@@ -515,23 +587,22 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
 
 @app.on_event("startup")
 async def startup_event():
-    """Load models on startup."""
-    try:
-        if MODEL_TYPE == "ensemble":
-            load_all_models()
-        elif MODEL_TYPE == "c0":
-            global c0_model
-            c0_model = load_model(C0_MODEL_PATH, "c0")
-        elif MODEL_TYPE == "c23":
-            global c23_model
-            c23_model = load_model(C23_MODEL_PATH, "c23")
-        elif MODEL_TYPE == "c40":
-            global c40_model
-            c40_model = load_model(C40_MODEL_PATH, "c40")
-    except Exception as e:
-        logger.error(f"Error during startup: {str(e)}")
-        # We don't raise an exception here, to allow the server to start
-        # even if model loading fails initially
+    """Load models on startup only if PRELOAD_MODEL is true."""
+    if PRELOAD_MODEL:
+        logger.info("Preloading models at startup (PRELOAD_MODEL=true)")
+        try:
+            if MODEL_TYPE == "ensemble":
+                load_all_models()
+            elif MODEL_TYPE == "c0":
+                load_model(C0_MODEL_PATH, "c0")
+            elif MODEL_TYPE == "c23":
+                load_model(C23_MODEL_PATH, "c23")
+            elif MODEL_TYPE == "c40":
+                load_model(C40_MODEL_PATH, "c40")
+        except Exception as e:
+            logger.error(f"Preloading failed: {str(e)}")
+    else:
+        logger.info("Models will be loaded on first request (PRELOAD_MODEL=false)")
 
 if __name__ == "__main__":
     # Run the API server

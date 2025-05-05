@@ -4,6 +4,8 @@ import time
 import base64
 import logging
 import traceback
+import threading
+import gc
 from typing import Dict, Any, Optional
 import sys
 import torch
@@ -35,6 +37,8 @@ app.add_middleware(
 # Environment variables
 USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
 MODEL_PORT = int(os.environ.get('MODEL_PORT', 5002))
+PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
 
 # Check if CUDA is available
 DEVICE = torch.device('cuda' if torch.cuda.is_available() and USE_GPU else 'cpu')
@@ -51,6 +55,9 @@ class ImageInput(BaseModel):
 
 # Global variables for model
 model = None
+model_lock = threading.Lock()
+last_used_time = 0
+model_loading = False
 
 # Download weights if not present
 def download_weights():
@@ -68,62 +75,111 @@ def download_weights():
 
 # Load the model
 def load_model():
-    global model
-    try:
-        logger.info(f"Loading UniversalFakeDetect model on {DEVICE}...")
+    """Load the UniversalFakeDetect model."""
+    global model, last_used_time, model_loading
+    
+    # If model is already loaded, update timestamp and return
+    if model is not None:
+        last_used_time = time.time()
+        return model
         
-        # List directory contents for debugging
-        logger.info(f"Current directory: {os.getcwd()}")
-        logger.info(f"Directory contents: {os.listdir('.')}")
-        
-        if os.path.exists('universalfakedetect'):
-            logger.info(f"universalfakedetect directory contents: {os.listdir('universalfakedetect')}")
-        else:
-            logger.error("universalfakedetect directory not found!")
-            return False
+    with model_lock:  # Thread safety for concurrent requests
+        # Check again after acquiring the lock
+        if model is not None:
+            last_used_time = time.time()
+            return model
             
-        # Ensure weights exist
-        download_weights()
-        weights_path = 'universalfakedetect/pretrained_weights/fc_weights.pth'
-            
-        # Import model modules
-        logger.info("Adding universalfakedetect to sys.path")
-        sys.path.append(os.path.abspath('universalfakedetect'))
+        # Set flag to indicate model is loading
+        model_loading = True
         
-        logger.info("Importing get_model from models")
         try:
-            # Try direct import first
-            from models import get_model
-            logger.info("Successfully imported get_model")
-        except ImportError as e:
-            logger.warning(f"Direct import failed: {str(e)}, trying alternate import")
-            from universalfakedetect.models import get_model
-            logger.info("Successfully imported get_model with alternate path")
+            logger.info(f"Loading UniversalFakeDetect model on {DEVICE}...")
+            
+            # List directory contents for debugging
+            logger.info(f"Current directory: {os.getcwd()}")
+            logger.info(f"Directory contents: {os.listdir('.')}")
+            
+            if os.path.exists('universalfakedetect'):
+                logger.info(f"universalfakedetect directory contents: {os.listdir('universalfakedetect')}")
+            else:
+                logger.error("universalfakedetect directory not found!")
+                model_loading = False
+                return None
+                
+            # Ensure weights exist
+            download_weights()
+            weights_path = 'universalfakedetect/pretrained_weights/fc_weights.pth'
+                
+            # Import model modules
+            logger.info("Adding universalfakedetect to sys.path")
+            sys.path.append(os.path.abspath('universalfakedetect'))
+            
+            logger.info("Importing get_model from models")
+            try:
+                # Try direct import first
+                from models import get_model
+                logger.info("Successfully imported get_model")
+            except ImportError as e:
+                logger.warning(f"Direct import failed: {str(e)}, trying alternate import")
+                from universalfakedetect.models import get_model
+                logger.info("Successfully imported get_model with alternate path")
+            except Exception as e:
+                logger.error(f"Error importing get_model: {str(e)}")
+                logger.error(traceback.format_exc())
+                model_loading = False
+                return None
+            
+            # Initialize the model
+            logger.info("Initializing model with CLIP:ViT-L/14")
+            model = get_model("CLIP:ViT-L/14")
+            
+            # Load the weights
+            logger.info(f"Loading weights from {weights_path}")
+            state_dict = torch.load(weights_path, map_location='cpu')
+            model.fc.load_state_dict(state_dict)
+            
+            # Move model to device and set to evaluation mode
+            logger.info(f"Moving model to device: {DEVICE}")
+            model.to(DEVICE)
+            model.eval()
+            
+            # Update last used time
+            last_used_time = time.time()
+            
+            # Clear CUDA cache to free up memory
+            if USE_GPU:
+                torch.cuda.empty_cache()
+            gc.collect()
+            
+            logger.info("Model loaded successfully!")
+            model_loading = False
+            return model
+            
         except Exception as e:
-            logger.error(f"Error importing get_model: {str(e)}")
+            logger.error(f"Error loading model: {str(e)}")
             logger.error(traceback.format_exc())
-            return False
+            model_loading = False
+            return None
+
+def unload_model_if_idle():
+    """Unload model if it's been idle for too long."""
+    global model, last_used_time
+    
+    if model is None:
+        return
         
-        # Initialize the model
-        logger.info("Initializing model with CLIP:ViT-L/14")
-        model = get_model("CLIP:ViT-L/14")
-        
-        # Load the weights
-        logger.info(f"Loading weights from {weights_path}")
-        state_dict = torch.load(weights_path, map_location='cpu')
-        model.fc.load_state_dict(state_dict)
-        
-        # Move model to device and set to evaluation mode
-        logger.info(f"Moving model to device: {DEVICE}")
-        model.to(DEVICE)
-        model.eval()
-        
-        logger.info("Model loaded successfully!")
-        return True
-    except Exception as e:
-        logger.error(f"Error loading model: {str(e)}")
-        logger.error(traceback.format_exc())
-        return False
+    if time.time() - last_used_time > MODEL_TIMEOUT:
+        with model_lock:
+            if model is not None and time.time() - last_used_time > MODEL_TIMEOUT:
+                logger.info(f"Unloading model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del model
+                model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info("Model unloaded and memory cleared")
 
 # Preprocess image for inference
 def preprocess_image(image_bytes):
@@ -178,40 +234,54 @@ def read_root():
         "description": "Universal Fake Image Detector that Generalizes Across Generative Models",
         "authors": "Utkarsh Ojha, Yuheng Li, Yong Jae Lee",
         "paper": "https://arxiv.org/abs/2302.10174",
-        "source": "https://github.com/WisconsinAIVision/UniversalFakeDetect"
+        "source": "https://github.com/WisconsinAIVision/UniversalFakeDetect",
+        "model_loaded": model is not None,
+        "lazy_loading": not PRELOAD_MODEL
     }
-
-# Add a global variable to track loading state
-model_loading = False
 
 # Health check endpoint
 @app.get("/health")
 def health_check():
     global model, model_loading
     
+    weights_path = 'universalfakedetect/pretrained_weights/fc_weights.pth'
+    model_file_exists = os.path.exists(weights_path)
+    
     if model is not None:
-        return {"status": "healthy", "device": str(DEVICE)}
+        return {"status": "healthy", "device": str(DEVICE), "model_loaded": True}
     elif model_loading:
         return {"status": "loading", "message": "Model is being loaded", "device": str(DEVICE)}
+    elif not model_file_exists:
+        return {"status": "missing_weights", "message": "Model weights not found", "device": str(DEVICE)}
     else:
-        return {"status": "error", "message": "Model not loaded"}
+        return {"status": "not_loaded", "message": "Model not loaded yet", "device": str(DEVICE)}
 
 # Prediction endpoint
 @app.post("/predict")
 async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
     # Check if model is loaded
-    if model is None:
-        logger.info("Model not loaded. Loading model now...")
-        success = load_model()
-        if not success:
-            raise HTTPException(status_code=500, detail="Failed to load model")
+    global model, last_used_time
     
     try:
+        # Load model if not already loaded
+        if model is None:
+            logger.info("Model not loaded. Loading model now...")
+            model = load_model()
+            if model is None:
+                raise HTTPException(status_code=500, detail="Failed to load model")
+        else:
+            # Update timestamp if already loaded
+            last_used_time = time.time()
+    
         # Decode base64 image
         image_bytes = base64.b64decode(input_data.image)
         
         # Start timing
         start_time = time.time()
+        
+        # Optimize memory during inference
+        if USE_GPU:
+            torch.cuda.empty_cache()
         
         # Preprocess the image
         image_tensor = preprocess_image(image_bytes)
@@ -221,6 +291,9 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
         
         # Calculate inference time
         inference_time = time.time() - start_time
+        
+        # Schedule unloading after timeout - run in background
+        threading.Timer(5.0, unload_model_if_idle).start()
         
         # Return results
         return {
@@ -238,11 +311,15 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
 # Load model on startup
 @app.on_event("startup")
 async def startup_event():
-    global model_loading
-    model_loading = True
-    # Start loading the model
-    load_model()
-    model_loading = False
+    """Load model on startup only if PRELOAD_MODEL is true."""
+    if PRELOAD_MODEL:
+        logger.info("Preloading model at startup (PRELOAD_MODEL=true)")
+        try:
+            load_model()
+        except Exception as e:
+            logger.error(f"Preloading failed: {str(e)}")
+    else:
+        logger.info("Model will be loaded on first request (PRELOAD_MODEL=false)")
 
 # Run the server
 if __name__ == "__main__":

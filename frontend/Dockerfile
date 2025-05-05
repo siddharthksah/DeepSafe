@@ -1,34 +1,34 @@
-# Build stage
-FROM node:16-alpine as build
+# Use official Node.js image
+FROM node:16-alpine AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json files
-COPY package*.json ./
+# Copy package files
+COPY package.json ./
 
-# Install dependencies with proper permissions
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN npm install
 
-# Copy all files
-COPY . .
+# Copy the rest of the application code
+COPY . ./
 
-# Set proper permissions for node_modules
-RUN chmod -R 755 node_modules/
+# Fix permissions for node_modules/.bin
+RUN chmod -R 755 node_modules/.bin
 
-# Build the application
+# Build the app
 RUN npm run build
 
-# Production stage
-FROM nginx:stable-alpine
+# Nginx for serving the built app
+FROM nginx:alpine
 
-# Copy build files from build stage
+# Copy build files
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
+# Expose port 80
 EXPOSE 80
 
 # Start Nginx server

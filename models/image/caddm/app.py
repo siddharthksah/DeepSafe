@@ -10,6 +10,8 @@ import torch
 import logging
 import time
 import glob
+import threading
+import gc
 from PIL import Image
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,6 +63,8 @@ if MODEL_BACKBONE not in available_backbones:
 CHECKPOINTS_DIR = "/app/checkpoints"
 USE_GPU = torch.cuda.is_available() and os.environ.get("USE_CPU", "false").lower() != "true"
 DEVICE = 'cuda' if USE_GPU else 'cpu'
+PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "5"))  # Seconds to keep model loaded
 
 # Define config for test
 CONFIG = {
@@ -98,6 +102,8 @@ class ImageInput(BaseModel):
 
 # Global variable for the model
 model = None
+model_lock = threading.Lock()
+last_used_time = 0
 
 # Face detector for better preprocessing
 face_detector = None
@@ -185,110 +191,150 @@ def find_model_weights():
 
 def load_model():
     """Load the CADDM model."""
-    global model
+    global model, last_used_time
     
-    try:
-        logger.info(f"Loading CADDM model with backbone {MODEL_BACKBONE} on {DEVICE}")
+    # If model is already loaded, update timestamp and return
+    if model is not None:
+        last_used_time = time.time()
+        return model
         
-        # Patch EfficientNet's pretrained weights loading
-        # If we're using EfficientNet, we need to modify the pretrained weights path
-        if MODEL_BACKBONE.startswith('efficientnet'):
-            # Import and modify the utils.load_pretrained_weights function
-            import backbones.efficientnet_pytorch.utils as effnet_utils
-            
-            # Override the load_pretrained_weights function to use our weights
-            original_load_pretrained = effnet_utils.load_pretrained_weights
-            
-            def patched_load_pretrained(model, model_name, load_fc=True, advprop=False):
-                # Use our own checkpoint instead
-                logger.info("Using custom EfficientNet loading logic")
-                # Find weights file
-                model_path = find_model_weights()
-                # Load state dict
-                state_dict = torch.load(model_path, map_location='cpu')
-                
-                # Handle different state dict formats
-                if 'network' in state_dict:
-                    state_dict = state_dict['network']
-                
-                # Load the state dict
-                if load_fc:
-                    model.load_state_dict(state_dict)
-                else:
-                    # Filter out fully connected layer parameters
-                    for k in list(state_dict.keys()):
-                        if k.startswith('_fc'):
-                            del state_dict[k]
-                    res = model.load_state_dict(state_dict, strict=False)
-                    assert set(res.missing_keys) == set(['_fc.weight', '_fc.bias']), 'issue loading pretrained weights'
-                
-                logger.info(f"Successfully loaded pretrained weights for {model_name}")
-                
-            # Replace the function
-            effnet_utils.load_pretrained_weights = patched_load_pretrained
-        
-        # Import model creator function
-        from backbones.caddm import CADDM
-        
-        # Create the model
-        model = CADDM(num_classes=2, backbone=MODEL_BACKBONE)
-        
-        # Find model weights
-        model_path = find_model_weights()
-        logger.info(f"Loading weights from {model_path}")
-        
-        # Load checkpoint
-        checkpoint = torch.load(model_path, map_location=DEVICE)
-        
-        # If the checkpoint contains 'network' key, extract it
-        if 'network' in checkpoint:
-            state_dict = checkpoint['network']
-        else:
-            state_dict = checkpoint
+    with model_lock:  # Thread safety for concurrent requests
+        # Check again after acquiring the lock
+        if model is not None:
+            last_used_time = time.time()
+            return model
             
         try:
-            model.load_state_dict(state_dict)
-            logger.info("Successfully loaded state dict directly")
-        except Exception as e:
-            logger.warning(f"Could not load state dict directly: {str(e)}")
-            logger.info("Trying to load with prefix 'module.'")
-            # Some models are saved with 'module.' prefix from DataParallel
-            from collections import OrderedDict
-            new_state_dict = OrderedDict()
-            for k, v in state_dict.items():
-                name = k if k.startswith('module.') else 'module.' + k
-                new_state_dict[name] = v
+            logger.info(f"Loading CADDM model with backbone {MODEL_BACKBONE} on {DEVICE}")
             
-            try:
-                model.load_state_dict(new_state_dict)
-                logger.info("Successfully loaded state dict with 'module.' prefix")
-            except Exception as e2:
-                logger.warning(f"Could not load state dict with 'module.' prefix: {str(e2)}")
-                logger.info("Trying to remove 'module.' prefix")
+            # Patch EfficientNet's pretrained weights loading
+            # If we're using EfficientNet, we need to modify the pretrained weights path
+            if MODEL_BACKBONE.startswith('efficientnet'):
+                # Import and modify the utils.load_pretrained_weights function
+                import backbones.efficientnet_pytorch.utils as effnet_utils
                 
+                # Override the load_pretrained_weights function to use our weights
+                original_load_pretrained = effnet_utils.load_pretrained_weights
+                
+                def patched_load_pretrained(model, model_name, load_fc=True, advprop=False):
+                    # Use our own checkpoint instead
+                    logger.info("Using custom EfficientNet loading logic")
+                    # Find weights file
+                    model_path = find_model_weights()
+                    # Load state dict
+                    state_dict = torch.load(model_path, map_location='cpu')
+                    
+                    # Handle different state dict formats
+                    if 'network' in state_dict:
+                        state_dict = state_dict['network']
+                    
+                    # Load the state dict
+                    if load_fc:
+                        model.load_state_dict(state_dict)
+                    else:
+                        # Filter out fully connected layer parameters
+                        for k in list(state_dict.keys()):
+                            if k.startswith('_fc'):
+                                del state_dict[k]
+                        res = model.load_state_dict(state_dict, strict=False)
+                        assert set(res.missing_keys) == set(['_fc.weight', '_fc.bias']), 'issue loading pretrained weights'
+                    
+                    logger.info(f"Successfully loaded pretrained weights for {model_name}")
+                    
+                # Replace the function
+                effnet_utils.load_pretrained_weights = patched_load_pretrained
+            
+            # Import model creator function
+            from backbones.caddm import CADDM
+            
+            # Create the model
+            model = CADDM(num_classes=2, backbone=MODEL_BACKBONE)
+            
+            # Find model weights
+            model_path = find_model_weights()
+            logger.info(f"Loading weights from {model_path}")
+            
+            # Load checkpoint
+            checkpoint = torch.load(model_path, map_location=DEVICE)
+            
+            # If the checkpoint contains 'network' key, extract it
+            if 'network' in checkpoint:
+                state_dict = checkpoint['network']
+            else:
+                state_dict = checkpoint
+                
+            try:
+                model.load_state_dict(state_dict)
+                logger.info("Successfully loaded state dict directly")
+            except Exception as e:
+                logger.warning(f"Could not load state dict directly: {str(e)}")
+                logger.info("Trying to load with prefix 'module.'")
+                # Some models are saved with 'module.' prefix from DataParallel
+                from collections import OrderedDict
                 new_state_dict = OrderedDict()
                 for k, v in state_dict.items():
-                    name = k[7:] if k.startswith('module.') else k
+                    name = k if k.startswith('module.') else 'module.' + k
                     new_state_dict[name] = v
                 
-                model.load_state_dict(new_state_dict)
-                logger.info("Successfully loaded state dict with 'module.' prefix removed")
+                try:
+                    model.load_state_dict(new_state_dict)
+                    logger.info("Successfully loaded state dict with 'module.' prefix")
+                except Exception as e2:
+                    logger.warning(f"Could not load state dict with 'module.' prefix: {str(e2)}")
+                    logger.info("Trying to remove 'module.' prefix")
+                    
+                    new_state_dict = OrderedDict()
+                    for k, v in state_dict.items():
+                        name = k[7:] if k.startswith('module.') else k
+                        new_state_dict[name] = v
+                    
+                    model.load_state_dict(new_state_dict)
+                    logger.info("Successfully loaded state dict with 'module.' prefix removed")
+            
+            # Move model to GPU if available
+            model = model.to(DEVICE)
+            model.eval()
+            
+            # Initialize the face detector
+            init_face_detector()
+            
+            # Update last used time
+            last_used_time = time.time()
+            
+            logger.info(f"Model loaded successfully on {DEVICE}")
+            
+            # Clear CUDA cache to free up memory
+            if USE_GPU:
+                torch.cuda.empty_cache()
+            gc.collect()
+            
+            return model
+                
+        except Exception as e:
+            logger.error(f"Failed to load model: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            raise
+
+def unload_model_if_idle():
+    """Unload model if it's been idle for too long."""
+    global model, last_used_time
+    
+    if model is None:
+        return
         
-        # Move model to GPU if available
-        model = model.to(DEVICE)
-        model.eval()
-        
-        # Initialize the face detector
-        init_face_detector()
-        
-        logger.info(f"Model loaded successfully on {DEVICE}")
-        return True
-        
-    except Exception as e:
-        logger.error(f"Failed to load model: {str(e)}")
-        import traceback
-        logger.error(traceback.format_exc())
-        return False
+    if time.time() - last_used_time > MODEL_TIMEOUT:
+        with model_lock:
+            if model is not None and time.time() - last_used_time > MODEL_TIMEOUT:
+                logger.info(f"Unloading model after {MODEL_TIMEOUT} seconds of inactivity")
+                # Delete model and clear memory
+                del model
+                model = None
+                # Clear CUDA cache
+                if USE_GPU:
+                    torch.cuda.empty_cache()
+                gc.collect()
+                logger.info("Model unloaded and memory cleared")
 
 def preprocess_image(image_bytes):
     """Preprocess the image for the model."""
@@ -328,7 +374,9 @@ async def root():
         "description": "Convolutional Artifact Detection for DeepFakes Module",
         "backbone": MODEL_BACKBONE,
         "device": DEVICE,
-        "gpu_available": torch.cuda.is_available()
+        "gpu_available": torch.cuda.is_available(),
+        "model_loaded": model is not None,
+        "lazy_loading": not PRELOAD_MODEL
     }
 
 @app.get("/health")
@@ -336,12 +384,25 @@ async def health():
     """Health check endpoint."""
     global model
     
-    if model is None:
-        model_status = load_model()
-        if not model_status:
-            return {"status": "loading", "message": "Model is being loaded", "device": DEVICE}
-    
-    return {"status": "healthy", "device": DEVICE}
+    # For health check, we don't need to load the model
+    # Just check if files exist
+    try:
+        # Check if weights file exists
+        model_path = find_model_weights()
+        model_file_exists = os.path.exists(model_path)
+        
+        return {
+            "status": "healthy" if model_file_exists else "missing_weights",
+            "device": DEVICE,
+            "model_loaded": model is not None,
+            "lazy_loading": not PRELOAD_MODEL
+        }
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": str(e),
+            "device": DEVICE
+        }
 
 @app.post("/predict")
 async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
@@ -354,15 +415,21 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
     try:
         # Make sure model is loaded
         if model is None:
-            success = load_model()
-            if not success:
-                raise HTTPException(status_code=500, detail="Failed to load model")
+            model = load_model()
+        else:
+            # Update timestamp if already loaded
+            global last_used_time
+            last_used_time = time.time()
             
         # Decode base64 image
         image_bytes = base64.b64decode(input_data.image)
         
         # Start timing
         start_time = time.time()
+        
+        # Optimize memory during inference
+        if USE_GPU:
+            torch.cuda.empty_cache()
         
         # Preprocess image
         img_tensor = preprocess_image(image_bytes)
@@ -386,6 +453,9 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
         
         logger.info(f"Inference completed in {inference_time:.4f} seconds. Predicted class: {prediction_class}, Probability: {fake_probability:.4f}")
         
+        # Schedule unloading after timeout - run in background
+        threading.Timer(5.0, unload_model_if_idle).start()
+        
         # Return standardized format matching other models
         return {
             "model": "caddm",
@@ -404,8 +474,16 @@ async def predict_image(input_data: ImageInput) -> Dict[str, Any]:
 
 @app.on_event("startup")
 async def startup_event():
-    """Load model on startup."""
-    load_model()
+    """Load model on startup only if PRELOAD_MODEL is true."""
+    if PRELOAD_MODEL:
+        logger.info("Preloading model at startup (PRELOAD_MODEL=true)")
+        try:
+            load_model()
+        except Exception as e:
+            logger.error(f"Preloading failed: {str(e)}")
+            # Don't raise exception - allow service to start anyway
+    else:
+        logger.info("Model will be loaded on first request (PRELOAD_MODEL=false)")
 
 if __name__ == "__main__":
     # Run the API server
