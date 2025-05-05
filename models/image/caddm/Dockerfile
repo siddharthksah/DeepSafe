@@ -20,6 +20,13 @@ RUN mkdir -p /app/backbones/efficientnet_pytorch
 # Clone the repository for the model code
 RUN git clone https://github.com/megvii-research/CADDM.git caddm
 
+# Create directory for efficientnet weights
+RUN mkdir -p /data/efficientnet
+
+# Download the EfficientNet weights
+RUN wget -O /data/efficientnet/efficientnet-b4-6ed6700e.pth \
+    https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b4-6ed6700e.pth
+
 # Download model weights (using gdown for Google Drive)
 RUN pip install --no-cache-dir gdown
 RUN mkdir -p /app/checkpoints
