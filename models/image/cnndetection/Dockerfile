@@ -23,12 +23,12 @@ RUN mkdir -p cnndetection/weights && \
     https://www.dropbox.com/s/2g2jagq2jn1fd0i/blur_jpg_prob0.5.pth?dl=1
 
 # Set environment variables
-ENV MODEL_PORT=5000
+ENV MODEL_PORT=5008
 ENV USE_GPU=true
 ENV MODEL_PATH="cnndetection/weights/blur_jpg_prob0.5.pth"
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5008
 
 # Run the application
 CMD ["python", "app.py"]

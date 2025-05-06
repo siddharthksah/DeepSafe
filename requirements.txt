@@ -1,0 +1,4 @@
+torch
+pillow
+requests
+rich

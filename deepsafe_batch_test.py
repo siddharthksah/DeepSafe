@@ -30,7 +30,7 @@ console = Console()
 
 # Model endpoints configuration
 MODEL_ENDPOINTS = {
-    "cnndetection": "http://localhost:5000/predict",
+    "cnndetection": "http://localhost:5008/predict",
     "ganimagedetection": "http://localhost:5001/predict",
     "universalfakedetect": "http://localhost:5002/predict",
     "hifi_ifdl": "http://localhost:5003/predict",

@@ -68,7 +68,7 @@ This project provides a complete solution for deepfake detection with:
 4. Access the application:
    - Web UI: http://localhost:3000
    - API: http://localhost:8000
-   - Model Service: http://localhost:5000
+   - Model Service: http://localhost:5008
 
 ## Usage
 

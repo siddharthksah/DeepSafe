@@ -35,7 +35,7 @@ def get_environment_variable(name: str, default: str) -> str:
 
 # Model endpoints configuration with validation
 MODEL_ENDPOINTS = {
-    "cnndetection": get_environment_variable("CNNDETECTION_URL", "http://cnndetection:5000/predict"),
+    "cnndetection": get_environment_variable("CNNDETECTION_URL", "http://cnndetection:5008/predict"),
     "ganimagedetection": get_environment_variable("GANIMAGEDETECTION_URL", "http://ganimagedetection:5001/predict"),
     "universalfakedetect": get_environment_variable("UNIVERSALFAKEDETECT_URL", "http://universalfakedetect:5002/predict"),
     "hifi_ifdl": get_environment_variable("HIFI_IFDL_URL", "http://hifi_ifdl:5003/predict"),

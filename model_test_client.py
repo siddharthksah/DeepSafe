@@ -29,7 +29,7 @@ console = Console()
 
 # Model endpoints configuration
 MODEL_ENDPOINTS = {
-    "cnndetection": "http://localhost:5000/predict",
+    "cnndetection": "http://localhost:5008/predict",
     "ganimagedetection": "http://localhost:5001/predict",
     "universalfakedetect": "http://localhost:5002/predict",
     "hifi_ifdl": "http://localhost:5003/predict",
@@ -307,10 +307,10 @@ if __name__ == "__main__":
         epilog="""
 Examples:
   # Test a specific model
-  ./model_test_client.py --image path/to/image.jpg --url http://localhost:5000/predict
+  ./model_test_client.py --image path/to/image.jpg --url http://localhost:5008/predict
   
   # Check health of a model
-  ./model_test_client.py --url http://localhost:5000/health --health
+  ./model_test_client.py --url http://localhost:5008/health --health
   
   # Test all models with health checks
   ./model_test_client.py --image path/to/image.jpg --all --health

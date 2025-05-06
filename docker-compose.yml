@@ -15,7 +15,7 @@ services:
       - caddm
       - faceforensics_plus_plus
     environment:
-      - CNNDETECTION_URL=http://cnndetection:5000/predict
+      - CNNDETECTION_URL=http://cnndetection:5008/predict
       - GANIMAGEDETECTION_URL=http://ganimagedetection:5001/predict
       - UNIVERSALFAKEDETECT_URL=http://universalfakedetect:5002/predict
       - HIFI_IFDL_URL=http://hifi_ifdl:5003/predict
@@ -30,18 +30,18 @@ services:
     build: ./models/image/cnndetection
     container_name: deepsafe-cnndetection
     ports:
-      - "5000:5000"
+      - "5008:5008"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
-      - MODEL_PORT=5000
+      - MODEL_PORT=5008
       - MODEL_PATH=cnndetection/weights/blur_jpg_prob0.5.pth
       - PRELOAD_MODEL=false
       - MODEL_TIMEOUT=600
@@ -54,13 +54,13 @@ services:
     ports:
       - "5001:5001"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5001
@@ -75,13 +75,13 @@ services:
     ports:
       - "5002:5002"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5002
@@ -96,13 +96,13 @@ services:
     ports:
       - "5003:5003"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5003
@@ -117,13 +117,13 @@ services:
     ports:
       - "5004:5004"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5004
@@ -138,13 +138,13 @@ services:
     ports:
       - "5005:5005"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5005
@@ -159,13 +159,13 @@ services:
     ports:
       - "5006:5006"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5006
@@ -181,13 +181,13 @@ services:
     ports:
       - "5007:5007"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     environment:
       - USE_GPU=false
       - MODEL_PORT=5007
