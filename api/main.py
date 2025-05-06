@@ -1,6 +1,6 @@
 """
 DeepSafe API Server
-A robust, production-ready API for deepfake detection using multiple models.
+A robust, production-ready API for deepfake detection using multiple models running on CPU.
 """
 import os
 import time
@@ -51,13 +51,13 @@ HEALTH_ENDPOINTS = {model: endpoint.replace("/predict", "/health") for model, en
 # Constants
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
 SUPPORTED_FORMATS = ["image/jpeg", "image/png", "image/webp"]
-DEFAULT_TIMEOUT = 60  # seconds
+DEFAULT_TIMEOUT = 1200  # seconds - increased for CPU processing
 MAX_RETRIES = 2
 
 # Initialize FastAPI app with more metadata
 app = FastAPI(
     title="DeepSafe API",
-    description="Enterprise-grade API for deepfake detection using an ensemble of state-of-the-art models",
+    description="Enterprise-grade API for deepfake detection using an ensemble of state-of-the-art models running on CPU",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -143,7 +143,7 @@ def check_model_health(model_name: str) -> Dict[str, Any]:
     try:
         response = requests.get(
             HEALTH_ENDPOINTS[model_name], 
-            timeout=10
+            timeout=600
         )
         if response.status_code == 200:
             return response.json()
@@ -258,11 +258,12 @@ async def root():
     """Root endpoint providing API information"""
     return {
         "name": "DeepSafe API",
-        "description": "Enterprise-grade API for deepfake detection",
+        "description": "Enterprise-grade API for deepfake detection using CPU-based models",
         "version": "1.0.0",
         "available_models": list(MODEL_ENDPOINTS.keys()),
         "ensemble_methods": ["voting", "average"],
-        "documentation": "/docs"
+        "documentation": "/docs",
+        "processing_mode": "CPU-only"
     }
 
 @app.get("/health", tags=["System"])
@@ -282,14 +283,16 @@ async def health():
     
     return {
         "status": "healthy" if all_healthy else "degraded",
-        "models": status
+        "models": status,
+        "processing_mode": "CPU-only"
     }
 
 @app.post("/predict", tags=["Detection"])
 async def predict_image(input_data: ImageInput):
     """
-    Detect if an image is a deepfake using multiple models.
+    Detect if an image is a deepfake using multiple models running on CPU.
     Returns individual model results and an ensemble verdict.
+    Note: CPU processing may take longer than GPU-based processing.
     """
     request_id = generate_request_id()
     logger.info(f"Processing prediction request {request_id}")
@@ -341,11 +344,13 @@ async def predict_image(input_data: ImageInput):
         "total_votes": fake_votes + real_votes,
         "inference_time": float(inference_time),
         "ensemble_method": input_data.ensemble_method,
-        "model_results": results
+        "model_results": results,
+        "processing_mode": "CPU-only"
     }
     
     logger.info(f"Request {request_id} completed in {inference_time:.2f}s with verdict: {verdict}")
     return response
+
 
 @app.post("/detect", tags=["Web UI"])
 async def detect(
@@ -357,6 +362,7 @@ async def detect(
     """
     Form-based endpoint for file uploads from web UI.
     Provides a simplified response format for frontend integration.
+    Note: CPU processing may take longer than GPU-based processing.
     """
     request_id = generate_request_id()
     logger.info(f"Processing web UI detection request {request_id}")
@@ -446,7 +452,8 @@ async def detect(
             "model_count": result["total_votes"],
             "fake_votes": result["fake_votes"],
             "real_votes": result["real_votes"],
-            "response_time": result["inference_time"]
+            "response_time": result["inference_time"],
+            "processing_mode": "CPU-only"
         }
         
     except HTTPException:
@@ -458,7 +465,7 @@ async def detect(
 if __name__ == "__main__":
     # Run the API server
     port = int(os.environ.get("PORT", 8000))
-    logger.info(f"Starting DeepSafe API server on port {port}")
+    logger.info(f"Starting DeepSafe API server on port {port} in CPU-only mode")
     
     # Uvicorn configuration
     uvicorn.run(

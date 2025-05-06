@@ -40,11 +40,11 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5000
       - MODEL_PATH=cnndetection/weights/blur_jpg_prob0.5.pth
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -62,10 +62,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5001
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -83,10 +83,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5002
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -104,10 +104,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5003
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -125,10 +125,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5004
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -146,10 +146,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5005
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -167,11 +167,11 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5006
       - MODEL_BACKBONE=efficientnet-b4
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 
@@ -189,10 +189,10 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      - USE_GPU=true
+      - USE_GPU=false
       - MODEL_PORT=5007
       - PRELOAD_MODEL=false
-      - MODEL_TIMEOUT=300
+      - MODEL_TIMEOUT=600
     networks:
       - deepsafe-network
 

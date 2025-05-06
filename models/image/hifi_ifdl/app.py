@@ -49,10 +49,14 @@ app.add_middleware(
 )
 
 # --- Configuration ---
-USE_GPU_ENV = os.environ.get('USE_GPU', 'true').lower() == 'true'
-DEVICE = 'cuda' if USE_GPU_ENV and torch.cuda.is_available() else 'cpu'
+# USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
+# DEVICE = 'cuda' if USE_GPU and torch.cuda.is_available() else 'cpu'
+# Environment variables
+# Environment variables
+USE_GPU = False  # Force CPU usage
+DEVICE = torch.device('cpu')  # Always use CPU
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 HRNET_WEIGHT_PATH = os.environ.get("HRNET_WEIGHT_PATH", "/app/weights/750001.pth")
 NLCD_WEIGHT_PATH = os.environ.get("NLCD_WEIGHT_PATH", "/app/weights/NLCDetection.pth")
 
@@ -119,7 +123,7 @@ def load_model():
             last_used_time = time.time()
             
             # Clear CUDA cache to free up memory
-            if USE_GPU_ENV and torch.cuda.is_available():
+            if USE_GPU and torch.cuda.is_available():
                 torch.cuda.empty_cache()
             gc.collect()
             
@@ -148,7 +152,7 @@ def unload_model_if_idle():
                 del model
                 model = None
                 # Clear CUDA cache
-                if USE_GPU_ENV and torch.cuda.is_available():
+                if USE_GPU and torch.cuda.is_available():
                     torch.cuda.empty_cache()
                 gc.collect()
                 logger.info("Model unloaded and memory cleared")
@@ -255,7 +259,7 @@ async def predict(input_data: ImageInput):
         logger.info(f"[Request #{request_id}] Processing image of size {len(image_bytes)} bytes")
 
         # Optimize memory during inference
-        if USE_GPU_ENV and torch.cuda.is_available():
+        if USE_GPU and torch.cuda.is_available():
             torch.cuda.empty_cache()
 
         # Preprocess image

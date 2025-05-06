@@ -51,10 +51,12 @@ app.add_middleware(
 
 # Model paths and settings
 MODEL_PATH = os.environ.get("MODEL_PATH", "ganimagedetection/weights/gandetection_resnet50nodown_stylegan2.pth")
-USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
-DEVICE = 'cuda:0' if USE_GPU else 'cpu'
+# USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
+# DEVICE = 'cuda:0' if USE_GPU else 'cpu'
+USE_GPU = False
+DEVICE = torch.device('cpu')  # Always use CPU
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "5"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 # Define request model - update to match UniversalFakeDetect
 class ImageInput(BaseModel):

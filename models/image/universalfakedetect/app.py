@@ -35,13 +35,15 @@ app.add_middleware(
 )
 
 # Environment variables
-USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
+# USE_GPU = os.environ.get('USE_GPU', 'true').lower() == 'true'
+USE_GPU = False
+DEVICE = torch.device('cpu')  # Always use CPU
 MODEL_PORT = int(os.environ.get('MODEL_PORT', 5002))
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 # Check if CUDA is available
-DEVICE = torch.device('cuda' if torch.cuda.is_available() and USE_GPU else 'cpu')
+# DEVICE = torch.device('cuda' if torch.cuda.is_available() and USE_GPU else 'cpu')
 logger.info(f"Using device: {DEVICE}")
 logger.info(f"CUDA available: {torch.cuda.is_available()}")
 if torch.cuda.is_available():

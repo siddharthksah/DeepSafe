@@ -85,10 +85,13 @@ else:  # Default to ensemble
     DEFAULT_MODEL_PATH = None
     MODEL_TYPE = "ensemble"
 
-USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
-DEVICE = 'cuda' if USE_GPU else 'cpu'
+# USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
+# DEVICE = 'cuda' if USE_GPU else 'cpu'
+# Environment variables
+USE_GPU = False  # Force CPU usage
+DEVICE = torch.device('cpu')  # Always use CPU
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 if MODEL_TYPE == "ensemble":
     logger.info(f"Using ensemble of all models")

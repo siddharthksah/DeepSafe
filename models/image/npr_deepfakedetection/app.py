@@ -55,7 +55,7 @@ MODEL_PATH = os.environ.get("MODEL_PATH", "npr_deepfakedetection/weights/NPR.pth
 USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
 DEVICE = 'cuda' if USE_GPU else 'cpu'
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "300"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 # Define request model - update to match UniversalFakeDetect and other models
 class ImageInput(BaseModel):

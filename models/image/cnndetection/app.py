@@ -52,10 +52,12 @@ app.add_middleware(
 
 # Model paths and settings
 MODEL_PATH = os.environ.get("MODEL_PATH", "cnndetection/weights/blur_jpg_prob0.5.pth")
-USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
-DEVICE = 'cuda' if USE_GPU else 'cpu'
+# USE_GPU = torch.cuda.is_available() and not os.environ.get("USE_CPU", False)
+# DEVICE = 'cuda' if USE_GPU else 'cpu'
+USE_GPU = False
+DEVICE = torch.device('cpu')  # Always use CPU
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "5"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 # Define request model - update to match UniversalFakeDetect
 class ImageInput(BaseModel):

@@ -17,11 +17,13 @@ import json
 import argparse
 import os
 import sys
+import gc
 from typing import Optional, Dict, List
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress
+import torch
 
 console = Console()
 
@@ -39,6 +41,15 @@ MODEL_ENDPOINTS = {
 
 # Health endpoints
 HEALTH_ENDPOINTS = {model: endpoint.replace("/predict", "/health") for model, endpoint in MODEL_ENDPOINTS.items()}
+
+# Force CPU usage
+USE_GPU = False
+DEVICE = torch.device('cpu')
+
+def clear_memory():
+    """Clear memory between model tests."""
+    # Use garbage collection only
+    gc.collect()
 
 def encode_image(image_path: str) -> str:
     """Read an image file and encode it as base64."""
@@ -72,6 +83,9 @@ def test_model(image_path: str, api_url: str, threshold: float = 0.5) -> Optiona
     except:
         pass
 
+    # Clear memory before processing
+    clear_memory()
+
     try:
         # Check if the file exists
         if not os.path.exists(image_path):
@@ -90,14 +104,15 @@ def test_model(image_path: str, api_url: str, threshold: float = 0.5) -> Optiona
 
         # Make request with timing
         console.print("Sending request...")
+        console.print("[yellow]Note: CPU processing may take longer than GPU[/yellow]")
         
         with Progress() as progress:
             task = progress.add_task("[cyan]Processing...", total=None)
             
             start_time = time.time()
             
-            # Use longer timeout for potentially slower models
-            timeout = 120 if "universal" in model_name.lower() or "hifi" in model_name.lower() else 60
+            # Increase timeout for CPU processing
+            timeout = 1200  # Increased timeout for CPU processing
             
             try:
                 response = requests.post(api_url, json=payload, timeout=timeout)
@@ -134,24 +149,35 @@ def test_model(image_path: str, api_url: str, threshold: float = 0.5) -> Optiona
                     result["model_name"] = model_name
                     result["total_request_time"] = total_time
                     
+                    # Clear memory after successful processing
+                    clear_memory()
+                    
                     return result
                 else:
                     console.print(f"[bold red]Error:[/bold red] {response.text}")
+                    # Clear memory after failure
+                    clear_memory()
                     return None
                 
             except requests.exceptions.Timeout:
                 progress.update(task, completed=100)
                 console.print(f"[bold red]Error:[/bold red] Request timed out after {timeout} seconds. The model may still be loading or processing took too long.")
+                # Clear memory after timeout
+                clear_memory()
                 return None
             
     except requests.exceptions.ConnectionError:
         console.print(f"[bold red]Error:[/bold red] Could not connect to the API at {api_url}. Ensure the service is running.")
+        # Clear memory after connection error
+        clear_memory()
         return None
     except Exception as e:
         console.print(f"[bold red]An unexpected error occurred:[/bold red] {str(e)}")
+        # Clear memory after any exception
+        clear_memory()
         return None
 
-def test_model_health(api_url: str, retry: bool = True) -> Optional[dict]:
+def test_model_health(api_url: str, retry: bool = True, max_wait_time: int = 600) -> Optional[dict]:
     """Test the health endpoint of a model service with optional retry for loading state."""
     model_name = "unknown"
     base_url_predict = api_url  # Assume input is predict URL
@@ -174,13 +200,13 @@ def test_model_health(api_url: str, retry: bool = True) -> Optional[dict]:
     health_url = f"{base_url}/health"
     console.print(f"Health URL: {health_url}")
 
-    max_retries = 5 if retry else 1
-    retry_delay = 10  # seconds
+    max_retries = 10 if retry else 1
+    retry_delay = 30  # seconds
 
     for attempt in range(max_retries):
         try:
             with console.status(f"[bold green]Checking health (Attempt {attempt+1}/{max_retries})..."):
-                response = requests.get(health_url, timeout=15)  # Increased timeout slightly
+                response = requests.get(health_url, timeout=600)  # Increased timeout slightly
             
             console.print(f"Health check attempt {attempt+1}/{max_retries} -> Status code: {response.status_code}")
 
@@ -276,7 +302,7 @@ def test_all_models(image_path: str, check_health: bool = True, threshold: float
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='DeepSafe Model Test Client - Diagnostic tool for testing individual deepfake detection models',
+        description='DeepSafe Model Test Client - Diagnostic tool for testing individual deepfake detection models (CPU mode)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -323,7 +349,7 @@ Examples:
 
     if args.all:
         # Test all individual models
-        console.print("[bold]Running tests on all DeepSafe models[/bold]")
+        console.print("[bold]Running tests on all DeepSafe models (CPU mode)[/bold]")
         results = test_all_models(args.image, args.health, args.threshold)
         all_results = results
 

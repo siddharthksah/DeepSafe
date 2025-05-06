@@ -34,4 +34,4 @@ ENV TIMEOUT=600
 EXPOSE 5002
 
 # Run the application with gunicorn for better timeout handling
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5002", "--timeout-keep-alive", "300"]
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5002", "--timeout-keep-alive", "600"]

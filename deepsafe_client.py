@@ -3,7 +3,7 @@
 DeepSafe Client - Official client library for the DeepSafe Deepfake Detection API
 
 This client provides a simple interface for detecting deepfakes using the 
-DeepSafe ensemble of state-of-the-art detection models.
+DeepSafe ensemble of state-of-the-art detection models running on CPU.
 
 Usage:
   ./deepsafe_client.py health [--api URL]
@@ -41,7 +41,7 @@ class DeepSafeClient:
         
         with console.status("[bold green]Checking DeepSafe system health..."):
             try:
-                response = requests.get(url, timeout=10)
+                response = requests.get(url, timeout=600)
                 
                 if response.status_code == 200:
                     return response.json()
@@ -107,7 +107,7 @@ class DeepSafeClient:
             payload["models"] = models
         
         # Make request
-        with console.status(f"[bold green]Sending request to DeepSafe API - {self.api_url}/predict..."):
+        with console.status(f"[bold green]Sending request to DeepSafe API - {self.api_url}/predict...\nPlease note that CPU processing may take longer than GPU"):
             start_time = time.time()
             
             try:
@@ -115,7 +115,7 @@ class DeepSafeClient:
                     f"{self.api_url}/predict",
                     headers=self.base_headers,
                     json=payload,
-                    timeout=120  # Increased timeout for initial model loading
+                    timeout=1200  # Increased timeout for CPU processing
                 )
                 
                 total_time = time.time() - start_time
@@ -178,7 +178,7 @@ class DeepSafeClient:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DeepSafe API Client for Deepfake Detection",
+        description="DeepSafe API Client for CPU-based Deepfake Detection",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -268,7 +268,7 @@ Examples:
                 models = [m.strip() for m in args.models.split(",")]
             
             # Make detection request
-            console.print(f"[bold]DeepSafe Analysis[/bold]: Running deepfake detection")
+            console.print(f"[bold]DeepSafe Analysis[/bold]: Running CPU-based deepfake detection")
             
             results = client.detect_deepfake(
                 image_path=args.image,

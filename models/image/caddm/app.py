@@ -61,10 +61,12 @@ if MODEL_BACKBONE not in available_backbones:
     MODEL_BACKBONE = "resnet34"
 
 CHECKPOINTS_DIR = "/app/checkpoints"
-USE_GPU = torch.cuda.is_available() and os.environ.get("USE_CPU", "false").lower() != "true"
-DEVICE = 'cuda' if USE_GPU else 'cpu'
+# USE_GPU = torch.cuda.is_available() and os.environ.get("USE_CPU", "false").lower() != "true"
+USE_GPU = False
+# DEVICE = 'cuda' if USE_GPU else 'cpu'
+DEVICE = torch.device('cpu')  # Always use CPU
 PRELOAD_MODEL = os.environ.get("PRELOAD_MODEL", "false").lower() == "true"
-MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "5"))  # Seconds to keep model loaded
+MODEL_TIMEOUT = int(os.environ.get("MODEL_TIMEOUT", "600"))  # Seconds to keep model loaded
 
 # Define config for test
 CONFIG = {

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-DeepSafe Batch Testing Tool
+DeepSafe Batch Testing Tool - Optimized for CPU-only processing
 
 This script runs all deepfake detection models on all images in a specified directory
-and generates a comprehensive report with detection results and performance metrics.
+sequentially, with proper memory management to optimize CPU performance.
 
 Usage:
-  ./deepsafe_batch_test.py --assets FOLDER [--output FILE] [--threshold NUM] [--method METHOD] [--individual]
+  ./deepsafe_batch_test.py --assets FOLDER [--output FILE] [--threshold NUM] [--method METHOD]
 """
 
 import requests
@@ -16,6 +16,8 @@ import time
 import os
 import json
 import sys
+import gc
+import torch
 from typing import Dict, Any, List
 from datetime import datetime
 import glob
@@ -38,14 +40,39 @@ MODEL_ENDPOINTS = {
     "faceforensics_plus_plus": "http://localhost:5007/predict",
 }
 
+# Health endpoints
+HEALTH_ENDPOINTS = {model: endpoint.replace("/predict", "/health") for model, endpoint in MODEL_ENDPOINTS.items()}
+
 # Main API endpoint
 MAIN_API_URL = "http://localhost:8000/predict"
+
+# Force CPU usage
+USE_GPU = False  # Force CPU usage
+DEVICE = torch.device('cpu')  # Always use CPU
 
 def encode_image(image_path: str) -> str:
     """Encode an image file to base64."""
     with open(image_path, "rb") as f:
         image_bytes = f.read()
     return base64.b64encode(image_bytes).decode('utf-8')
+
+def clear_memory():
+    """Clear memory between model tests."""
+    # No GPU memory management needed, just garbage collection
+    gc.collect()
+
+def check_model_health(model_name: str, api_url: str) -> Dict[str, Any]:
+    """Check if a model is healthy and ready for prediction."""
+    health_url = api_url.replace("/predict", "/health")
+    try:
+        response = requests.get(health_url, timeout=30)
+        if response.status_code == 200:
+            health_data = response.json()
+            return health_data
+        else:
+            return {"status": "error", "error": f"Status code: {response.status_code}"}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
 def test_with_api(image_path: str, threshold: float = 0.5, ensemble_method: str = "voting") -> Dict[str, Any]:
     """Test image with the main DeepSafe API."""
@@ -56,6 +83,9 @@ def test_with_api(image_path: str, threshold: float = 0.5, ensemble_method: str 
         img_width, img_height = img.size
         img_format = img.format
         img_size = os.path.getsize(image_path) / 1024  # KB
+        
+        # Clear memory before processing
+        clear_memory()
         
         # Encode image
         base64_image = encode_image(image_path)
@@ -74,7 +104,7 @@ def test_with_api(image_path: str, threshold: float = 0.5, ensemble_method: str 
             MAIN_API_URL,
             headers={"Content-Type": "application/json"},
             json=payload,
-            timeout=240  # Increased timeout for initial model loading
+            timeout=600  # Increased timeout for CPU processing
         )
         
         total_time = time.time() - start_time
@@ -90,14 +120,21 @@ def test_with_api(image_path: str, threshold: float = 0.5, ensemble_method: str 
             result['image_format'] = img_format
             result['client_request_time'] = total_time
             
+            # Clear memory after successful prediction
+            clear_memory()
+            
             return result
         else:
+            # Clear memory after failed API request
+            clear_memory()
             return {
                 "error": f"API request failed: {response.status_code}, {response.text}",
                 "image_path": image_path,
                 "image_name": os.path.basename(image_path)
             }
     except Exception as e:
+        # Clear memory after exception
+        clear_memory()
         return {
             "error": str(e),
             "image_path": image_path,
@@ -107,6 +144,9 @@ def test_with_api(image_path: str, threshold: float = 0.5, ensemble_method: str 
 def test_with_individual_model(image_path: str, model_name: str, api_url: str, threshold: float = 0.5) -> Dict[str, Any]:
     """Test image with an individual model endpoint."""
     try:
+        # Clear memory before encoding the image
+        clear_memory()
+        
         # Encode image
         base64_image = encode_image(image_path)
         
@@ -119,9 +159,10 @@ def test_with_individual_model(image_path: str, model_name: str, api_url: str, t
         # Make request
         start_time = time.time()
         
-        # Use longer timeout for potentially slower models
-        timeout = 120 if "universal" in model_name.lower() or "hifi" in model_name.lower() else 60
+        # Use longer timeout for potentially slower models on CPU
+        timeout = 600 if "universal" in model_name.lower() or "hifi" in model_name.lower() else 600
         
+        console.print(f"[bold cyan]Testing {os.path.basename(image_path)} with {model_name}...[/bold cyan]")
         response = requests.post(
             api_url, 
             json=payload, 
@@ -139,8 +180,14 @@ def test_with_individual_model(image_path: str, model_name: str, api_url: str, t
             result["image_path"] = image_path
             result["image_name"] = os.path.basename(image_path)
             
+            # Clear memory after successful prediction
+            clear_memory()
+            
             return result
         else:
+            console.print(f"[bold red]Error with {model_name}:[/bold red] Status code {response.status_code}")
+            # Clear memory even after failed prediction
+            clear_memory()
             return {
                 "error": f"API request failed: {response.status_code}, {response.text}",
                 "model_name": model_name,
@@ -148,6 +195,9 @@ def test_with_individual_model(image_path: str, model_name: str, api_url: str, t
                 "image_name": os.path.basename(image_path)
             }
     except Exception as e:
+        console.print(f"[bold red]Error with {model_name}:[/bold red] {str(e)}")
+        # Clear memory even after exception
+        clear_memory()
         return {
             "error": str(e),
             "model_name": model_name,
@@ -214,6 +264,46 @@ def print_ensemble_results_table(results: List[Dict[str, Any]]) -> None:
         )
     
     console.print(table)
+
+def process_images_sequentially(image_files: List[str], threshold: float = 0.5) -> List[Dict[str, Dict[str, Any]]]:
+    """Process all images with all models sequentially."""
+    results = []
+    
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn()
+    ) as progress:
+        # Create a task for the overall progress
+        main_task = progress.add_task("[cyan]Processing images...", total=len(image_files) * len(MODEL_ENDPOINTS))
+        
+        # Process each image
+        for img_idx, image_path in enumerate(image_files):
+            img_name = os.path.basename(image_path)
+            img_result = {"image_path": image_path, "image_name": img_name}
+            
+            # Process each model for this image
+            for model_name, api_url in MODEL_ENDPOINTS.items():
+                progress.update(main_task, description=f"[cyan]Testing {img_name} with {model_name} ({img_idx+1}/{len(image_files)})")
+                
+                # Clear memory before testing each model
+                clear_memory()
+                
+                # Test with this model
+                model_result = test_with_individual_model(image_path, model_name, api_url, threshold)
+                img_result[model_name] = model_result
+                
+                # Update progress
+                progress.update(main_task, advance=1)
+                
+                # Extra sleep to ensure full cleanup
+                time.sleep(1)
+            
+            results.append(img_result)
+    
+    return results
 
 def print_individual_model_table(results: List[Dict[str, Dict[str, Any]]]) -> None:
     """Print a table of individual model results for all images."""
@@ -341,18 +431,18 @@ def print_model_summary_table(results: List[Dict[str, Dict[str, Any]]]) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DeepSafe Batch Testing Tool",
+        description="DeepSafe Batch Testing Tool - Optimized for CPU processing",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Test all images in the assets folder using the ensemble API
+  # Test all images in the assets folder sequentially
   ./deepsafe_batch_test.py --assets ./assets
   
-  # Test with individual models and save results
-  ./deepsafe_batch_test.py --assets ./assets --individual --output results.json
+  # Change threshold and save results
+  ./deepsafe_batch_test.py --assets ./assets --threshold 0.7 --output results.json
   
-  # Change threshold and ensemble method
-  ./deepsafe_batch_test.py --assets ./assets --threshold 0.7 --method average
+  # Use API for ensemble approach (not individual testing)
+  ./deepsafe_batch_test.py --assets ./assets --api-only --method average
   """
     )
     
@@ -360,7 +450,7 @@ Examples:
     parser.add_argument('--output', type=str, help='Save results to JSON file')
     parser.add_argument('--threshold', type=float, default=0.5, help='Classification threshold (0.0 to 1.0)')
     parser.add_argument('--method', type=str, default="voting", choices=["voting", "average"], help='Ensemble method')
-    parser.add_argument('--individual', action='store_true', help='Also test individual models (not just the ensemble API)')
+    parser.add_argument('--api-only', action='store_true', help='Only use the main API for ensemble testing (not individual models)')
     
     args = parser.parse_args()
     
@@ -378,94 +468,90 @@ Examples:
     
     console.print(f"[bold]Found {len(image_files)} images in {args.assets}[/bold]")
     
-    # Process all images
-    ensemble_results = []
-    individual_results = []
-    
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TimeElapsedColumn()
-    ) as progress:
-        # Test with DeepSafe API
-        api_task = progress.add_task(f"[cyan]Testing images with DeepSafe API...", total=len(image_files))
+    if args.api_only:
+        # Process all images with the main API
+        console.print(f"[bold]Using main API for ensemble testing with method: {args.method}[/bold]")
+        ensemble_results = []
         
-        for i, image_path in enumerate(image_files):
-            img_name = os.path.basename(image_path)
-            progress.update(api_task, description=f"[cyan]Testing with API: {img_name} ({i+1}/{len(image_files)})")
-            
-            try:
-                result = test_with_api(image_path, args.threshold, args.method)
-                ensemble_results.append(result)
-            except Exception as e:
-                console.print(f"[bold red]Error processing {img_name}:[/bold red] {str(e)}")
-                ensemble_results.append({
-                    "error": str(e),
-                    "image_path": image_path,
-                    "image_name": img_name
-                })
-            
-            progress.update(api_task, advance=1)
-        
-        # Test with individual models if requested
-        if args.individual:
-            individual_task = progress.add_task(f"[cyan]Testing with individual models...", total=len(image_files) * len(MODEL_ENDPOINTS))
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn()
+        ) as progress:
+            # Create a task for the API progress
+            api_task = progress.add_task(f"[cyan]Testing images with DeepSafe API...", total=len(image_files))
             
             for i, image_path in enumerate(image_files):
                 img_name = os.path.basename(image_path)
-                img_result = {"image_path": image_path, "image_name": img_name}
+                progress.update(api_task, description=f"[cyan]Testing with API: {img_name} ({i+1}/{len(image_files)})")
                 
-                for model_name, api_url in MODEL_ENDPOINTS.items():
-                    progress.update(individual_task, description=f"[cyan]Testing {img_name} with {model_name} ({i+1}/{len(image_files)})")
-                    
-                    try:
-                        result = test_with_individual_model(image_path, model_name, api_url, args.threshold)
-                        img_result[model_name] = result
-                    except Exception as e:
-                        console.print(f"[bold red]Error with {model_name} on {img_name}:[/bold red] {str(e)}")
-                        img_result[model_name] = {
-                            "error": str(e),
-                            "model_name": model_name,
-                            "image_path": image_path,
-                            "image_name": img_name
-                        }
-                    
-                    progress.update(individual_task, advance=1)
+                try:
+                    result = test_with_api(image_path, args.threshold, args.method)
+                    ensemble_results.append(result)
+                except Exception as e:
+                    console.print(f"[bold red]Error processing {img_name}:[/bold red] {str(e)}")
+                    ensemble_results.append({
+                        "error": str(e),
+                        "image_path": image_path,
+                        "image_name": img_name
+                    })
                 
-                individual_results.append(img_result)
-    
-    # Print results tables
-    console.print("\n[bold]Ensemble Results:[/bold]")
-    print_ensemble_results_table(ensemble_results)
-    
-    if args.individual:
+                progress.update(api_task, advance=1)
+                
+                # Extra sleep to ensure full memory cleanup between runs
+                time.sleep(1)
+            
+        # Print ensemble results
+        console.print("\n[bold]Ensemble Results:[/bold]")
+        print_ensemble_results_table(ensemble_results)
+        
+        # Save results if requested
+        if args.output:
+            output_data = {
+                "timestamp": datetime.now().isoformat(),
+                "config": {
+                    "threshold": args.threshold,
+                    "ensemble_method": args.method,
+                    "image_count": len(image_files)
+                },
+                "ensemble_results": ensemble_results
+            }
+            
+            with open(args.output, 'w') as f:
+                json.dump(output_data, f, indent=2)
+            
+            console.print(f"\n[bold green]Results saved to {args.output}[/bold green]")
+    else:
+        # Process all images with all models sequentially
+        console.print("[bold]Testing all images with individual models sequentially[/bold]")
+        console.print("[bold]Running on CPU only - expect slower inference times[/bold]")
+        
+        individual_results = process_images_sequentially(image_files, args.threshold)
+        
+        # Print results
         console.print("\n[bold]Individual Model Results:[/bold]")
         print_individual_model_table(individual_results)
         
         console.print("\n[bold]Model Performance Summary:[/bold]")
         print_model_summary_table(individual_results)
-    
-    # Save results to file if requested
-    if args.output:
-        output_data = {
-            "timestamp": datetime.now().isoformat(),
-            "config": {
-                "threshold": args.threshold,
-                "ensemble_method": args.method,
-                "image_count": len(image_files)
-            },
-            "ensemble_results": ensemble_results
-        }
         
-        if args.individual:
-            output_data["individual_results"] = individual_results
-        
-        with open(args.output, 'w') as f:
-            json.dump(output_data, f, indent=2)
-        
-        console.print(f"\n[bold green]Results saved to {args.output}[/bold green]")
+        # Save results if requested
+        if args.output:
+            output_data = {
+                "timestamp": datetime.now().isoformat(),
+                "config": {
+                    "threshold": args.threshold,
+                    "image_count": len(image_files)
+                },
+                "individual_results": individual_results
+            }
+            
+            with open(args.output, 'w') as f:
+                json.dump(output_data, f, indent=2)
+            
+            console.print(f"\n[bold green]Results saved to {args.output}[/bold green]")
     
     console.print("\n[bold green]===== Batch Testing Complete =====[/bold green]")
 
