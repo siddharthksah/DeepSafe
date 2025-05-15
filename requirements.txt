@@ -2,3 +2,8 @@ torch
 pillow
 requests
 rich
+pandas
+scikit-learn
+numpy
+matplotlib
+seaborn

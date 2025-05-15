@@ -196,6 +196,21 @@ services:
     networks:
       - deepsafe-network
 
+  yermandy_clip_detection:
+    build: ./models/image/yermandy_clip_detection
+    container_name: deepsafe-yermandy-clip-detection
+    ports:
+      - "5009:5009" # Assuming MODEL_PORT in its app.py is 5009
+    restart: unless-stopped
+    environment:
+      - USE_GPU=false # Your project is CPU based
+      - MODEL_PORT=5009
+      - MODEL_PATH=model_code/weights/model.ckpt # Path inside the container
+      - PRELOAD_MODEL=false # Set to true if you want it to load on startup
+      - MODEL_TIMEOUT=600   # Only relevant if PRELOAD_MODEL is false
+    networks:
+      - deepsafe-network
+
   frontend:
     build: ./frontend
     container_name: deepsafe-frontend

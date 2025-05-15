@@ -24,6 +24,16 @@ ignore-tree-and-content:
   - ".venv/**"
   - "frontend/public/images/demo_image.jpg"
   - "frontend/public/favicon.png"
+  - "models/image/caddm/**"
+  - "models/image/dmimagedetection/**"
+  - "models/image/hifi_ifdl/**"
+  - "models/image/npr_deepfakedetection/**"
+  - "models/image/universalfakedetect/**"
+  - "experiments/**"
+  - "experiment_output/**"
+  - "experiment_output_0.3/**"
+  - "experiment_output_0.5/**"
+
 
 
 # Ignore files and directories for contents sections

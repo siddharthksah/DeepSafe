@@ -37,6 +37,7 @@ MODEL_ENDPOINTS = {
     "dmimagedetection": "http://localhost:5005/predict",
     "caddm": "http://localhost:5006/predict",
     "faceforensics_plus_plus": "http://localhost:5007/predict",
+    "yermandy_clip_detection": "http://localhost:5009/predict",
 }
 
 # Health endpoints

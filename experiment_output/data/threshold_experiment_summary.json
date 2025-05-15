@@ -1,0 +1,973 @@
+{
+    "experiment_metadata": {
+        "timestamp": "2025-05-06T19:04:08.141118",
+        "input_directory": "experiment",
+        "output_directory": "experiment_output",
+        "threshold_step": 0.1,
+        "tested_thresholds": [
+            0.1,
+            0.2,
+            0.30000000000000004,
+            0.4,
+            0.5,
+            0.6000000000000001,
+            0.7000000000000001,
+            0.8,
+            0.9
+        ],
+        "num_images": 200,
+        "fake_count": 100,
+        "real_count": 100
+    },
+    "metrics_per_threshold": {
+        "cnndetection": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }, 
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "ganimagedetection": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.505,
+                "precision": 0.6666666666666666,
+                "recall": 0.02,
+                "f1_score": 0.038834951456310676,
+                "specificity": 0.99
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "universalfakedetect": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.67,
+                "precision": 0.8148148148148148,
+                "recall": 0.44,
+                "f1_score": 0.5714285714285714,
+                "specificity": 0.9
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.625,
+                "precision": 0.8048780487804879,
+                "recall": 0.33,
+                "f1_score": 0.46808510638297873,
+                "specificity": 0.92
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.61,
+                "precision": 0.8055555555555556,
+                "recall": 0.29,
+                "f1_score": 0.4264705882352941,
+                "specificity": 0.93
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.6,
+                "precision": 0.8125,
+                "recall": 0.26,
+                "f1_score": 0.3939393939393939,
+                "specificity": 0.94
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.595,
+                "precision": 0.8275862068965517,
+                "recall": 0.24,
+                "f1_score": 0.37209302325581395,
+                "specificity": 0.95
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.58,
+                "precision": 0.8076923076923077,
+                "recall": 0.21,
+                "f1_score": 0.3333333333333333,
+                "specificity": 0.95
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.58,
+                "precision": 0.8333333333333334,
+                "recall": 0.2,
+                "f1_score": 0.3225806451612903,
+                "specificity": 0.96
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.58,
+                "precision": 0.8333333333333334,
+                "recall": 0.2,
+                "f1_score": 0.3225806451612903,
+                "specificity": 0.96
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.575,
+                "precision": 0.9411764705882353,
+                "recall": 0.16,
+                "f1_score": 0.27350427350427353,
+                "specificity": 0.99
+            }
+        ],
+        "hifi_ifdl": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.44,
+                "precision": 0.4647058823529412,
+                "recall": 0.79,
+                "f1_score": 0.5851851851851851,
+                "specificity": 0.09
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.45,
+                "precision": 0.3076923076923077,
+                "recall": 0.08,
+                "f1_score": 0.12698412698412698,
+                "specificity": 0.82
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "npr_deepfakedetection": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "dmimagedetection": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.59,
+                "precision": 0.640625,
+                "recall": 0.41,
+                "f1_score": 0.5,
+                "specificity": 0.77
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.535,
+                "precision": 0.5813953488372093,
+                "recall": 0.25,
+                "f1_score": 0.34965034965034963,
+                "specificity": 0.82
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.525,
+                "precision": 0.5757575757575758,
+                "recall": 0.19,
+                "f1_score": 0.2857142857142857,
+                "specificity": 0.86
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.535,
+                "precision": 0.64,
+                "recall": 0.16,
+                "f1_score": 0.256,
+                "specificity": 0.91
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.52,
+                "precision": 0.6111111111111112,
+                "recall": 0.11,
+                "f1_score": 0.1864406779661017,
+                "specificity": 0.93
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.525,
+                "precision": 0.6923076923076923,
+                "recall": 0.09,
+                "f1_score": 0.1592920353982301,
+                "specificity": 0.96
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.53,
+                "precision": 1.0,
+                "recall": 0.06,
+                "f1_score": 0.11320754716981132,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.51,
+                "precision": 1.0,
+                "recall": 0.02,
+                "f1_score": 0.0392156862745098,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "caddm": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.46,
+                "precision": 0.2777777777777778,
+                "recall": 0.05,
+                "f1_score": 0.0847457627118644,
+                "specificity": 0.87
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "faceforensics_plus_plus": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.505,
+                "precision": 0.5026178010471204,
+                "recall": 0.96,
+                "f1_score": 0.6597938144329897,
+                "specificity": 0.05
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 0.95,
+                "f1_score": 0.6551724137931034,
+                "specificity": 0.05
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 0.94,
+                "f1_score": 0.6527777777777778,
+                "specificity": 0.06
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.495,
+                "precision": 0.48717948717948717,
+                "recall": 0.19,
+                "f1_score": 0.2733812949640288,
+                "specificity": 0.8
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.505,
+                "precision": 0.5161290322580645,
+                "recall": 0.16,
+                "f1_score": 0.24427480916030533,
+                "specificity": 0.85
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.51,
+                "precision": 0.5384615384615384,
+                "recall": 0.14,
+                "f1_score": 0.2222222222222222,
+                "specificity": 0.88
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "ensemble_voting": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.55,
+                "precision": 0.5581395348837209,
+                "recall": 0.48,
+                "f1_score": 0.5161290322580645,
+                "specificity": 0.62
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.515,
+                "precision": 0.5882352941176471,
+                "recall": 0.1,
+                "f1_score": 0.17094017094017094,
+                "specificity": 0.93
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.505,
+                "precision": 1.0,
+                "recall": 0.01,
+                "f1_score": 0.019801980198019802,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ],
+        "ensemble_average": [
+            {
+                "threshold": 0.1,
+                "accuracy": 0.5,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "specificity": 0.0
+            },
+            {
+                "threshold": 0.2,
+                "accuracy": 0.575,
+                "precision": 0.6190476190476191,
+                "recall": 0.39,
+                "f1_score": 0.4785276073619632,
+                "specificity": 0.76
+            },
+            {
+                "threshold": 0.30000000000000004,
+                "accuracy": 0.53,
+                "precision": 0.875,
+                "recall": 0.07,
+                "f1_score": 0.12962962962962962,
+                "specificity": 0.99
+            },
+            {
+                "threshold": 0.4,
+                "accuracy": 0.505,
+                "precision": 1.0,
+                "recall": 0.01,
+                "f1_score": 0.019801980198019802,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.5,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.6000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.7000000000000001,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.8,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            },
+            {
+                "threshold": 0.9,
+                "accuracy": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "specificity": 1.0
+            }
+        ]
+    },
+    "best_performance_summary": [
+        {
+            "method": "universalfakedetect",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.7765,
+            "accuracy": 0.67,
+            "precision": 0.8148148148148148,
+            "recall": 0.44,
+            "f1_score": 0.5714285714285714,
+            "specificity": 0.9
+        },
+        {
+            "method": "ensemble_average",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6858,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        },
+        {
+            "method": "cnndetection",
+            "optimal_threshold_f1": 0.9,
+            "auc": 0.6343000000000002,
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0
+        },
+        {
+            "method": "ganimagedetection",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6158000000000001,
+            "accuracy": 0.505,
+            "precision": 0.6666666666666666,
+            "recall": 0.02,
+            "f1_score": 0.038834951456310676,
+            "specificity": 0.99
+        },
+        {
+            "method": "dmimagedetection",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6083000000000001,
+            "accuracy": 0.59,
+            "precision": 0.640625,
+            "recall": 0.41,
+            "f1_score": 0.5,
+            "specificity": 0.77
+        },
+        {
+            "method": "ensemble_voting",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.55255,
+            "accuracy": 0.55,
+            "precision": 0.5581395348837209,
+            "recall": 0.48,
+            "f1_score": 0.5161290322580645,
+            "specificity": 0.62
+        },
+        {
+            "method": "faceforensics_plus_plus",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.5396000000000001,
+            "accuracy": 0.505,
+            "precision": 0.5026178010471204,
+            "recall": 0.96,
+            "f1_score": 0.6597938144329897,
+            "specificity": 0.05
+        },
+        {
+            "method": "npr_deepfakedetection",
+            "optimal_threshold_f1": 0.9,
+            "auc": 0.47695,
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0
+        },
+        {
+            "method": "hifi_ifdl",
+            "optimal_threshold_f1": 0.30000000000000004,
+            "auc": 0.3769,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        },
+        {
+            "method": "caddm",
+            "optimal_threshold_f1": 0.30000000000000004,
+            "auc": 0.35800000000000004,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        }
+    ],
+    "performance_ranking_auc_f1": [
+        {
+            "method": "universalfakedetect",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.7765,
+            "accuracy": 0.67,
+            "precision": 0.8148148148148148,
+            "recall": 0.44,
+            "f1_score": 0.5714285714285714,
+            "specificity": 0.9
+        },
+        {
+            "method": "ensemble_average",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6858,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        },
+        {
+            "method": "cnndetection",
+            "optimal_threshold_f1": 0.9,
+            "auc": 0.6343000000000002,
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0
+        },
+        {
+            "method": "ganimagedetection",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6158000000000001,
+            "accuracy": 0.505,
+            "precision": 0.6666666666666666,
+            "recall": 0.02,
+            "f1_score": 0.038834951456310676,
+            "specificity": 0.99
+        },
+        {
+            "method": "dmimagedetection",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.6083000000000001,
+            "accuracy": 0.59,
+            "precision": 0.640625,
+            "recall": 0.41,
+            "f1_score": 0.5,
+            "specificity": 0.77
+        },
+        {
+            "method": "ensemble_voting",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.55255,
+            "accuracy": 0.55,
+            "precision": 0.5581395348837209,
+            "recall": 0.48,
+            "f1_score": 0.5161290322580645,
+            "specificity": 0.62
+        },
+        {
+            "method": "faceforensics_plus_plus",
+            "optimal_threshold_f1": 0.1,
+            "auc": 0.5396000000000001,
+            "accuracy": 0.505,
+            "precision": 0.5026178010471204,
+            "recall": 0.96,
+            "f1_score": 0.6597938144329897,
+            "specificity": 0.05
+        },
+        {
+            "method": "npr_deepfakedetection",
+            "optimal_threshold_f1": 0.9,
+            "auc": 0.47695,
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0
+        },
+        {
+            "method": "hifi_ifdl",
+            "optimal_threshold_f1": 0.30000000000000004,
+            "auc": 0.3769,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        },
+        {
+            "method": "caddm",
+            "optimal_threshold_f1": 0.30000000000000004,
+            "auc": 0.35800000000000004,
+            "accuracy": 0.5,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1_score": 0.6666666666666666,
+            "specificity": 0.0
+        }
+    ],
+    "top_performers_auc": {
+        "overall_best": "universalfakedetect",
+        "best_ensemble": "ensemble_average",
+        "best_individual": "universalfakedetect"
+    }
+}

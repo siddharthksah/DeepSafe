@@ -1,0 +1,240 @@
+{
+    "experiment_metadata": {
+        "timestamp": "2025-05-06T16:07:50.623527",
+        "input_directory": "experiment",
+        "output_directory": "experiment_output",
+        "classification_threshold": 0.5,
+        "num_images": 200,
+        "fake_count": 100,
+        "real_count": 100
+    },
+    "performance_metrics": {
+        "cnndetection": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6343000000000002,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "cnndetection"
+        },
+        "ganimagedetection": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6158000000000001,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "ganimagedetection"
+        },
+        "universalfakedetect": {
+            "accuracy": 0.595,
+            "precision": 0.8275862068965517,
+            "recall": 0.24,
+            "f1_score": 0.37209302325581395,
+            "specificity": 0.95,
+            "auc": 0.7765,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "universalfakedetect"
+        },
+        "hifi_ifdl": {
+            "accuracy": 0.45,
+            "precision": 0.3076923076923077,
+            "recall": 0.08,
+            "f1_score": 0.12698412698412698,
+            "specificity": 0.82,
+            "auc": 0.3769,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "hifi_ifdl"
+        },
+        "npr_deepfakedetection": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.47695,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "npr_deepfakedetection"
+        },
+        "dmimagedetection": {
+            "accuracy": 0.52,
+            "precision": 0.6111111111111112,
+            "recall": 0.11,
+            "f1_score": 0.1864406779661017,
+            "specificity": 0.93,
+            "auc": 0.6083000000000001,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "dmimagedetection"
+        },
+        "caddm": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.3607,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "caddm"
+        },
+        "faceforensics_plus_plus": {
+            "accuracy": 0.505,
+            "precision": 0.5161290322580645,
+            "recall": 0.16,
+            "f1_score": 0.24427480916030533,
+            "specificity": 0.85,
+            "auc": 0.5396000000000001,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "faceforensics_plus_plus"
+        },
+        "ensemble_voting": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.55255,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "ensemble_voting"
+        },
+        "ensemble_average": {
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6858,
+            "num_samples": 200,
+            "num_errors": 0,
+            "method": "ensemble_average"
+        }
+    },
+    "performance_ranking_auc_f1": [
+        {
+            "method": "universalfakedetect",
+            "accuracy": 0.595,
+            "precision": 0.8275862068965517,
+            "recall": 0.24,
+            "f1_score": 0.37209302325581395,
+            "specificity": 0.95,
+            "auc": 0.7765,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "ensemble_average",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6858,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "cnndetection",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6343000000000002,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "ganimagedetection",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.6158000000000001,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "dmimagedetection",
+            "accuracy": 0.52,
+            "precision": 0.6111111111111112,
+            "recall": 0.11,
+            "f1_score": 0.1864406779661017,
+            "specificity": 0.93,
+            "auc": 0.6083000000000001,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "ensemble_voting",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.55255,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "faceforensics_plus_plus",
+            "accuracy": 0.505,
+            "precision": 0.5161290322580645,
+            "recall": 0.16,
+            "f1_score": 0.24427480916030533,
+            "specificity": 0.85,
+            "auc": 0.5396000000000001,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "npr_deepfakedetection",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.47695,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "hifi_ifdl",
+            "accuracy": 0.45,
+            "precision": 0.3076923076923077,
+            "recall": 0.08,
+            "f1_score": 0.12698412698412698,
+            "specificity": 0.82,
+            "auc": 0.3769,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        },
+        {
+            "method": "caddm",
+            "accuracy": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "specificity": 1.0,
+            "auc": 0.3607,
+            "num_samples": 200.0,
+            "num_errors": 0.0
+        }
+    ],
+    "top_performers": {
+        "overall_best": "universalfakedetect",
+        "best_ensemble": "ensemble_average",
+        "best_individual": "universalfakedetect"
+    }
+}

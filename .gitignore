@@ -5,3 +5,7 @@ models/image/ganimagedetection/ganimagedetection
 models/universalfakedetect/universalfakedetect
 .repo-to-text-settings.yaml
 models/image/hifi_ifdl/hifi_ifdl
+experiment/
+repo-to-text_2025-05-06-07-37-07-UTC.txt
+models/image/yermandy_clip_detection
+.DS_Store

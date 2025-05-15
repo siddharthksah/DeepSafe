@@ -1,4 +1,15 @@
-FROM pytorch/pytorch:1.11.0-cuda11.3-cudnn8-runtime
+FROM python:3.9-slim
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y git wget && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+# Install CPU-only PyTorch for arm64
+RUN pip install --no-cache-dir \
+    torch==2.0.1 torchvision==0.15.2 \
+    -f https://download.pytorch.org/whl/cpu/torch_stable.html \
+    && pip install --no-cache-dir -r requirements.txt
+
 
 WORKDIR /app
 
