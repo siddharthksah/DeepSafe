@@ -5,6 +5,12 @@
 
 DeepSafe is a Streamlit-based web application for DeepFake detection, offering an easy-to-use interface for analyzing images and videos. Users can add their own deepfake detection models and compare them with existing models out of the box.
 
+> **Heads-up**  
+> This public repo tracks **v1**. The commercial branch (🎯 higher accuracy, API-first) is private.  
+> **Need production-grade detection?** [Request a demo](mailto:siddharth123sk@gmail.com?subject=DeepSafe%20Enterprise%20Demo)
+
+---
+
 ## WebApp
 
 [Live here](https://deepsafe.disconinja.duckdns.org/) (Limited access, for full access please [contact me](mailto:siddharth123sk@gmail.com)).
