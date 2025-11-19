@@ -1,0 +1,27 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+pydantic<2.0.0 # Pydantic v1 for compatibility with DeepfakeBench
+# torch, torchvision, torchaudio are installed via --index-url in Dockerfile
+Pillow>=9.0.0,<9.5.0
+opencv-python-headless==4.6.0.66
+# numpy==1.21.5 # Exact version from DeepfakeBench install.sh for dlib compatibility
+numpy>=1.22.0,<1.24.0 # Try a range compatible with PyTorch 1.12 and hopefully dlib
+PyYAML>=6.0
+scikit-learn==1.0.2
+albumentations==1.1.0
+timm==0.6.12
+efficientnet-pytorch>=0.7.1
+transformers>=4.20.0,<4.25.0
+
+dlib>=19.22.0,<19.25.0
+
+tensorboard>=2.9.0
+kornia==0.6.12
+imageio==2.9.0
+imgaug==0.4.0
+scipy==1.7.3
+einops
+lmdb
+simplejson
+fvcore
+loralib

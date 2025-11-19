@@ -1,0 +1,9 @@
+{
+  "npr_deepfakedetection_prob": 1.75,
+  "spsl_deepfake_detection_prob": 0.25,
+  "trufor_prob": 0.25,
+  "ucf_deepfake_detection_prob": 0.25,
+  "universalfakedetect_prob": 0.75,
+  "wavelet_clip_detection_prob": 1.0,
+  "yermandy_clip_detection_prob": 1.75
+}

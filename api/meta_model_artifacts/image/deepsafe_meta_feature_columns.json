@@ -1,0 +1,9 @@
+[
+  "npr_deepfakedetection_prob",
+  "spsl_deepfake_detection_prob",
+  "trufor_prob",
+  "ucf_deepfake_detection_prob",
+  "universalfakedetect_prob",
+  "wavelet_clip_detection_prob",
+  "yermandy_clip_detection_prob"
+]

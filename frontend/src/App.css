@@ -1,0 +1,11 @@
+/* frontend/src/App.css */
+/* Remove all previous styles. We will use Tailwind CSS utility classes. */
+/* If you have any truly global base styles that cannot be achieved via Tailwind's @layer base or index.css, they can go here. */
+/* For now, let's keep it minimal or empty. */
+
+/* Example of a global style if needed, but prefer Tailwind: */
+/*
+body {
+  font-family: 'Inter', sans-serif;
+}
+*/

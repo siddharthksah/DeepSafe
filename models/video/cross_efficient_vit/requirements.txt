@@ -1,0 +1,26 @@
+# In deepsafe_private/models/video/cross_efficient_vit/requirements.txt
+
+# PyTorch and torchvision (CPU version will be installed in Dockerfile)
+# torch
+# torchvision
+# torchaudio
+
+numpy<2.0,>=1.21.0 # <--- PIN NUMPY VERSION HERE, ensure it's < 2.0
+# opencv-python-headless==4.6.0.66 # Installed explicitly in Dockerfile
+
+Pillow>=8.3.1
+scikit-learn
+albumentations==0.5.2 # This version of albumentations should work with numpy<2.0
+tqdm
+pyyaml
+efficientnet_pytorch==0.7.1
+einops
+facenet-pytorch==2.5.2
+gdown
+
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+pydantic<2.0.0
+python-multipart
+
+requests

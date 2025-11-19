@@ -1,0 +1,24 @@
+fastapi
+uvicorn[standard]
+# torch and torchvision are expected from the base pytorch image
+Pillow>=9.0.0
+python-multipart
+numpy
+
+torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
+lightning==2.5.0 
+transformers==4.50.0
+tqdm==4.67.1 # progress bar
+timm==1.0.14 # torch models
+matplotlib
+seaborn==0.13.2  # visualization
+scikit-learn==1.6.1 # metrics
+rich==13.9.4 # logging
+wandb==0.19.4 # logging
+pydantic==2.9.2 # config
+ruff==0.9.3 # formatting
+fire==0.7.0 # CLI
+peft==0.14.0 # parameter-efficient fine-tuning
+# ipykernel==6.29.5 # jupyter

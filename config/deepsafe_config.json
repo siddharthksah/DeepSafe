@@ -1,0 +1,42 @@
+{
+  "api_url": "http://localhost:8000",
+  "media_types": {
+    "image": {
+      "model_endpoints": {
+        "npr_deepfakedetection": "http://npr_deepfakedetection:5001/predict",
+        "yermandy_clip_detection": "http://yermandy_clip_detection:5002/predict",
+        "wavelet_clip_detection": "http://wavelet_clip_detection:5003/predict",
+        "universalfakedetect": "http://universalfakedetect:5004/predict",
+        "trufor": "http://trufor:5005/predict",
+        "spsl_deepfake_detection": "http://spsl_deepfake_detection:5006/predict",
+        "ucf_deepfake_detection": "http://ucf_deepfake_detection:5007/predict"
+      },
+      "health_endpoints": {
+        "npr_deepfakedetection": "http://npr_deepfakedetection:5001/health",
+        "yermandy_clip_detection": "http://yermandy_clip_detection:5002/health",
+        "wavelet_clip_detection": "http://wavelet_clip_detection:5003/health",
+        "universalfakedetect": "http://universalfakedetect:5004/health",
+        "trufor": "http://trufor:5005/health",
+        "spsl_deepfake_detection": "http://spsl_deepfake_detection:5006/health",
+        "ucf_deepfake_detection": "http://ucf_deepfake_detection:5007/health"
+      },
+      "supported_extensions": ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.bmp", "*.gif", "*.tiff", "*.tif"]
+    },
+    "video": {
+      "model_endpoints": {
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/predict"
+      },
+      "health_endpoints": {
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/health"
+      },
+      "supported_extensions": ["*.mp4", "*.avi", "*.mov", "*.mkv"]
+    }
+  },
+  "default_output_dir_base": "./deepsafe_test_results",
+  "default_threshold": 0.5,
+  "default_ensemble_method": "stacking",
+  "default_api_timeout_seconds": 1200,
+  "default_model_timeout_seconds_video": 1800,
+  "memory_optimization": true,
+  "default_max_workers_batch": 1
+}
