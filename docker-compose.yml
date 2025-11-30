@@ -18,6 +18,7 @@ services:
       - npr_deepfakedetection
       - universalfakedetect
       - cross_efficient_vit
+      - vocoder_artifacts
     networks:
       - deepsafe-network
 
@@ -59,9 +60,26 @@ services:
     restart: unless-stopped
     environment:
       - MODEL_PORT=7001
-      - PRELOAD_MODEL=false 
+      - PRELOAD_MODEL=false
       - MODEL_TIMEOUT=900
       - USE_GPU=false
+    networks:
+      - deepsafe-network
+
+  # --- Audio Model Services ---
+  vocoder_artifacts:
+    build: ./models/audio/vocoder_artifacts
+    container_name: deepsafe-vocoder-artifacts
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    environment:
+      - MODEL_PORT=8001
+      - PRELOAD_MODEL=false
+      - MODEL_TIMEOUT=600
+      - USE_GPU=false
+    volumes:
+      - ./models/audio/vocoder_artifacts/models:/app/models:ro
     networks:
       - deepsafe-network
 

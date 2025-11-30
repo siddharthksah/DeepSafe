@@ -69,6 +69,47 @@ function Dashboard({ onLogout }) {
         }
     };
 
+    const handleDemoImage = () => {
+        fetch('/demo_image.jpg')
+            .then((res) => res.blob())
+            .then((blob) => {
+                const file = new File([blob], 'demo_image.jpg', { type: 'image/jpeg' });
+                setSelectedFile(file);
+                setPreviewUrl('/demo_image.jpg');
+                setMediaType('image');
+                setResults(null);
+                setError(null);
+            })
+            .catch((err) => setError('Failed to load demo image'));
+    };
+
+    const handleDemoVideo = () => {
+        fetch('/demo_video.mp4')
+            .then((res) => res.blob())
+            .then((blob) => {
+                const file = new File([blob], 'demo_video.mp4', { type: 'video/mp4' });
+                setSelectedFile(file);
+                setPreviewUrl('/demo_video.mp4');
+                setMediaType('video');
+                setResults(null);
+                setError(null);
+            })
+            .catch((err) => setError('Failed to load demo video'));
+    };
+
+    const handleDemoAudio = () => {
+        fetch('/demo_audio.wav')
+            .then((res) => res.blob())
+            .then((blob) => {
+                const file = new File([blob], 'demo_audio.wav', { type: 'audio/wav' });
+                setSelectedFile(file);
+                setPreviewUrl('/demo_audio.wav');
+                setMediaType('audio');
+                setResults(null);
+                setError(null);
+            })
+            .catch((err) => setError('Failed to load demo audio'));
+    };
     const handleAnalyze = async () => {
         if (!selectedFile) return;
         setIsAnalyzing(true);
@@ -262,14 +303,22 @@ function Dashboard({ onLogout }) {
                                     <h3 style={{ fontSize: '1.1rem', fontWeight: '600' }}>Ready to Analyze</h3>
                                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{selectedFile.size > 1024 * 1024 ? `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB` : `${(selectedFile.size / 1024).toFixed(2)} KB`}</p>
                                 </div>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={handleAnalyze}
-                                    disabled={isAnalyzing}
-                                    style={{ opacity: isAnalyzing ? 0.7 : 1, minWidth: '150px' }}
-                                >
-                                    {isAnalyzing ? 'Processing...' : 'Run DeepSafe'}
-                                </button>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button onClick={handleDemoVideo} className="btn btn-secondary">
+                                        🎬 Demo Video
+                                    </button>
+                                    <button onClick={handleDemoAudio} className="btn btn-secondary">
+                                        🎵 Demo Audio
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleAnalyze}
+                                        disabled={isAnalyzing}
+                                        style={{ opacity: isAnalyzing ? 0.7 : 1, minWidth: '150px' }}
+                                    >
+                                        {isAnalyzing ? 'Processing...' : 'Run DeepSafe'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -304,7 +353,7 @@ function App() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        localStorage.clear();
         setIsAuthenticated(false);
     };
 

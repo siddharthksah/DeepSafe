@@ -34,6 +34,21 @@
         "*.mov",
         "*.mkv"
       ]
+    },
+    "audio": {
+      "model_endpoints": {
+        "vocoder_artifacts": "http://vocoder_artifacts:8001/predict"
+      },
+      "health_endpoints": {
+        "vocoder_artifacts": "http://vocoder_artifacts:8001/health"
+      },
+      "supported_extensions": [
+        "*.mp3",
+        "*.wav",
+        "*.flac",
+        "*.aac",
+        "*.ogg"
+      ]
     }
   },
   "default_output_dir_base": "./deepsafe_test_results",

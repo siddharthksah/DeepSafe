@@ -8,3 +8,4 @@ frontend/.DS_Store
 .DS_Store
 .DS_Store
 .DS_Store
+models/audio/vocoder_artifacts/models/librifake_pretrained_lambda0.5_epoch_25.pth
