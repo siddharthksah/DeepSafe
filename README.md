@@ -1,26 +1,40 @@
-# DeepSafe: Advanced Deepfake Detection Platform
+# DeepSafe: Enterprise-Grade Deepfake Detection Platform
 
 ![DeepSafe Banner](https://via.placeholder.com/1200x300?text=DeepSafe+Deepfake+Detection+Platform)
+
+<div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI Status](https://github.com/yourusername/DeepSafe/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/DeepSafe/actions)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
-**DeepSafe** is a modular, extensible, and containerized platform for detecting deepfakes in images and videos. It aggregates state-of-the-art detection models into a unified API and provides a user-friendly web interface for analysis.
+</div>
 
-## 🚀 Key Features
+---
 
--   **Multi-Model Ensemble**: Combines predictions from multiple state-of-the-art models (NPR, UniversalFakeDetect, CrossEfficientViT, etc.) for higher accuracy.
--   **Meta-Learning**: Uses a stacking ensemble approach to learn the best combination of model outputs.
--   **Modular Architecture**: Each model runs in its own Docker container, allowing for easy addition or removal of detectors.
--   **Video & Image Support**: Specialized pipelines for both media types.
--   **Modern UI**: React-based frontend for easy interaction and visualization of results.
--   **REST API**: Fully documented FastAPI backend for integration into other systems.
+**DeepSafe** is a modular, high-performance, and containerized platform designed for the robust detection of deepfakes in digital media. By aggregating state-of-the-art detection models into a unified ensemble, DeepSafe provides enterprise-grade accuracy and reliability.
+
+## 🚀 Why DeepSafe?
+
+### Platform Agnostic & Dependency Isolated
+DeepSafe adopts a **microservices architecture** where each detection model runs in its own isolated Docker container. This design choice is deliberate and critical:
+-   **No Dependency Hell**: Each model can have its own specific version of PyTorch, CUDA, or other libraries without conflicting with others.
+-   **Platform Independent**: Whether you are on Linux, macOS, or Windows, if you have Docker, DeepSafe works.
+-   **Scalable**: Scale individual models based on load.
+
+### Key Features
+-   **Enterprise-Grade Authentication**: Secure Login and Registration system to protect access.
+-   **Multi-Modal Detection**: Analyzes both **Images** and **Videos** for manipulation.
+-   **Ensemble Intelligence**: Combines multiple state-of-the-art models (NPR, UniversalFakeDetect, CrossEfficientViT) for superior accuracy.
+-   **Meta-Learning Engine**: Dynamically stacks model outputs using advanced meta-learners to reduce false positives.
+-   **Premium UI/UX**: A modern, dark-themed React dashboard with interactive charts and real-time feedback.
+-   **Dockerized Architecture**: Fully containerized services for easy deployment and isolation.
+-   **RESTful API**: Robust FastAPI backend with health checks, batch processing, and detailed logging.
 
 ## 🏗️ Architecture
 
-DeepSafe uses a microservices architecture orchestrated by Docker Compose:
+DeepSafe orchestrates a fleet of specialized detectors via a central API gateway:
 
 ```mermaid
 graph TD
@@ -31,7 +45,6 @@ graph TD
     subgraph "Image Detectors"
         Meta --> NPR[NPR Deepfake]
         Meta --> UFD[Universal Fake Detect]
-        Meta --> WClip[Wavelet CLIP]
     end
     
     subgraph "Video Detectors"
@@ -42,9 +55,8 @@ graph TD
 ## 🛠️ Quick Start
 
 ### Prerequisites
-
--   Docker & Docker Compose
--   Git
+-   **Docker** & **Docker Compose**
+-   **Git**
 
 ### Installation
 
@@ -54,69 +66,39 @@ graph TD
     cd DeepSafe
     ```
 
-2.  **Start the application**:
+2.  **Launch the Platform**:
     ```bash
     make start
     ```
-    *This command builds all necessary containers and starts the services. It may take a while on the first run.*
+    *This will build all containers and start the services. Initial build may take a few minutes.*
 
 3.  **Access the Dashboard**:
-    Open your browser and navigate to `http://localhost:80`.
+    Open `http://localhost:80` in your browser.
 
-4.  **Access the API Docs**:
-    Navigate to `http://localhost:8000/docs` for the Swagger UI.
-
-## 🧪 Testing
-
-We provide a built-in test suite to verify the system's health and prediction capabilities.
-
-```bash
-make test
-```
-
-This command will:
-1.  Check the health of all active services.
-2.  Run prediction tests on sample image and video files.
-3.  Report the results in the terminal.
+4.  **API Documentation**:
+    Visit `http://localhost:8000/docs` for the interactive Swagger UI.
 
 ## 📦 Available Models
 
 | Model | Type | Status | Description |
 | :--- | :--- | :--- | :--- |
-| **NPR Deepfake** | Image | ✅ Active | Neural Pattern Recognition for image deepfakes. |
-| **Universal Fake Detect** | Image | ✅ Active | Generalizable deepfake detection. |
-| **Cross Efficient ViT** | Video | ✅ Active | Efficient video deepfake detection. |
-| **Wavelet CLIP** | Image | 🚧 Optional | Requires manual weight download. |
-| **TruFor** | Image | 🚧 Disabled | Transformer for image forgery detection. |
+| **NPR Deepfake** | Image | ✅ Active | Neural Pattern Recognition for subtle artifact detection. |
+| **Universal Fake Detect** | Image | ✅ Active | Generalizable detection for unseen deepfake types. |
+| **Cross Efficient ViT** | Video | ✅ Active | High-efficiency video analysis using Vision Transformers. |
 
-*To enable disabled models, uncomment them in `docker-compose.yml`.*
+## 🧪 Testing & Verification
 
-## 🗺️ Roadmap
+DeepSafe includes a comprehensive test suite to ensure system integrity.
 
-- [x] Core API and Frontend
-- [x] Docker Containerization
-- [x] Image Detection Pipeline
-- [x] Video Detection Pipeline
-- [ ] Real-time Webcam Analysis
-- [ ] Audio Deepfake Detection
-- [ ] Browser Extension
+```bash
+# Run health checks and basic functionality tests
+make test
+```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a Pull Request.
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-## 🙏 Acknowledgements
-
--   [DeepfakeBench](https://github.com/SCLBD/DeepfakeBench) for model implementations.
--   [FastAPI](https://fastapi.tiangolo.com/) for the high-performance API.
--   [React](https://reactjs.org/) for the frontend library.

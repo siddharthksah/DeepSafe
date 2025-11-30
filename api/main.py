@@ -41,6 +41,13 @@ import sys
 from rich.console import Console as RichConsole
 from rich.table import Table as RichTable
 from rich.text import Text as RichText
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, status
+from datetime import datetime, timedelta
+from sqlalchemy.orm import Session
+from database import init_db, get_db, AnalysisHistory
 
 # --- Logging Configuration ---
 logging.basicConfig(
@@ -120,6 +127,68 @@ meta_scalers: Dict[str, Any] = {}
 meta_imputers: Dict[str, Any] = {}
 meta_feature_columns_map: Dict[str, List[str]] = {}
 
+# --- Auth Configuration ---
+SECRET_KEY = get_environment_variable("SECRET_KEY", "deepsafe_super_secret_key_change_me")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Mock Database for Demo Purposes
+fake_users_db = {}
+
+class User(BaseModel):
+    username: str
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    disabled: Optional[bool] = None
+
+class UserInDB(User):
+    hashed_password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = fake_users_db.get(username)
+    if user is None:
+        raise credentials_exception
+    return user
+
 # --- FastAPI Application ---
 app = FastAPI(
     title="DeepSafe API",
@@ -138,6 +207,10 @@ async def startup_event_api():
     2. Hydrates the meta-learner registry by loading serialized artifacts (models, scalers, imputers)
        from the shared volume. This enables the 'stacking' ensemble method.
     """
+    # Initialize database
+    init_db()
+    logger.info("Database initialized successfully")
+
     global meta_learners, meta_scalers, meta_imputers, meta_feature_columns_map
     
     if not SUPPORTED_MEDIA_TYPES:
@@ -559,7 +632,6 @@ async def predict_media_endpoint_api(request: Request, input_data: PredictInput)
         model_query_results, input_data.threshold, input_data.ensemble_method, media_type, req_id
     )
     total_processing_time = time.time() - start_overall_time
-    
     response_payload = {
         "request_id": req_id, "media_type_processed": media_type,
         "verdict": verdict, "confidence_in_verdict": confidence, "ensemble_score_is_fake": ensemble_prob_fake,
@@ -569,11 +641,75 @@ async def predict_media_endpoint_api(request: Request, input_data: PredictInput)
         "ensemble_method_requested": input_data.ensemble_method, "ensemble_method_used": actual_method_used,
         "model_results": model_query_results, "processing_mode": "CPU-only"
     }
+    
+    # Save to database history
+    try:
+        db = SessionLocal()
+        history_record = AnalysisHistory(
+            request_id=req_id,
+            username=None,  # TODO: Add current user if using auth on this endpoint
+            media_type=media_type,
+            media_name=None, # Not available in this endpoint
+            verdict=verdict,
+            confidence=confidence,
+            ensemble_method=actual_method_used,
+            ensemble_score=ensemble_prob_fake,
+            inference_time=total_processing_time,
+            full_response=json.dumps(response_payload)
+        )
+        db.add(history_record)
+        db.commit()
+        db.close()
+    except Exception as db_err:
+        logger.warning(f"Request {req_id}: Failed to save to database: {db_err}")
+    
     logger.info(f"Request {req_id} ({media_type}): Prediction complete in {total_processing_time:.2f}s. Verdict: '{verdict}', P(Fake): {ensemble_prob_fake:.4f} (Method: '{actual_method_used}')")
     print_results_summary_table_api(req_id, media_type, actual_method_used, verdict, ensemble_prob_fake, model_query_results, input_data.threshold)
     return response_payload
 
+    print_results_summary_table_api(req_id, media_type, actual_method_used, verdict, ensemble_prob_fake, model_query_results, input_data.threshold)
+    return response_payload
 
+# --- Auth Endpoints ---
+
+@app.post("/token", response_model=Token, tags=["Auth"])
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = fake_users_db.get(form_data.username)
+    if not user or not verify_password(form_data.password, user['hashed_password']):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user['username']}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/register", response_model=Token, tags=["Auth"])
+async def register_user(form_data: OAuth2PasswordRequestForm = Depends()):
+    if form_data.username in fake_users_db:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    hashed_password = get_password_hash(form_data.password)
+    fake_users_db[form_data.username] = {
+        "username": form_data.username,
+        "hashed_password": hashed_password,
+        "email": "user@example.com",
+        "full_name": "DeepSafe User",
+        "disabled": False,
+    }
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": form_data.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/users/me", response_model=User, tags=["Auth"])
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
 @app.post("/detect", tags=["Web UI"], response_model_exclude_none=True)
 async def detect_media_endpoint_api_form(
     request: Request, file: UploadFile = File(...), 
@@ -661,6 +797,64 @@ async def detect_media_endpoint_api_form(
         if 'file' in locals() and file: 
             await file.close()
 
+
+
+
+# --- History Endpoints ---
+@app.get("/history", tags=["History"])
+async def get_analysis_history(
+    limit: int = 100,
+    offset: int = 0,
+    media_type: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Retrieve analysis history with pagination and filtering."""
+    query = db.query(AnalysisHistory)
+    if media_type:
+        query = query.filter(AnalysisHistory.media_type == media_type)
+    
+    total = query.count()
+    records = query.order_by(AnalysisHistory.timestamp.desc()).offset(offset).limit(limit).all()
+    
+    return {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "records": [
+            {
+                "id": r.id,
+                "request_id": r.request_id,
+                "media_type": r.media_type,
+                "verdict": r.verdict,
+                "confidence": r.confidence,
+                "timestamp": r.timestamp.isoformat()
+            }
+            for r in records
+        ]
+    }
+
+@app.get("/history/{request_id}", tags=["History"])
+async def get_analysis_by_id(
+    request_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Retrieve a specific analysis result by request ID."""
+    record = db.query(AnalysisHistory).filter(AnalysisHistory.request_id == request_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    return {
+        "id": record.id,
+        "request_id": record.request_id,
+        "media_type": record.media_type,
+        "verdict": record.verdict,
+        "confidence": record.confidence,
+        "ensemble_method": record.ensemble_method,
+        "timestamp": record.timestamp.isoformat(),
+        "full_response": json.loads(record.full_response) if record.full_response else None
+    }
 
 if __name__ == "__main__":
     if not CONFIG_FILE_PATH_FROM_ENV or not os.path.exists(CONFIG_FILE_PATH_FROM_ENV) or not ALL_MODEL_CONFIGS.get("media_types"):

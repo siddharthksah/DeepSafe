@@ -1,532 +1,329 @@
-// frontend/src/App.js
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import UploadSection from './components/UploadSection';
-import ResultsSection from './components/ResultsSection';
-import SettingsPanel from './components/SettingsPanel';
-import InfoSection from './components/InfoSection';
-import NavigationBar from './components/NavigationBar';
-import ErrorBoundary from './components/ErrorBoundary';
-import ModelHealthDashboard from './components/ModelHealthDashboard';
-import Toast from './components/Toast';
-import { exportResults, downloadPDF } from './utils/exportUtils';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
+import './App.css';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+} from 'chart.js';
+import { Bar, Doughnut } from 'react-chartjs-2';
 
-const POLLING_INTERVALS = {
-  FIRST_CHECK_DELAY: 5000, 
-  INITIAL_FAST: 7000,      
-  NORMAL_UNHEALTHY: 20000, 
-  STABLE_HEALTHY: 60000,   
+// Register ChartJS components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
+
+const API_BASE_URL = 'http://localhost:8000';
+
+// Protected Route Wrapper
+const ProtectedRoute = ({ children, isAuthenticated }) => {
+    const location = useLocation();
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+    return children;
 };
 
-const App = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [processStage, setProcessStage] = useState('');
-  const [modelProgress, setModelProgress] = useState({});
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [debugMode, setDebugMode] = useState(process.env.NODE_ENV === 'development');
-  const [toast, setToast] = useState(null);
-  
-  const [selectedModels, setSelectedModels] = useState(() => {
-    const saved = localStorage.getItem('deepsafeSelectedModels');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [threshold, setThreshold] = useState(() => {
-    const saved = localStorage.getItem('deepsafeThreshold');
-    return saved ? parseFloat(saved) : 0.5;
-  });
-  
-  const [ensembleMethod, setEnsembleMethod] = useState(() => {
-    const saved = localStorage.getItem('deepsafeEnsembleMethod');
-    return saved || 'stacking'; 
-  });
+function Dashboard({ onLogout }) {
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [mediaType, setMediaType] = useState('image');
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [results, setResults] = useState(null);
+    const [error, setError] = useState(null);
+    const [systemHealth, setSystemHealth] = useState(null);
 
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('deepsafeDarkMode');
-    if (saved !== null) return saved === 'true';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/health`)
+            .then((res) => res.json())
+            .then((data) => setSystemHealth(data))
+            .catch((err) => console.error('Health check failed:', err));
+    }, []);
 
-  const [showSettings, setShowSettings] = useState(false);
-  const [activeTab, setActiveTab] = useState('detect'); 
-  const [activeMediaType, setActiveMediaType] = useState('image'); 
-
-  const [availableModels, setAvailableModels] = useState([]);
-  const [modelHealthStatus, setModelHealthStatus] = useState({});
-  const [stackingAvailableByMediaType, setStackingAvailableByMediaType] = useState({});
-  
-  const [isHealthCheckInProgress, setIsHealthCheckInProgress] = useState(false);
-  const healthCheckTimeoutRef = useRef(null);
-  const mountedRef = useRef(true); 
-
-  const [isModelDashboardExpanded, setIsModelDashboardExpanded] = useState(false);
-
-  const baseModelInfo = {
-    "npr_deepfakedetection": { name: 'NPR DeepFake', description: 'Neural Pattern Recognition for image deepfakes.', type: 'image' },
-    "yermandy_clip_detection": { name: 'Yermandy CLIP', description: 'CLIP-based image deepfake detection.', type: 'image' },
-    "wavelet_clip_detection": { name: 'Wavelet CLIP', description: 'Wavelet Transform + CLIP for image forensics.', type: 'image' },
-    "universalfakedetect": { name: 'Universal Detector', description: 'General deepfake detection for images.', type: 'image' },
-    "trufor": { name: 'TruFor', description: 'Transformer for image Forgery Detection.', type: 'image' },
-    "spsl_deepfake_detection": { name: 'SPSL DeepFake', description: 'SPSL (DeepfakeBench) for image deepfakes.', type: 'image' },
-    "ucf_deepfake_detection": { name: 'UCF DeepFake', description: 'Uncovering Common Features (DeepfakeBench) for images.', type: 'image' },
-    "cross_efficient_vit": { name: "CrossEfficientViT", description: "Combines EfficientNet and Vision Transformers for video deepfake detection.", type: "video" },
-  };
-
-  const showToast = useCallback((message, type = 'success', duration = 3000) => {
-    setToast({ message, type, id: Date.now() });
-    setTimeout(() => setToast(null), duration);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('deepsafeSelectedModels', JSON.stringify(selectedModels));
-  }, [selectedModels]);
-
-  useEffect(() => {
-    localStorage.setItem('deepsafeThreshold', threshold.toString());
-  }, [threshold]);
-
-  useEffect(() => {
-    localStorage.setItem('deepsafeEnsembleMethod', ensembleMethod);
-  }, [ensembleMethod]);
-
-  useEffect(() => {
-    localStorage.setItem('deepsafeDarkMode', darkMode.toString());
-    // Apply dark class to both html and body for better coverage
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-    }
-  }, [darkMode]);
-
-  const performAndScheduleHealthCheck = useCallback(async (isInitialFastPollPhase = true) => {
-    if (isHealthCheckInProgress || !mountedRef.current) return;
-    setIsHealthCheckInProgress(true);
-    let nextInterval = POLLING_INTERVALS.NORMAL_UNHEALTHY;
-    try {
-      const response = await fetch('/api/health');
-      if (!mountedRef.current) return;
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: "Health check request failed." }));
-        console.error('Health check API request failed:', response.status, errorData);
-        setStackingAvailableByMediaType({});
-        const errorStatus = {};
-        Object.keys(baseModelInfo).forEach(id => {
-          errorStatus[id] = { status: 'error', message: 'Health check failed' };
-        });
-        setModelHealthStatus(errorStatus);
-        setAvailableModels(Object.keys(baseModelInfo).map(id => ({
-          id, name: baseModelInfo[id]?.name || id, description: baseModelInfo[id]?.description || 'Model',
-          type: baseModelInfo[id]?.type || 'unknown', status: 'error'
-        })));
-      } else {
-        const data = await response.json();
-        if (!mountedRef.current) return;
-
-        const apiMediaTypeDetails = data.media_type_details || {};
-        let allModelsFromApi = [];
-        let newStackingStatus = {};
-        let newModelHealth = {};
-
-        Object.entries(apiMediaTypeDetails).forEach(([mediaType, typeDetails]) => {
-          newStackingStatus[mediaType] = typeDetails.stacking_ensemble_loaded || false;
-          const modelsForType = typeDetails.models || {};
-          Object.entries(modelsForType).forEach(([modelId, modelDetails]) => {
-            newModelHealth[modelId] = modelDetails;
-            if (!allModelsFromApi.find(m => m.id === modelId)) {
-              allModelsFromApi.push({
-                id: modelId,
-                name: baseModelInfo[modelId]?.name || modelId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                description: baseModelInfo[modelId]?.description || 'Deepfake detection model',
-                type: baseModelInfo[modelId]?.type || mediaType, 
-                status: modelDetails?.status || 'unknown'
-              });
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setResults(null);
+            setError(null);
+            const objectUrl = URL.createObjectURL(file);
+            setPreviewUrl(objectUrl);
+            if (file.type.startsWith('video/')) {
+                setMediaType('video');
+            } else {
+                setMediaType('image');
             }
-          });
-        });
-        
-        setStackingAvailableByMediaType(newStackingStatus);
-        setModelHealthStatus(newModelHealth);
-
-        if (allModelsFromApi.length > 0) {
-            setAvailableModels(allModelsFromApi);
-        } else {
-          console.warn("API health check returned no specific model statuses in media_type_details. Falling back to baseModelInfo for available models list.");
-          allModelsFromApi = Object.keys(baseModelInfo).map(id => ({
-            id, name: baseModelInfo[id]?.name || id, description: baseModelInfo[id]?.description || 'Model',
-            type: baseModelInfo[id]?.type || 'unknown', status: 'unknown'
-          }));
-          setAvailableModels(allModelsFromApi);
         }
-        
-        const isSystemFullyHealthy = data.overall_api_status === 'healthy';
-        if (isSystemFullyHealthy) nextInterval = POLLING_INTERVALS.STABLE_HEALTHY;
-        else if (isInitialFastPollPhase) nextInterval = POLLING_INTERVALS.INITIAL_FAST;
-      }
-    } catch (err) {
-      console.error('Health check fetch/processing exception:', err);
-      if (!mountedRef.current) return;
-      setStackingAvailableByMediaType({});
-      const errorStatus = {};
-      Object.keys(baseModelInfo).forEach(id => {
-        errorStatus[id] = { status: 'error', message: 'Health check exception' };
-      });
-      setModelHealthStatus(errorStatus);
-      setAvailableModels(Object.keys(baseModelInfo).map(id => ({
-        id, name: baseModelInfo[id]?.name || id, description: baseModelInfo[id]?.description || 'Model',
-        type: baseModelInfo[id]?.type || 'unknown', status: 'error'
-      })));
-    } finally {
-      if (mountedRef.current) {
-        setIsHealthCheckInProgress(false);
-        if (healthCheckTimeoutRef.current) clearTimeout(healthCheckTimeoutRef.current);
-        let nextPollPhase = isInitialFastPollPhase;
-        if (isInitialFastPollPhase && nextInterval !== POLLING_INTERVALS.INITIAL_FAST) nextPollPhase = false;
-        else if (nextInterval === POLLING_INTERVALS.STABLE_HEALTHY) nextPollPhase = false;
-        healthCheckTimeoutRef.current = setTimeout(() => performAndScheduleHealthCheck(nextPollPhase), nextInterval);
-      }
-    }
-  }, [baseModelInfo, isHealthCheckInProgress]);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    const initialTimeoutId = setTimeout(() => {
-      if (mountedRef.current) performAndScheduleHealthCheck(true);
-    }, POLLING_INTERVALS.FIRST_CHECK_DELAY);
-    return () => {
-      mountedRef.current = false;
-      clearTimeout(initialTimeoutId);
-      if (healthCheckTimeoutRef.current) clearTimeout(healthCheckTimeoutRef.current);
-    };
-  }, [performAndScheduleHealthCheck]);
-
-  useEffect(() => {
-    if (availableModels.length > 0) {
-      const availableModelIds = availableModels.map(m => m.id);
-      setSelectedModels(prevSelectedModels => 
-        prevSelectedModels.filter(smId => availableModelIds.includes(smId))
-      );
-    }
-  }, [availableModels]);
-
-  const handleFileChange = useCallback((event) => {
-    const file = event.target.files[0];
-    setError(null); setResult(null); setModelProgress({});
-    if (file) {
-      let validMimeTypes, maxFileSize, mediaTypeName;
-      switch(activeMediaType) {
-        case 'video':
-          validMimeTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/x-m4v'];
-          maxFileSize = 500 * 1024 * 1024; // 500MB for videos
-          mediaTypeName = "video";
-          break;
-        case 'audio':
-          validMimeTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/x-m4a'];
-          maxFileSize = 200 * 1024 * 1024; // 200MB for audio
-          mediaTypeName = "audio";
-          break;
-        case 'image':
-        default:
-          validMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-          maxFileSize = 100 * 1024 * 1024; // 100MB for images
-          mediaTypeName = "image";
-          break;
-      }
-
-      if (!validMimeTypes.includes(file.type)) {
-        setError(`Invalid file type for ${mediaTypeName}. Supported: ${validMimeTypes.map(t => t.split('/')[1]).join(', ')}.`);
-        showToast(`Invalid file type. Please select a valid ${mediaTypeName} file.`, 'error');
-        setSelectedFile(null); setPreview(null); return;
-      }
-      if (file.size > maxFileSize) {
-        setError(`File size exceeds ${maxFileSize / (1024*1024)}MB limit for ${mediaTypeName}.`);
-        showToast(`File too large. Maximum size: ${maxFileSize / (1024*1024)}MB`, 'error');
-        setSelectedFile(null); setPreview(null); return;
-      }
-      setSelectedFile(file);
-      showToast(`${file.name} selected successfully`, 'success');
-      
-      if (activeMediaType === 'image' || activeMediaType === 'video') {
-        const reader = new FileReader();
-        reader.onloadend = () => setPreview(reader.result);
-        reader.readAsDataURL(file);
-      } else {
-        setPreview(null); 
-      }
-    } else {
-      setSelectedFile(null); setPreview(null);
-    }
-  }, [activeMediaType, showToast]);
-
-  const handleDemoMedia = useCallback(async (demoMediaType, demoFileNameKey) => {
-    setError(null); setResult(null); setModelProgress({}); setLoading(true); setProcessStage(`Loading demo ${demoMediaType}...`);
-    
-    const demoFilePaths = {
-      image: {
-        'real_portrait': '/demo_images/real_sample.jpg', 
-        'ai_face_gan': '/demo_images/fake_sample_gan.jpg',
-        'stylegan_city': '/demo_images/fake_sample_stylegan.jpg',
-        'face_swap': '/demo_images/fake_sample_faceswap.jpg'
-      },
-      video: {
-        'real_video_1': '/demo_videos/real/1.mp4',
-        'real_video_2': '/demo_videos/real/2.mp4',
-        'fake_video_1': '/demo_videos/fake/1.mp4',
-        'fake_video_2': '/demo_videos/fake/2.mp4',
-      }
     };
 
-    let mediaPath = demoFilePaths[demoMediaType]?.[demoFileNameKey];
-    
-    if (!mediaPath) {
-      if (demoMediaType === 'image') mediaPath = demoFilePaths.image.ai_face_gan;
-      else if (demoMediaType === 'video') mediaPath = demoFilePaths.video.fake_video_1;
-      else {
-        setError(`Demo ${demoMediaType} '${demoFileNameKey}' not available.`);
-        showToast(`Demo ${demoMediaType} not available`, 'error');
-        setLoading(false); setProcessStage('');
-        return;
-      }
-    }
+    const handleAnalyze = async () => {
+        if (!selectedFile) return;
+        setIsAnalyzing(true);
+        setError(null);
+        setResults(null);
 
-    try {
-      const response = await fetch(mediaPath);
-      if (!response.ok) throw new Error(`Failed to fetch demo ${demoMediaType} from ${mediaPath} (${response.status})`);
-      const blob = await response.blob();
-      const fileExtension = mediaPath.split('.').pop() || (demoMediaType === 'image' ? 'jpg' : 'mp4');
-      const fileNameForFileObject = `demo_${demoFileNameKey}.${fileExtension}`;
-      const file = new File([blob], fileNameForFileObject, { type: blob.type || `${demoMediaType}/${fileExtension}` });
-      
-      setSelectedFile(file); 
-      showToast(`Demo ${demoMediaType} loaded successfully`, 'success');
-      if (demoMediaType === 'image' || demoMediaType === 'video') {
-        const reader = new FileReader();
-        reader.onloadend = () => { setPreview(reader.result); setLoading(false); setProcessStage(''); };
-        reader.readAsDataURL(file);
-      } else {
-        setPreview(null);
-        setLoading(false); setProcessStage('');
-      }
-    } catch (err) {
-      console.error(`Error loading demo ${demoMediaType} (${mediaPath}):`, err);
-      setError(`Failed to load demo ${demoMediaType}. Please try uploading manually.`);
-      showToast(`Failed to load demo ${demoMediaType}`, 'error');
-      setLoading(false); setProcessStage('');
-    }
-  }, [showToast]);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('media_type', mediaType);
 
-  const toggleSettings = () => setShowSettings(prev => !prev);
-  const toggleDebugMode = () => setDebugMode(prev => !prev);
-  const toggleModelDashboardExpand = () => setIsModelDashboardExpanded(prev => !prev);
+        try {
+            const response = await fetch(`${API_BASE_URL}/detect`, {
+                method: 'POST',
+                body: formData,
+            });
 
-  const toggleModel = (modelId) => {
-    setSelectedModels(prevModels =>
-      prevModels.includes(modelId) ? prevModels.filter(id => id !== modelId) : [...prevModels, modelId]
-    );
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedFile) { 
-      setError(`Please select an ${activeMediaType} file first.`); 
-      showToast(`Please select a file to analyze`, 'error');
-      return; 
-    }
-    setLoading(true); setError(null); setResult(null); setModelProgress({}); setProcessStage(`Preparing ${activeMediaType}...`);
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('threshold', threshold.toString());
-      formData.append('ensemble_method', ensembleMethod);
-      
-      const modelsRelevantToMediaType = availableModels.filter(m => m.type === activeMediaType);
-      const activeAndSelectedModels = selectedModels.filter(modelId => {
-        const model = modelsRelevantToMediaType.find(m => m.id === modelId);
-        return model && (model.status === 'healthy' || model.status === 'loading' || model.status === 'unknown');
-      });
-      
-      if (selectedModels.length > 0 && activeAndSelectedModels.length === 0) {
-        console.warn(`User selected models but none are active/available for ${activeMediaType}. API will use its default for this type.`);
-      } else if (activeAndSelectedModels.length > 0) {
-        formData.append('models', activeAndSelectedModels.join(','));
-      }
-      
-      setProcessStage(`Uploading & Analyzing ${activeMediaType}...`);
-
-      const modelsForProgress = activeAndSelectedModels.length > 0 ? activeAndSelectedModels : 
-                                modelsRelevantToMediaType
-                                  .filter(m => m.status === 'healthy' || m.status === 'loading' || m.status === 'unknown')
-                                  .map(m => m.id);
-
-      const progressInterval = setInterval(() => {
-        setModelProgress(prev => {
-          const newProgress = { ...prev };
-          modelsForProgress.forEach(modelId => {
-            if (!newProgress[modelId] || newProgress[modelId].status !== 'completed') {
-              if (!newProgress[modelId]) newProgress[modelId] = { status: 'processing', progress: 0 };
-              else if (newProgress[modelId].progress < 90) newProgress[modelId].progress = Math.min(90, newProgress[modelId].progress + Math.random() * 15);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Analysis failed');
             }
-          });
-          return newProgress;
-        });
-      }, 500);
 
-      const response = await fetch('/api/detect', { method: 'POST', body: formData });
-      clearInterval(progressInterval);
-      setProcessStage('Processing results...');
-      const data = await response.json();
-
-      if (!response.ok) {
-        const errorDetail = data.detail || `Server error: ${response.status}`;
-        if (typeof errorDetail === 'string' && errorDetail.toLowerCase().includes("unknown model(s) specified")) {
-          console.warn("API reported unknown models. Forcing health check.");
-          performAndScheduleHealthCheck(true);
-          throw new Error("Model selection mismatch. Please try again. Available models list updated.");
+            const data = await response.json();
+            setResults(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsAnalyzing(false);
         }
-        throw new Error(errorDetail);
-      }
-      
-      const finalProgress = {};
-      const returnedModelKeys = data.model_results ? Object.keys(data.model_results) : modelsForProgress;
-      returnedModelKeys.forEach(modelId => {
-        finalProgress[modelId] = {
-          status: data.model_results && data.model_results[modelId]?.error ? 'error' : 'completed',
-          progress: 100
+    };
+
+    const renderHealthStatus = () => {
+        if (!systemHealth) return <span className="text-secondary">Checking system...</span>;
+        const status = systemHealth.overall_api_status || 'Unknown';
+        const color = status === 'healthy' ? 'var(--success)' : 'var(--danger)';
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color, boxShadow: `0 0 8px ${color}` }}></span>
+                <span style={{ color: color, fontWeight: 600, fontSize: '0.875rem' }}>{status.toUpperCase()}</span>
+            </div>
+        );
+    };
+
+    const renderResults = () => {
+        if (!results) return null;
+        const isFake = results.is_likely_deepfake;
+        const confidence = (results.deepfake_probability * 100).toFixed(1);
+        const verdictColor = isFake ? 'var(--danger)' : 'var(--success)';
+        const verdictText = isFake ? 'FAKE' : 'REAL';
+
+        const barData = {
+            labels: Object.keys(results.model_results || {}),
+            datasets: [
+                {
+                    label: 'Fake Probability',
+                    data: Object.values(results.model_results || {}).map(r => r.probability ? r.probability * 100 : 0),
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+            ],
         };
-      });
-      modelsForProgress.forEach(modelId => {
-        if (!finalProgress[modelId]) finalProgress[modelId] = { status: 'unknown_response', progress: 100 };
-      });
 
-      setModelProgress(finalProgress);
-      setResult(data);
-      const verdict = data.is_likely_deepfake ? 'AI-Generated' : 'Authentic';
-      showToast(`Analysis complete: ${verdict} (${(data.deepfake_probability * 100).toFixed(0)}% confidence)`, data.is_likely_deepfake ? 'warning' : 'success', 5000);
-    } catch (err) {
-      console.error(`Error during ${activeMediaType} analysis:`, err);
-      setError(err.message || `An unexpected error occurred during ${activeMediaType} analysis.`);
-      showToast(err.message || 'Analysis failed', 'error');
-      setModelProgress(prev => {
-        const newProgress = {...prev};
-        Object.keys(newProgress).forEach(modelId => {
-          if (newProgress[modelId].status !== 'completed') newProgress[modelId] = { status: 'error', progress: newProgress[modelId].progress || 0};
-        });
-        return newProgress;
-      });
-    } finally {
-      setLoading(false); setProcessStage('');
-    }
-  };
+        const doughnutData = {
+            labels: ['Real', 'Fake'],
+            datasets: [
+                {
+                    data: [100 - (results.deepfake_probability * 100), results.deepfake_probability * 100],
+                    backgroundColor: ['rgba(16, 185, 129, 0.6)', 'rgba(239, 68, 68, 0.6)'],
+                    borderColor: ['rgba(16, 185, 129, 1)', 'rgba(239, 68, 68, 1)'],
+                    borderWidth: 1,
+                },
+            ],
+        };
 
-  const handleExportResults = (format) => {
-    if (!result) return;
-    if (format === 'json') {
-      exportResults(result, selectedFile?.name || 'analysis');
-      showToast('Results exported as JSON', 'success');
-    } else if (format === 'pdf') {
-      downloadPDF(result, selectedFile?.name || 'analysis', activeMediaType === 'image' ? preview : null);
-      showToast('PDF report generated', 'success');
-    }
-  };
-  
-  const modelsForSettingsPanel = availableModels.filter(m => m.type === activeMediaType);
+        return (
+            <div className="animate-fade-in" style={{ marginTop: '2rem' }}>
+                <div className="card" style={{ textAlign: 'center', marginBottom: '2rem', borderTop: `4px solid ${verdictColor}` }}>
+                    <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Analysis Verdict</h2>
+                    <div style={{ fontSize: '3rem', fontWeight: '800', color: verdictColor, textShadow: `0 0 20px ${verdictColor}40` }}>
+                        {verdictText}
+                    </div>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+                        Confidence: <strong style={{ color: 'var(--text-primary)' }}>{confidence}%</strong>
+                    </p>
+                </div>
 
-  return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-neutral-900 transition-colors duration-200"> 
-      <Header 
-        showSettings={showSettings} 
-        toggleSettings={toggleSettings}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        debugMode={debugMode}
-        toggleDebugMode={toggleDebugMode}
-      />
-      <NavigationBar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        activeMediaType={activeMediaType}
-        setActiveMediaType={(type) => {
-          setActiveMediaType(type);
-          setSelectedFile(null); 
-          setPreview(null);
-          setResult(null);
-          setError(null);
-        }}
-      />
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <ErrorBoundary showDetails={debugMode}>
-          {showSettings && (
-            <SettingsPanel
-              threshold={threshold} setThreshold={setThreshold}
-              ensembleMethod={ensembleMethod} setEnsembleMethod={setEnsembleMethod}
-              selectedModels={selectedModels} setSelectedModels={setSelectedModels}
-              toggleModel={toggleModel}
-              availableModels={modelsForSettingsPanel} 
-              modelHealthStatus={modelHealthStatus}
-              stackingAvailable={stackingAvailableByMediaType[activeMediaType] || false} 
-              darkMode={darkMode} setDarkMode={setDarkMode}
-              debugMode={debugMode} setDebugMode={setDebugMode}
-              onClose={toggleSettings}
-              activeMediaType={activeMediaType}
-            />
-          )}
-          {activeTab === 'detect' && (
-            <div className="space-y-8">
-              <ModelHealthDashboard 
-                modelHealthStatus={modelHealthStatus} 
-                availableModels={availableModels} 
-                isExpanded={isModelDashboardExpanded} 
-                toggleExpand={toggleModelDashboardExpand}
-              />
-              <UploadSection
-                selectedFile={selectedFile} preview={preview}
-                loading={loading} processStage={processStage} error={error}
-                handleFileChange={handleFileChange} 
-                handleDemoMedia={(demoFileNameKey) => handleDemoMedia(activeMediaType, demoFileNameKey)} 
-                handleSubmit={handleSubmit}
-                mediaType={activeMediaType}
-              />
-              {(loading || result) && (
-                <ResultsSection 
-                  result={result} loading={loading} modelProgress={modelProgress}
-                  debugMode={debugMode} onExport={handleExportResults}
-                  fileName={selectedFile?.name} preview={preview}
-                  mediaType={activeMediaType}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                    <div className="card">
+                        <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Ensemble Score</h3>
+                        <div style={{ height: '250px', display: 'flex', justifyContent: 'center' }}>
+                            <Doughnut data={doughnutData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }} />
+                        </div>
+                    </div>
+                    <div className="card">
+                        <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Individual Model Scores</h3>
+                        <div style={{ height: '250px' }}>
+                            <Bar data={barData} options={{ maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } }, plugins: { legend: { display: false } } }} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="App">
+            <header style={{
+                padding: '1.5rem 2rem',
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'rgba(15, 23, 42, 0.8)',
+                backdropFilter: 'blur(10px)',
+                position: 'sticky',
+                top: 0,
+                zIndex: 100
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '1.2rem'
+                    }}>DS</div>
+                    <h1 style={{ fontSize: '1.5rem', fontWeight: '700', letterSpacing: '-0.025em' }}>DeepSafe</h1>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    {renderHealthStatus()}
+                    <button onClick={onLogout} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>Logout</button>
+                </div>
+            </header>
+
+            <main className="container">
+                <div style={{ textAlign: 'center', marginBottom: '3rem', paddingTop: '2rem' }}>
+                    <h2 className="text-gradient" style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', lineHeight: 1.2 }}>
+                        Detect Deepfakes with<br />Enterprise Precision
+                    </h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto' }}>
+                        Upload your media to analyze it against our multi-model ensemble engine.
+                    </p>
+                </div>
+
+                <div className="card" style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem', borderStyle: 'dashed', borderWidth: '2px', borderColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(30, 41, 59, 0.5)' }}>
+                    <input
+                        type="file"
+                        id="file-upload"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                        accept="image/*,video/*"
+                    />
+                    <label htmlFor="file-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}>
+                        <div style={{
+                            width: '64px',
+                            height: '64px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '1.5rem',
+                            color: 'var(--accent-primary)'
+                        }}>
+                            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                        <span style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                            {selectedFile ? selectedFile.name : 'Click to Upload or Drag & Drop'}
+                        </span>
+                        <span style={{ color: 'var(--text-secondary)' }}>Supported formats: JPG, PNG, MP4, AVI</span>
+                    </label>
+                </div>
+
+                {previewUrl && (
+                    <div className="animate-fade-in" style={{ marginTop: '2rem', maxWidth: '800px', margin: '2rem auto 0' }}>
+                        <div className="card" style={{ overflow: 'hidden', padding: 0 }}>
+                            <div style={{ position: 'relative', width: '100%', height: '400px', backgroundColor: '#000' }}>
+                                {mediaType === 'video' ? (
+                                    <video src={previewUrl} controls style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                ) : (
+                                    <img src={previewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                )}
+                            </div>
+                            <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-secondary)' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600' }}>Ready to Analyze</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{selectedFile.size > 1024 * 1024 ? `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB` : `${(selectedFile.size / 1024).toFixed(2)} KB`}</p>
+                                </div>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleAnalyze}
+                                    disabled={isAnalyzing}
+                                    style={{ opacity: isAnalyzing ? 0.7 : 1, minWidth: '150px' }}
+                                >
+                                    {isAnalyzing ? 'Processing...' : 'Run DeepSafe'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="animate-fade-in" style={{ maxWidth: '800px', margin: '2rem auto 0', padding: '1rem', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        {error}
+                    </div>
+                )}
+
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                    {renderResults()}
+                </div>
+            </main>
+
+            <footer style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <p>&copy; {new Date().getFullYear()} DeepSafe Platform. Open Source & Enterprise Ready.</p>
+            </footer>
+        </div>
+    );
+}
+
+function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return localStorage.getItem('token') !== null;
+    });
+
+    const handleLogin = (token) => {
+        localStorage.setItem('token', token);
+        setIsAuthenticated(true);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+    };
+
+    return (
+        <Router>
+            <Routes>
+                <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                <Route path="/register" element={<Register onLogin={handleLogin} />} />
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <Dashboard onLogout={handleLogout} />
+                        </ProtectedRoute>
+                    }
                 />
-              )}
-            </div>
-          )}
-          {activeTab === 'batch' && ( 
-            <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 animate-fade-in">
-              <h2 className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100 mb-4">Batch Processing</h2>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-                Efficiently analyze multiple files. This feature is currently under development for enterprise use.
-              </p>
-              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg text-sm text-primary-700 dark:text-primary-300">
-                <p className="font-medium">Interested in Batch Processing?</p>
-                <p className="mt-1">Contact our team to learn more about high-volume analysis capabilities for your organization.</p>
-                <button 
-                    type="button" 
-                    onClick={() => window.open('mailto:deepsafe.hq@gmail.com?subject=DeepSafe Enterprise Inquiry', '_blank')}
-                    className="mt-4 px-4 py-2 bg-primary-600 text-white text-xs font-medium rounded-md hover:bg-primary-700 transition-all hover:scale-105 active:scale-100"
-                >
-                  Contact Us
-                </button>
-              </div>
-            </div>
-          )}
-          {activeTab === 'about' && <InfoSection />}
-        </ErrorBoundary>
-      </main>
-      <Footer />
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-    </div>
-  );
-};
+            </Routes>
+        </Router>
+    );
+}
 
 export default App;

@@ -14,11 +14,10 @@ services:
       - PORT=8000
       - META_MODEL_ARTIFACTS_DIR=/app/meta_model_artifacts
       - DEEPSAFE_CONFIG_FILE_PATH=/app/config/deepsafe_config.json
-      # - LOG_LEVEL=debug # Optional: for more verbose API logs
     depends_on:
       - npr_deepfakedetection
       - universalfakedetect
-      # Add other future video/audio model service names here
+      - cross_efficient_vit
     networks:
       - deepsafe-network
 
@@ -37,36 +36,6 @@ services:
     networks:
       - deepsafe-network
 
-  # yermandy_clip_detection:
-  #   build: ./models/image/yermandy_clip_detection
-  #   container_name: deepsafe-yermandy-clip-detection
-  #   ports:
-  #     - "5002:5002"
-  #   restart: unless-stopped
-  #   environment:
-  #     - MODEL_PORT=5002
-  #     - MODEL_PATH=model_code/weights/model.ckpt
-  #     - PRELOAD_MODEL=false
-  #     - MODEL_TIMEOUT=600
-  #     - USE_GPU=false
-  #   networks:
-  #     - deepsafe-network
-
-  # wavelet_clip_detection:
-  #   build: ./models/image/wavelet_clip_detection
-  #   container_name: deepsafe-wavelet-clip-detection
-  #   ports:
-  #     - "5003:5003"
-  #   restart: unless-stopped
-  #   environment:
-  #     - MODEL_PORT=5003
-  #     - MODEL_PATH=model_code/weights/clip_wavelet_best.pth
-  #     - PRELOAD_MODEL=false
-  #     - MODEL_TIMEOUT=600
-  #     - USE_GPU=false
-  #   networks:
-  #     - deepsafe-network
-
   universalfakedetect:
     build: ./models/image/universalfakedetect
     container_name: deepsafe-universalfakedetect
@@ -81,48 +50,7 @@ services:
     networks:
       - deepsafe-network
 
-  # trufor:
-  #   build: ./models/image/trufor
-  #   container_name: deepsafe-trufor
-  #   ports:
-  #     - "5005:5005"
-  #   restart: unless-stopped
-  #   environment:
-  #     - MODEL_PORT=5005
-  #     - PRELOAD_MODEL=false
-  #     - MODEL_TIMEOUT=600
-  #     - USE_GPU=false
-  #   networks:
-  #     - deepsafe-network
-
-  # spsl_deepfake_detection:
-  #   build: ./models/image/spsl_deepfake_detection
-  #   container_name: deepsafe-spsl-deepfake-detection
-  #   ports:
-  #     - "5006:5006"
-  #   restart: unless-stopped
-  #   environment:
-  #     - MODEL_PORT=5006
-  #     - PRELOAD_MODEL=false
-  #     - MODEL_TIMEOUT=600
-  #     - USE_GPU=false
-  #   networks:
-  #     - deepsafe-network
-
-  # ucf_deepfake_detection:
-  #   build: ./models/image/ucf_deepfake_detection
-  #   container_name: deepsafe-ucf-deepfake-detection
-  #   ports:
-  #     - "5007:5007"
-  #   restart: unless-stopped
-  #   environment:
-  #     - MODEL_PORT=5007
-  #     - PRELOAD_MODEL=false
-  #     - MODEL_TIMEOUT=600
-  #     - USE_GPU=false
-  #   networks:
-  #     - deepsafe-network
-
+  # --- Video Model Services ---
   cross_efficient_vit:
     build: ./models/video/cross_efficient_vit
     container_name: deepsafe-cross-efficient-vit
@@ -132,35 +60,10 @@ services:
     environment:
       - MODEL_PORT=7001
       - PRELOAD_MODEL=false 
-      - MODEL_TIMEOUT=900   # Video models might be heavier, allow longer idle time
-      - USE_GPU=false       # Ensure CPU operation
-      # The following are set within the cross_efficient_vit/Dockerfile,
-      # but can be overridden here if needed for different weight files for the same image:
-      # - DEFAULT_MODEL_VARIANT="cross_efficient_vit" 
-      # - CROSS_EFFICIENT_VIT_MODEL_PATH="/app/model_code/cross-efficient-vit/pretrained_models/cross_efficient_vit.pth"
-      # - EFFICIENT_VIT_MODEL_PATH="/app/model_code/efficient-vit/pretrained_models/efficient_vit.pth"
-      # - CROSS_EFFICIENT_VIT_CONFIG_PATH="/app/model_code/cross-efficient-vit/configs/architecture.yaml"
-      # - EFFICIENT_VIT_CONFIG_PATH="/app/model_code/efficient-vit/configs/architecture.yaml"
-      # - FRAMES_PER_VIDEO="15" # If you want to control frame sampling from docker-compose
+      - MODEL_TIMEOUT=900
+      - USE_GPU=false
     networks:
       - deepsafe-network
-    # Optional: Add resource limits for CPU/memory if this model is resource-intensive
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '2.0' 
-    #       memory: 4G
-
-  # --- Placeholder for future audio model service ---
-  # example_audio_model_1:
-  #   build: ./models/audio/example_audio_model_1
-  #   container_name: deepsafe-example-audio-model-1
-  #   ports:
-  #     - "8001:8001"
-  #   restart: unless-stopped
-  #   # ... environment ...
-  #   networks:
-  #     - deepsafe-network
 
   frontend:
     build: ./frontend

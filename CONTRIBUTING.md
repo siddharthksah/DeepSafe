@@ -1,70 +1,36 @@
 # Contributing to DeepSafe
 
-First off, thanks for taking the time to contribute! 🎉
+Thank you for your interest in contributing to DeepSafe! We welcome contributions from the community to help make the internet a safer place by detecting deepfakes.
 
-The following is a set of guidelines for contributing to DeepSafe. These are just guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
-
-## Code of Conduct
-
-This project and everyone participating in it is governed by the [DeepSafe Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
-
-## How Can I Contribute?
+## How to Contribute
 
 ### Reporting Bugs
-
-This section guides you through submitting a bug report for DeepSafe. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
-
-- **Use a clear and descriptive title** for the issue to identify the problem.
-- **Describe the exact steps which reproduce the problem** in as many details as possible.
-- **Provide specific examples** to demonstrate the steps.
-- **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
-- **Explain which behavior you expected to see instead and why.**
+- Check if the issue has already been reported.
+- Open a new issue with a clear title and detailed description.
+- Include steps to reproduce, expected behavior, and actual behavior.
+- Attach screenshots or logs if applicable.
 
 ### Suggesting Enhancements
-
-This section guides you through submitting an enhancement suggestion for DeepSafe, including completely new features and minor improvements to existing functionality.
-
-- **Use a clear and descriptive title** for the issue to identify the suggestion.
-- **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
-- **Explain why this enhancement would be useful** to most DeepSafe users.
+- Open a new issue describing the feature or improvement.
+- Explain why this enhancement would be useful.
 
 ### Pull Requests
-
-- Fill in the required template
-- Do not include issue numbers in the PR title
-- Include screenshots and animated GIFs in your pull request whenever possible.
-- Follow the Python style guides (PEP 8).
-- End all files with a newline.
+1. Fork the repository.
+2. Create a new branch for your feature or fix: `git checkout -b feature/your-feature-name`.
+3. Make your changes and commit them with clear messages.
+4. Push to your fork: `git push origin feature/your-feature-name`.
+5. Open a Pull Request against the `main` branch.
+6. Describe your changes and reference any related issues.
 
 ## Development Setup
+1. Clone the repository.
+2. Install dependencies (see README.md).
+3. Run tests before submitting: `make test`.
 
-1.  **Clone the repo**:
-    ```bash
-    git clone https://github.com/yourusername/DeepSafe.git
-    cd DeepSafe
-    ```
+## Code Style
+- Follow PEP 8 for Python code.
+- Use standard JavaScript/React best practices.
+- Keep code clean, readable, and well-commented.
 
-2.  **Set up environment**:
-    Copy the example environment file:
-    ```bash
-    cp .env.example .env
-    ```
-
-3.  **Run with Docker**:
-    ```bash
-    make start
-    ```
-
-4.  **Run Tests**:
-    ```bash
-    make test
-    ```
-
-## Styleguides
-
-### Git Commit Messages
-
-- Use the present tense ("Add feature" not "Added feature")
-- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-- Limit the first line to 72 characters or less
-- Reference issues and pull requests liberally after the first line
+## License
+By contributing, you agree that your contributions will be licensed under the MIT License.

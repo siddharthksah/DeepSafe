@@ -1,2 +1,10 @@
 walkthrough.md
 VERIFICATION.md
+frontend/node_modules
+.DS_Store
+models/.DS_Store
+frontend/.DS_Store
+# ignore all .DS_Store files
+.DS_Store
+.DS_Store
+.DS_Store

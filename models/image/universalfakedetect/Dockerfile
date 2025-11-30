@@ -12,7 +12,9 @@ RUN apt-get update && \
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install uv && \
+    uv pip install --system --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY app.py .

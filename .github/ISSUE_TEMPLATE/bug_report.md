@@ -23,10 +23,10 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Environment (please complete the following information):**
+**Desktop (please complete the following information):**
  - OS: [e.g. macOS, Windows]
  - Browser [e.g. chrome, safari]
- - DeepSafe Version [e.g. v1.0]
+ - Version [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.
