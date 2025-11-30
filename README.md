@@ -39,8 +39,8 @@ DeepSafe orchestrates a fleet of specialized detectors via a central API gateway
 ```mermaid
 graph TD
     Client[Web Client / User] --> Nginx[Nginx / Frontend]
-    Nginx --> API[DeepSafe API (FastAPI)]
-    API --> Meta[Meta-Learner / Ensemble]
+    Nginx --> API[DeepSafe API FastAPI]
+    API --> Meta[Meta-Learner Ensemble]
     
     subgraph "Image Detectors"
         Meta --> NPR[NPR Deepfake]
