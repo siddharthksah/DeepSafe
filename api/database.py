@@ -2,7 +2,17 @@
 DeepSafe Database Module
 SQLAlchemy ORM models and database session management for storing analysis history.
 """
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Text, Boolean
+
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime,
+    Text,
+    Boolean,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -13,7 +23,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./deepsafe_history.db")
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -22,6 +32,7 @@ Base = declarative_base()
 
 class AnalysisHistory(Base):
     """Store analysis results for auditing and reporting."""
+
     __tablename__ = "analysis_history"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -29,17 +40,17 @@ class AnalysisHistory(Base):
     username = Column(String, index=True, nullable=True)  # User who ran the analysis
     media_type = Column(String, nullable=False)  # image, video, audio
     media_name = Column(String, nullable=True)
-    
+
     # Analysis Results
     verdict = Column(String, nullable=False)  # "real" or "fake"
     confidence = Column(Float, nullable=False)
     ensemble_method = Column(String, nullable=False)  # "stacking", "voting", "average"
     ensemble_score = Column(Float, nullable=False)
-    
+
     # Metadata
     inference_time = Column(Float, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
-    
+
     # Optional: Store full JSON response
     full_response = Column(Text, nullable=True)
 

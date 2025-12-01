@@ -20,30 +20,31 @@ DATASETS = [
         "name": "140k",
         "slug": "xhlulu/140k-real-and-fake-faces",
         "subdirs": {"real": "real", "fake": "fake"},
-        "fake_label": "stylegan2"
+        "fake_label": "stylegan2",
     },
     {
         "name": "deepfake_real",
         "slug": "manjilkarki/deepfake-and-real-images",
         "subdirs": {"real": "real", "fake": "fake"},
-        "fake_label": "pggan_stylegan_mix"
+        "fake_label": "pggan_stylegan_mix",
     },
     {
         "name": "dfdc_f150",
         "slug": "sciarrilli/dfdc-f150",
         "subdirs": {"real": "real", "fake": "fake"},
-        "fake_label": "dfdc_swaps"
+        "fake_label": "dfdc_swaps",
     },
     {
         "name": "faceforensics_imgs",
         "slug": "greatgamedota/faceforensics",
         "subdirs": {"real": "real", "fake": "fake"},
-        "fake_label": "ffpp_swaps"
+        "fake_label": "ffpp_swaps",
     },
 ]
 
 TARGET_PER_CLASS = 10_000
 # ----------------------------------------------------------------------
+
 
 def kaggle_download(slug: str, dest: pathlib.Path) -> pathlib.Path:
     """Download <slug> to dest/. Returns path of the zip."""
@@ -58,6 +59,7 @@ def kaggle_download(slug: str, dest: pathlib.Path) -> pathlib.Path:
     )
     return zip_path
 
+
 def extract(zip_path: pathlib.Path, dest: pathlib.Path) -> pathlib.Path:
     """Unzip if needed. Returns extraction dir."""
     extract_dir = dest / zip_path.stem
@@ -68,8 +70,10 @@ def extract(zip_path: pathlib.Path, dest: pathlib.Path) -> pathlib.Path:
         zf.extractall(path=extract_dir)
     return extract_dir
 
+
 def glob_images(root: pathlib.Path, pattern: str):
     return list(root.glob(pattern)) + list(root.glob(pattern.replace("jpg", "png")))
+
 
 def main(out_dir: pathlib.Path, seed: int):
     random.seed(seed)
@@ -127,13 +131,17 @@ def main(out_dir: pathlib.Path, seed: int):
         (out_dir / cls).mkdir(parents=True, exist_ok=True)
 
     manifest_rows = []
+
     def copy_files(file_list, cls):
         for src in tqdm(file_list, desc=f"Copying {cls}"):
             dst = out_dir / cls / src.name
             shutil.copy(src, dst)
             manifest_rows.append(
-                {"filename": dst.name, "label": cls,
-                 "source": fake_source_tag.get(str(src), "n/a")}
+                {
+                    "filename": dst.name,
+                    "label": cls,
+                    "source": fake_source_tag.get(str(src), "n/a"),
+                }
             )
 
     copy_files(selected_real, "real")
@@ -142,10 +150,12 @@ def main(out_dir: pathlib.Path, seed: int):
     pd.DataFrame(manifest_rows).to_csv(out_dir / "manifest.csv", index=False)
     print("Done →", out_dir)
 
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--out_dir", default="faces20k", type=pathlib.Path,
-                   help="destination folder")
+    p.add_argument(
+        "--out_dir", default="faces20k", type=pathlib.Path, help="destination folder"
+    )
     p.add_argument("--seed", default=42, type=int)
     args = p.parse_args()
     main(args.out_dir, args.seed)
