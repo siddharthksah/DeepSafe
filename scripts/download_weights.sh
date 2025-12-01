@@ -28,5 +28,16 @@ echo "CrossEfficientViT weights are typically handled by the Docker build."
 echo "If build fails, download from: https://drive.google.com/drive/folders/19bNOs8_rZ7LmPP3boDS3XvZcR1iryHR1"
 echo "Place in: models/video/cross_efficient_vit/model_code/gdrive_weights/"
 
+# FakeSTormer Weights
+echo "------------------------------------------------"
+echo "Checking FakeSTormer weights..."
+if [ -f "models/video/fake_stormer/model_code/weights/best.pth" ]; then
+    echo "FakeSTormer weights already exist."
+else
+    echo "Please download the weights from the following Dropbox link:"
+    echo "Link: https://www.dropbox.com/scl/fo/elk2szqf0du4l6zm5job9/AAdVmNH--6ywHBZGNQJlR5o?rlkey=5kde7vj4wklrx1jwdul0m6g46&e=1&st=czw4szw0&dl=0"
+    echo "Place the 'best.pth' file in: models/video/fake_stormer/model_code/weights/"
+fi
+
 echo "------------------------------------------------"
 echo "Download check complete."

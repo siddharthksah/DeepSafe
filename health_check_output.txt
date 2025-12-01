@@ -1,0 +1,37 @@
+Results for this run will be saved in: 
+/Users/sidd/Desktop/Personal/Projects/DeepSafe/deepsafe_test_results/20251201_203609
+╭──────────────────────────────────────────────────╮
+│ DeepSafe System Health Check (Media Type: VIDEO) │
+╰──────────────────────────────────────────────────╯
+Error checking main API
+health at 
+http://localhost:8000/h
+ealth: 
+HTTPConnectionPool(host
+='localhost', 
+port=8000): Max retries
+exceeded with url: 
+/health (Caused by 
+NewConnectionError('<ur
+llib3.connection.HTTPCo
+nnection object at 
+0x113dc2fd0>: Failed to
+establish a new 
+connection: [Errno 61] 
+Connection refused'))
+                                                 DeepSafe System Status                                                 
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Component                             ┃ Status                                ┃ Details                              ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ API Gateway Overall                   │ UNKNOWN (KEY 'OVERALL_API_STATUS'     │                                      │
+│                                       │ MISSING)                              │                                      │
+│ 'VIDEO' Processing Status             │ UNKNOWN (MEDIA TYPE DETAILS MISSING   │                                      │
+│                                       │ OR STATUS KEY MISSING)                │                                      │
+├───────────────────────────────────────┼───────────────────────────────────────┼──────────────────────────────────────┤
+│ Individual Models for 'VIDEO' (Status │                                       │                                      │
+│ via API Gateway)                      │                                       │                                      │
+│ No model statuses reported by API for │ -                                     │ Check API health endpoint response   │
+│ 'video'.                              │                                       │ structure.                           │
+├───────────────────────────────────────┼───────────────────────────────────────┼──────────────────────────────────────┤
+│ Stacking Ensemble for 'VIDEO'         │ Unavailable                           │                                      │
+└───────────────────────────────────────┴───────────────────────────────────────┴──────────────────────────────────────┘

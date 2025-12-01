@@ -23,10 +23,12 @@
     },
     "video": {
       "model_endpoints": {
-        "cross_efficient_vit": "http://cross_efficient_vit:7001/predict"
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/predict",
+        "fake_stormer": "http://fake_stormer:7002/predict"
       },
       "health_endpoints": {
-        "cross_efficient_vit": "http://cross_efficient_vit:7001/health"
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/health",
+        "fake_stormer": "http://fake_stormer:7002/health"
       },
       "supported_extensions": [
         "*.mp4",

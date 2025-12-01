@@ -5,7 +5,7 @@
 <div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI Status](https://github.com/yourusername/DeepSafe/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/DeepSafe/actions)
+[![CI Status](https://github.com/siddharthksah/DeepSafe/actions/workflows/ci.yml/badge.svg)](https://github.com/siddharthksah/DeepSafe/actions)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
@@ -62,7 +62,7 @@ graph TD
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/DeepSafe.git
+    git clone https://github.com/siddharthksah/DeepSafe.git
     cd DeepSafe
     ```
 
@@ -85,6 +85,7 @@ graph TD
 | **NPR Deepfake** | Image | ✅ Active | Neural Pattern Recognition for subtle artifact detection. |
 | **Universal Fake Detect** | Image | ✅ Active | Generalizable detection for unseen deepfake types. |
 | **Cross Efficient ViT** | Video | ✅ Active | High-efficiency video analysis using Vision Transformers. |
+| **FakeSTormer** | Video | ✅ Active | Vulnerability-Aware Spatio-Temporal Learning for Generalizable Deepfake Video Detection. |
 
 ## 🧪 Testing & Verification
 
@@ -102,3 +103,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
+## 🏆 Credits
+
+DeepSafe integrates and builds upon the following excellent open-source research:
+
+-   **NPR Deepfake**: [GitHub](https://github.com/chuangchuangtan/NPR-Deepfake)
+-   **Universal Fake Detect**: [GitHub](https://github.com/ojha11/UniversalFakeDetect)
+-   **Cross Efficient ViT**: [GitHub](https://github.com/nicolia/CrossEfficientViT)
+-   **FakeSTormer**: [GitHub](https://github.com/10Ring/FakeSTormer)
+
+We thank the original authors for their contributions to the community.
