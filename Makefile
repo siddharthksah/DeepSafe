@@ -16,7 +16,7 @@ install:
 start:
 	@echo "Starting DeepSafe..."
 	docker-compose up -d
-	@echo "DeepSafe is running at http://localhost:80"
+	@echo "DeepSafe is running at http://localhost:8888"
 
 stop:
 	@echo "Stopping DeepSafe..."

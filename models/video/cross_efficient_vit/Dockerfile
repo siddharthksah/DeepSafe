@@ -28,8 +28,7 @@ ENV QT_QPA_PLATFORM=offscreen
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install uv && \
-    uv pip install --system --no-cache-dir \
+    pip install --no-cache-dir \
     torch==1.11.0 \
     torchvision==0.12.0 \
     torchaudio==0.11.0 \
@@ -38,11 +37,11 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # NumPy version will be handled by requirements.txt now
 # REMOVE THIS LINE: RUN pip install --no-cache-dir numpy==1.21.6
 
-RUN uv pip install --system --no-cache-dir opencv-python-headless==4.6.0.66
+RUN pip install --no-cache-dir opencv-python-headless==4.6.0.66
 
 # Install other Python dependencies from requirements.txt
 # This will install numpy as per the constraint in requirements.txt
-RUN uv pip install --system --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # ... (rest of your Dockerfile remains the same) ...
 
@@ -58,14 +57,14 @@ RUN mkdir -p /app/model_code/efficient-vit/pretrained_models && \
 
 # Move downloaded weights to their respective locations
 RUN if [ -f /app/model_code/gdrive_weights/efficient_vit.pth ]; then \
-    mv /app/model_code/gdrive_weights/efficient_vit.pth /app/model_code/efficient-vit/pretrained_models/efficient_vit.pth; \
+        mv /app/model_code/gdrive_weights/efficient_vit.pth /app/model_code/efficient-vit/pretrained_models/efficient_vit.pth; \
     else \
-    echo "Warning: efficient_vit.pth not found in gdrive_weights, assuming it might be part of the repo or handled differently." ; \
+        echo "Warning: efficient_vit.pth not found in gdrive_weights, assuming it might be part of the repo or handled differently." ; \
     fi && \
     if [ -f /app/model_code/gdrive_weights/cross_efficient_vit.pth ]; then \
-    mv /app/model_code/gdrive_weights/cross_efficient_vit.pth /app/model_code/cross-efficient-vit/pretrained_models/cross_efficient_vit.pth; \
+        mv /app/model_code/gdrive_weights/cross_efficient_vit.pth /app/model_code/cross-efficient-vit/pretrained_models/cross_efficient_vit.pth; \
     else \
-    echo "Warning: cross_efficient_vit.pth not found in gdrive_weights, assuming it might be part of the repo or handled differently." ; \
+        echo "Warning: cross_efficient_vit.pth not found in gdrive_weights, assuming it might be part of the repo or handled differently." ; \
     fi && \
     rm -rf /app/model_code/gdrive_weights
 

@@ -32,6 +32,13 @@ DeepSafe adopts a **microservices architecture** where each detection model runs
 -   **Dockerized Architecture**: Fully containerized services for easy deployment and isolation.
 -   **RESTful API**: Robust FastAPI backend with health checks, batch processing, and detailed logging.
 
+## 📸 UI Preview
+
+<div align="center">
+  <img src="docs/images/login_page.png" alt="Login Page" width="45%">
+  <img src="docs/images/dashboard.png" alt="Dashboard" width="45%">
+</div>
+
 ## 🏗️ Architecture
 
 DeepSafe orchestrates a fleet of specialized detectors via a central API gateway:
@@ -73,7 +80,7 @@ graph TD
     *This will build all containers and start the services. Initial build may take a few minutes.*
 
 3.  **Access the Dashboard**:
-    Open `http://localhost:80` in your browser.
+    Open `http://localhost:8888` in your browser.
 
 4.  **API Documentation**:
     Visit `http://localhost:8000/docs` for the interactive Swagger UI.

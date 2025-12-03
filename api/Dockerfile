@@ -23,6 +23,7 @@ RUN pip install uv && \
 
 # Copy application code
 COPY main.py .
+COPY database.py .
 
 # Expose the port the app runs on
 EXPOSE ${PORT}
