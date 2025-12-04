@@ -1,6 +1,4 @@
-# DeepSafe: Enterprise-Grade Deepfake Detection Platform
-
-![DeepSafe Banner](https://via.placeholder.com/1200x300?text=DeepSafe+Deepfake+Detection+Platform)
+# 🐶 DeepSafe: Enterprise-Grade Deepfake Detection Platform
 
 <div align="center">
 
@@ -35,8 +33,10 @@ DeepSafe adopts a **microservices architecture** where each detection model runs
 ## 📸 UI Preview
 
 <div align="center">
-  <img src="docs/images/login_page.png" alt="Login Page" width="45%">
-  <img src="docs/images/dashboard.png" alt="Dashboard" width="45%">
+  <img src="docs/images/login.png" alt="Login Page" width="45%">
+  <img src="docs/images/dashboard_1.png" alt="Dashboard Overview" width="45%">
+  <img src="docs/images/dashboard_2.png" alt="Dashboard Analysis" width="45%">
+  <img src="docs/images/dashboard_3.png" alt="Dashboard Results" width="45%">
 </div>
 
 ## 🏗️ Architecture

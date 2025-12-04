@@ -14,3 +14,4 @@ deepsafe_utils/__pycache__/visualizer.cpython-313.pyc
 #ignore all .pyc files
 *.pyc   
 models/audio/vocoder_artifacts/temp_repo
+models/audio/vocoder_artifacts/temp_repo

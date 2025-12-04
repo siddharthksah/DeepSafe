@@ -166,7 +166,7 @@ services:
     build: ./frontend
     container_name: deepsafe-frontend
     ports:
-      - "8888:80"
+      - "80:80"
     restart: unless-stopped
     depends_on:
       - api
