@@ -1,3 +1,40 @@
+# sofia-forensics
+
+> **Fork of [DeepSafe](https://github.com/siddharthksah/DeepSafe) for master's thesis research at the University of Bari Aldo Moro.**
+
+This repository is a personalized fork of the DeepSafe deepfake detection
+platform, extended with OSINT modules and a SOFIA layer mapper for the
+purpose of master's thesis research on cyber-social terrorism, conducted
+under the supervision of Prof.ssa Barletta at the SERLAB research group.
+
+The thesis builds on the **SOFIA framework** (Baldassarre et al.), a
+multi-layered model for analyzing AI-driven cyber-social threats. This
+fork operationalizes the framework's "Layer 2 Shield" component for
+retroactive provenance reconstruction of deepfake artifacts, when proactive
+watermarking is absent.
+
+## Original contribution vs inherited base
+
+| Component | Origin |
+|---|---|
+| API gateway (FastAPI), microservices architecture, meta-learner stacking | Inherited from DeepSafe (MIT) |
+| Image and video deepfake detectors (NPR, UniFD, Cross-Efficient ViT) | Inherited from DeepSafe |
+| `models/osint/` modules (ingestion, metadata forensics, reverse search, first appearance) | Original thesis work |
+| `api/sofia/` SOFIA layer mapper | Original thesis work |
+| Audio and text detectors | Original thesis work (planned) |
+
+Architecture decision records documenting design choices made during this
+fork are maintained in a separate private repository for the duration of
+the thesis work, and may be made available upon request for academic
+evaluation purposes.
+
+## Original DeepSafe README
+
+The original DeepSafe README follows below, preserved for reference and
+attribution.
+
+---
+
 # DeepSafe
 
 **Enterprise-grade deepfake detection across image, video, and audio.**
