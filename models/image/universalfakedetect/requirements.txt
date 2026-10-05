@@ -7,3 +7,4 @@ ftfy
 regex
 setuptools<70
 tqdm
+opencv-python-headless
